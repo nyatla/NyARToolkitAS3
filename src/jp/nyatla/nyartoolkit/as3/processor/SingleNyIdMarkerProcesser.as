@@ -30,6 +30,20 @@
  */
 package jp.nyatla.nyartoolkit.as3.processor 
 {
+	import jp.nyatla.nyartoolkit.as3.core.param.*;
+	import jp.nyatla.nyartoolkit.as3.core.match.*;
+	import jp.nyatla.nyartoolkit.as3.core.pickup.*;
+	import jp.nyatla.nyartoolkit.as3.core.squaredetect.*;
+	import jp.nyatla.nyartoolkit.as3.core.transmat.*;
+	import jp.nyatla.nyartoolkit.as3.core.raster.*;
+	import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
+	import jp.nyatla.nyartoolkit.as3.core.*;
+	import jp.nyatla.nyartoolkit.as3.core.rasterfilter.rgb2bin.*;
+	import jp.nyatla.nyartoolkit.as3.core.types.*;
+	import jp.nyatla.nyartoolkit.as3.*;
+	import jp.nyatla.nyartoolkit.as3.nyidmarker.data.*;
+	import jp.nyatla.nyartoolkit.as3.core.analyzer.raster.threshold.*;
+	import jp.nyatla.as3utils.*;
 	public class SingleNyIdMarkerProcesser
 	{
 		/**
@@ -55,15 +69,15 @@ package jp.nyatla.nyartoolkit.as3.processor
 		private var _data_current:INyIdMarkerData;
 
 
-		protected function SingleNyIdMarkerProcesser()
+		public function SingleNyIdMarkerProcesser()
 		{
 			return;
 		}
 		private var _initialized:Boolean=false;
-		protected function initInstance(i_param:NyARParam, i_encoder:INyIdMarkerDataEncoder , i_raster_format:int):void
+		protected function initInstance(i_param:NyARParam, i_encoder:INyIdMarkerDataEncoder ,i_marker_width:int, i_raster_format:int):void
 		{
 			//初期化済？
-			assert(this._initialized==false);
+			NyAS3Utils.assert(this._initialized==false);
 			
 			var scr_size:NyARIntSize = i_param.getScreenSize();
 			// 解析オブジェクトを作る
@@ -79,7 +93,8 @@ package jp.nyatla.nyartoolkit.as3.processor
 			this._threshold_detect=new NyARRasterThresholdAnalyzer_SlidePTile(15,i_raster_format,4);
 			this._initialized=true;
 			this._is_active=false;
-			this._offset=new NyARRectOffset();
+			this._offset = new NyARRectOffset();
+			this._offset.setSquare(i_marker_width);
 			return;
 			
 		}
@@ -90,7 +105,7 @@ package jp.nyatla.nyartoolkit.as3.processor
 			return;
 		}
 
-		public function reset(boolean i_is_force):void
+		public function reset(i_is_force:Boolean):void
 		{
 			if (i_is_force == false && this._is_active){
 				// 強制書き換えでなければイベントコール
@@ -104,7 +119,7 @@ package jp.nyatla.nyartoolkit.as3.processor
 		public function detectMarker(i_raster:INyARRgbRaster):void
 		{
 			// サイズチェック
-			if (!this._bin_raster.getSize().isEqualSize(i_raster.getSize().w, i_raster.getSize().h)) {
+			if (!this._bin_raster.getSize().isEqualSize_int(i_raster.getSize().w, i_raster.getSize().h)) {
 				throw new NyARException();
 			}
 			// ラスタを２値イメージに変換する.
@@ -194,6 +209,19 @@ package jp.nyatla.nyartoolkit.as3.processor
 		}
 	}
 }
+import jp.nyatla.nyartoolkit.as3.core.param.*;
+import jp.nyatla.nyartoolkit.as3.core.match.*;
+import jp.nyatla.nyartoolkit.as3.core.pickup.*;
+import jp.nyatla.nyartoolkit.as3.core.squaredetect.*;
+import jp.nyatla.nyartoolkit.as3.core.transmat.*;
+import jp.nyatla.nyartoolkit.as3.core.raster.*;
+import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
+import jp.nyatla.nyartoolkit.as3.core.*;
+import jp.nyatla.nyartoolkit.as3.core.rasterfilter.rgb2bin.*;
+import jp.nyatla.nyartoolkit.as3.core.types.*;
+import jp.nyatla.nyartoolkit.as3.*;
+import jp.nyatla.nyartoolkit.as3.nyidmarker.data.*;
+import jp.nyatla.nyartoolkit.as3.nyidmarker.*;
 
 /**
  * detectMarkerのコールバック関数
@@ -201,24 +229,24 @@ package jp.nyatla.nyartoolkit.as3.processor
 class DetectSquareCB implements DetectMarkerCallback
 {
 	//公開プロパティ
-	public final NyARSquare square=new NyARSquare();
-	public INyIdMarkerData marker_data;
-	public int threshold;
+	public var square:NyARSquare=new NyARSquare();
+	public var marker_data:INyIdMarkerData;
+	public var threshold:int;
 
 	
 	//参照
-	private INyARRgbRaster _ref_raster;
+	private var _ref_raster:INyARRgbRaster;
 	//所有インスタンス
-	private INyIdMarkerData _current_data;
-	private final NyIdMarkerPickup _id_pickup = new NyIdMarkerPickup();
-	private Coord2Linear _coordline;
-	private INyIdMarkerDataEncoder _encoder;
+	private var _current_data:INyIdMarkerData;
+	private var _id_pickup:NyIdMarkerPickup = new NyIdMarkerPickup();
+	private var _coordline:Coord2Linear;
+	private var _encoder:INyIdMarkerDataEncoder;
 
 	
-	private INyIdMarkerData _data_temp;
-	private INyIdMarkerData _prev_data;
+	private var _data_temp:INyIdMarkerData;
+	private var _prev_data:INyIdMarkerData;
 	
-	public DetectSquareCB(NyARParam i_param,INyIdMarkerDataEncoder i_encoder)
+	public function DetectSquareCB(i_param:NyARParam,i_encoder:INyIdMarkerDataEncoder)
 	{
 		this._coordline=new Coord2Linear(i_param.getScreenSize(),i_param.getDistortionFactor());
 		this._data_temp=i_encoder.createDataInstance();
@@ -226,7 +254,7 @@ class DetectSquareCB implements DetectMarkerCallback
 		this._encoder=i_encoder;
 		return;
 	}
-	private NyARIntPoint2d[] __tmp_vertex=NyARIntPoint2d.createArray(4);
+	private var __tmp_vertex:Vector.<NyARIntPoint2d>=NyARIntPoint2d.createArray(4);
 	/**
 	 * Initialize call back handler.
 	 */
@@ -285,11 +313,12 @@ class DetectSquareCB implements DetectMarkerCallback
 		//ココから先はこの条件でしか実行されない。
 		var sq:NyARSquare=this.square;
 		//directionを考慮して、squareを更新する。
-		for(var i:int=0;i<4;i++){
+		var i:int;
+		for(i=0;i<4;i++){
 			var idx:int=(i+4 - param.direction) % 4;
 			this._coordline.coord2Line(i_vertex_index[idx],i_vertex_index[(idx+1)%4],i_coordx,i_coordy,i_coor_num,sq.line[i]);
 		}
-		for (var i:int = 0; i < 4; i++) {
+		for (i= 0; i < 4; i++) {
 			//直線同士の交点計算
 			if(!NyARLinear.crossPos(sq.line[i],sq.line[(i + 3) % 4],sq.sqvertex[i])){
 				throw new NyARException();//ここのエラー復帰するならダブルバッファにすればOK

@@ -30,6 +30,11 @@
  */
 package jp.nyatla.nyartoolkit.as3.core.analyzer.raster 
 {
+	import jp.nyatla.nyartoolkit.as3.core.types.*;
+	import jp.nyatla.nyartoolkit.as3.*;
+	import jp.nyatla.nyartoolkit.as3.core.raster.*;
+	import jp.nyatla.nyartoolkit.as3.core.rasterreader.*;
+	import jp.nyatla.as3utils.*;
 	
 	public class NyARRasterAnalyzer_Histgram
 	{
@@ -73,8 +78,8 @@ package jp.nyatla.nyartoolkit.as3.core.analyzer.raster
 		{
 			var size:NyARIntSize=i_input.getSize();
 			//最大画像サイズの制限
-			assert(size.w*size.h<0x40000000);
-			assert(o_histgram.length == 256);//現在は固定
+			NyAS3Utils.assert(size.w*size.h<0x40000000);
+			NyAS3Utils.assert(o_histgram.length == 256);//現在は固定
 
 			var  h:Vector.<int>=o_histgram.data;
 			//ヒストグラム初期化
@@ -89,6 +94,9 @@ package jp.nyatla.nyartoolkit.as3.core.analyzer.raster
 import jp.nyatla.nyartoolkit.as3.core.rasterfilter.*;
 import jp.nyatla.nyartoolkit.as3.core.raster.*;
 import jp.nyatla.nyartoolkit.as3.core.*;	
+import jp.nyatla.as3utils.*;
+import jp.nyatla.nyartoolkit.as3.core.rasterreader.*;
+import jp.nyatla.nyartoolkit.as3.core.types.*;
 
 interface ICreateHistgramImpl
 {
@@ -97,9 +105,9 @@ interface ICreateHistgramImpl
 
 class NyARRasterThresholdAnalyzer_Histgram_INT1D_GRAY_8 implements ICreateHistgramImpl
 {
-	public override function createHistgram(i_reader:INyARBufferReader,i_size:NyARIntSize,o_histgram:Vector.<int>,i_skip:int):int
+	public function createHistgram(i_reader:INyARBufferReader,i_size:NyARIntSize,o_histgram:Vector.<int>,i_skip:int):int
 	{
-		assert (i_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8));
+		NyAS3Utils.assert (i_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8));
 		var input:Vector.<int>=(Vector.<int>)(i_reader.getBuffer());
 		for (var y:int = i_size.h-1; y >=0 ; y-=i_skip){
 			var pt:int=y*i_size.w;
@@ -116,12 +124,12 @@ class NyARRasterThresholdAnalyzer_Histgram_INT1D_X8R8G8B8_32 implements ICreateH
 {
 	public function createHistgram(i_reader:INyARBufferReader,i_size:NyARIntSize,o_histgram:Vector.<int>,i_skip:int):int
 	{
-		assert (i_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_X8R8G8B8_32));
-		final int[] input=(int[]) i_reader.getBuffer();
-		for (int y = i_size.h-1; y >=0 ; y-=i_skip){
-			int pt=y*i_size.w;
-			for (int x = i_size.w-1; x >=0; x--) {
-				int p=input[pt];
+		NyAS3Utils.assert (i_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_X8R8G8B8_32));
+		var input:Vector.<int> =Vector.<int>(i_reader.getBuffer());
+		for (var y:int = i_size.h-1; y >=0 ; y-=i_skip){
+			var pt:int=y*i_size.w;
+			for (var x:int = i_size.w-1; x >=0; x--) {
+				var p:int=input[pt];
 				o_histgram[((p& 0xff)+(p& 0xff)+(p& 0xff))/3]++;
 				pt++;
 			}

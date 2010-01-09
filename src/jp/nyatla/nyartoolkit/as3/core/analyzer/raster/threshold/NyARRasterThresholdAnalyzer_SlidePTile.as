@@ -30,7 +30,13 @@
  */
 package jp.nyatla.nyartoolkit.as3.core.analyzer.raster.threshold 
 {
+	import jp.nyatla.nyartoolkit.as3.core.analyzer.histgram.*;
+	import jp.nyatla.nyartoolkit.as3.core.analyzer.raster.threshold.*;
+	import jp.nyatla.nyartoolkit.as3.core.analyzer.raster.*;
+	import jp.nyatla.nyartoolkit.as3.core.types.*;
 	import jp.nyatla.nyartoolkit.as3.core.raster.*;
+	import jp.nyatla.as3utils.*;
+	
 	public class NyARRasterThresholdAnalyzer_SlidePTile implements INyARRasterThresholdAnalyzer
 	{
 		private var _raster_analyzer:NyARRasterAnalyzer_Histgram;
@@ -43,14 +49,14 @@ package jp.nyatla.nyartoolkit.as3.core.analyzer.raster.threshold
 		}
 		public function NyARRasterThresholdAnalyzer_SlidePTile(i_persentage:int,i_raster_format:int,i_vertical_interval:int)
 		{
-			assert (0 <= i_persentage && i_persentage <= 50);
+			NyAS3Utils.assert (0 <= i_persentage && i_persentage <= 50);
 			//初期化
 			this._sptile=new NyARHistgramAnalyzer_SlidePTile(i_persentage);
 			this._histgram=new NyARHistgram(256);
 			this._raster_analyzer=new NyARRasterAnalyzer_Histgram(i_raster_format,i_vertical_interval);
 		}
 		
-		public override function analyzeRaster(i_input:INyARRaster):int
+		public function analyzeRaster(i_input:INyARRaster):int
 		{
 			this._raster_analyzer.analyzeRaster(i_input, this._histgram);
 			return this._sptile.getThreshold(this._histgram);

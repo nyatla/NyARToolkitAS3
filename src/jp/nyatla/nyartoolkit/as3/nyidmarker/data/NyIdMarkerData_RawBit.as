@@ -30,13 +30,14 @@
  */
 package jp.nyatla.nyartoolkit.as3.nyidmarker.data 
 {
+	import jp.nyatla.nyartoolkit.as3.utils.as3.*;
 	public class NyIdMarkerData_RawBit implements INyIdMarkerData
 	{
 		public var packet:Vector.<int>=new Vector.<int>(22);
 		public var length:int;
 		public function isEqual(i_target:INyIdMarkerData):Boolean
 		{
-			NyIdMarkerData_RawBit s=(NyIdMarkerData_RawBit)i_target;
+			var s:NyIdMarkerData_RawBit=NyIdMarkerData_RawBit(i_target);
 			if(s.length!=this.length){
 				return false;
 			}
@@ -49,8 +50,8 @@ package jp.nyatla.nyartoolkit.as3.nyidmarker.data
 		}
 		public function copyFrom(i_source:INyIdMarkerData):void
 		{
-			var s:NyIdMarkerData_RawBit=(NyIdMarkerData_RawBit)i_source;
-			System.arraycopy(s.packet,0,this.packet,0,s.length);
+			var s:NyIdMarkerData_RawBit=NyIdMarkerData_RawBit(i_source);
+			ArrayUtils.copyInt(s.packet,0,this.packet,0,s.length);
 			this.length=s.length;
 			return;
 		}

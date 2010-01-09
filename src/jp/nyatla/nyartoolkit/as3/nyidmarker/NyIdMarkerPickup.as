@@ -30,7 +30,11 @@
  */
 package jp.nyatla.nyartoolkit.as3.nyidmarker 
 {
-	import jp.nyatla.nyartoolkit.as3.core.squaredetect.Coord2SquareVertexIndexes;
+	import jp.nyatla.nyartoolkit.as3.core.squaredetect.*;
+	import jp.nyatla.nyartoolkit.as3.core.raster.*;
+	import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
+	import jp.nyatla.nyartoolkit.as3.core.rasterreader.*;
+	import jp.nyatla.nyartoolkit.as3.core.types.*;
 
 	/**
 	 * ラスタ画像の任意矩形から、NyARIdMarkerDataを抽出します。
@@ -71,15 +75,15 @@ package jp.nyatla.nyartoolkit.as3.nyidmarker
 			
 
 
-			final PerspectivePixelReader.TThreshold th=this.__pickFromRaster_th;
-			final MarkerPattEncoder encoder=this.__pickFromRaster_encoder;
+			var th:TThreshold=this.__pickFromRaster_th;
+			var encoder:MarkerPattEncoder=this.__pickFromRaster_encoder;
 			//マーカパラメータを取得
 			this._perspective_reader.detectThresholdValue(reader,raster_size,th);
 
 			if(!this._perspective_reader.readDataBits(reader,raster_size,th, encoder)){
 				return false;
 			}
-			final int d=encoder.encode(o_data);
+			var d:int=encoder.encode(o_data);
 			if(d<0){
 				return false;
 			}
@@ -91,13 +95,20 @@ package jp.nyatla.nyartoolkit.as3.nyidmarker
 	}
 }
 
+import jp.nyatla.as3utils.*;
+import jp.nyatla.nyartoolkit.as3.core.utils.*;
+import jp.nyatla.nyartoolkit.as3.core.rasterreader.*;
+import jp.nyatla.nyartoolkit.as3.core.types.*;
+import jp.nyatla.nyartoolkit.as3.nyidmarker.*;
+import jp.nyatla.nyartoolkit.as3.nyidmarker.data.*;
+
 /**
  * NyARColorPatt_NyIdMarkerがラスタからPerspective変換して読みだすためのクラス
  *
  */
 class PerspectivePixelReader
 {
-	private var _param_gen:NyARPerspectiveParamGenerator=new NyARPerspectiveParamGenerator_O1(1,1,100,100);
+	private var _param_gen:NyARPerspectiveParamGenerator_O1=new NyARPerspectiveParamGenerator_O1(1,1,100,100);
 	private var _cparam:Vector.<Number>=new Vector.<Number>(8);
 
 
@@ -144,8 +155,9 @@ class PerspectivePixelReader
 			var cpy0_12:Number=cpara[1]*cy0+cpara[2];
 			var cpy0_45:Number=cpara[4]*cy0+cpara[5];
 			var cpy0_7:Number=cpara[7]*cy0+1.0;			
-			var pt:int=0;
-			for(var i2:int=0;i2<i_width;i2++)
+			var pt:int = 0;
+			var i2:int;
+			for(i2=0;i2<i_width;i2++)
 			{
 				var cx0:int=1+i2*i_step_x+i_lt_x;				
 				var d:Number=cpara_6*cx0+cpy0_7;
@@ -162,7 +174,7 @@ class PerspectivePixelReader
 			//1行分のピクセルを取得(場合によっては専用アクセサを書いた方がいい)
 			i_reader.getPixelSet(ref_x,ref_y,i_width,pixcel_temp);
 			//グレースケールにしながら、line→mapへの転写
-			for(var i2:int=0;i2<i_width;i2++){
+			for(i2=0;i2<i_width;i2++){
 				var index:int=i2*3;
 				o_pixel[out_index]=(pixcel_temp[index+0]+pixcel_temp[index+1]+pixcel_temp[index+2])/3;
 				out_index++;
@@ -198,12 +210,13 @@ class PerspectivePixelReader
 	 * @return
 	 * 見つかれば0以上、密辛ければ0未満
 	 */
-	private static function getMaxFreq(i_freq_count_table:Vector.<int>,i_freq_table:Vector.<int>,io_freq_table:Vector.<int>):int
+	private static function getMaxFreq(i_freq_count_table:Vector.<int>,i_freq_table:Vector.<int>,o_freq_table:Vector.<int>):int
 	{
 		//一番成分の大きいものを得る
 		var index:int=-1;
-		var max:int=0;
-		for(var i:int=0;i<MAX_FREQ;i++){
+		var max:int = 0;
+		var i:int;
+		for(i=0;i<MAX_FREQ;i++){
 			if(max<i_freq_count_table[i]){
 				index=i;
 				max=i_freq_count_table[i];
@@ -214,7 +227,7 @@ class PerspectivePixelReader
 		}
 		/*周波数インデクスを計算*/
 		var st:int=(index-1)*index;
-		for(var i:int=0;i<index*2;i++)
+		for(i=0;i<index*2;i++)
 		{
 			o_freq_table[i]=i_freq_table[st+i]*FRQ_STEP/max;
 		}
@@ -258,6 +271,7 @@ class PerspectivePixelReader
 	 */
 	public function getRowFrequency(i_reader:INyARRgbPixelReader,i_raster_size:NyARIntSize,i_y1:int,i_th_h:int,i_th_l:int,o_edge_index:Vector.<int>):int
 	{
+		var i:int;
 		//3,4,5,6,7,8,9,10
 		var freq_count_table:Vector.<int>=this._freq_count_table;
 		//0,2,4,6,8,10,12,14,16,18,20の要素を持つ配列
@@ -268,10 +282,10 @@ class PerspectivePixelReader
 		var ref_x:Vector.<int>=this._ref_x;
 		var ref_y:Vector.<int>=this._ref_y;
 		var pixcel_temp:Vector.<int>=this._pixcel_temp;
-		for(var i:int=0;i<10;i++){
+		for(i=0;i<10;i++){
 			freq_count_table[i]=0;
 		}
-		for(var i:int=0;i<110;i++){
+		for(i=0;i<110;i++){
 			freq_table[i]=0;
 		}
 		var raster_width:int=i_raster_size.w;
@@ -282,7 +296,8 @@ class PerspectivePixelReader
 		var cpara_6:Number=cpara[6];		
 		
 		//10-20ピクセル目からタイミングパターンを検出
-		for(var i:int=0;i<FREQ_SAMPLE_NUM;i++){
+		for (i = 0; i < FREQ_SAMPLE_NUM; i++) {
+			var i2:int;
 			//2行分のピクセルインデックスを計算
 			var cy0:Number=1+i_y1+i;
 			var cpy0_12:Number=cpara[1]*cy0+cpara[2];
@@ -290,7 +305,7 @@ class PerspectivePixelReader
 			var cpy0_7:Number=cpara[7]*cy0+1.0;
 
 			var pt:int=0;
-			for(var i2:int=0;i2<FRQ_POINTS;i2++)
+			for(i2=0;i2<FRQ_POINTS;i2++)
 			{
 				var cx0:Number=1+i2*FRQ_STEP+FRQ_EDGE;			
 				var d:Number=(cpara_6*cx0)+cpy0_7;
@@ -322,7 +337,7 @@ class PerspectivePixelReader
 			//検出カウンタを追加
 			freq_count_table[freq_t]++;
 			var table_st:int=(freq_t-1)*freq_t;
-			for(var i2:int=0;i2<freq_t*2;i2++){
+			for(i2=0;i2<freq_t*2;i2++){
 				freq_table[table_st+i2]+=o_edge_index[i2];
 			}
 		}
@@ -331,6 +346,7 @@ class PerspectivePixelReader
 	
 	public function getColFrequency(i_reader:INyARRgbPixelReader,i_raster_size:NyARIntSize,i_x1:int,i_th_h:int,i_th_l:int,o_edge_index:Vector.<int>):int
 	{
+		var i:int;
 		var cpara:Vector.<Number>=this._cparam;
 //		final INyARRgbPixelReader reader=this._raster.getRgbPixelReader();
 		var ref_x:Vector.<int>=this._ref_x;
@@ -339,11 +355,11 @@ class PerspectivePixelReader
 		//0,2,4,6,8,10,12,14,16,18,20=(11*20)/2=110
 		//初期化
 		var freq_count_table:Vector.<int>=this._freq_count_table;
-		for(var i:int=0;i<10;i++){
+		for(i=0;i<10;i++){
 			freq_count_table[i]=0;
 		}
-		var freq_table:Vector.<int>=this._freq_table;
-		for(var i:int=0;i<110;i++){
+		var freq_table:Vector.<int> = this._freq_table;
+		for(i=0;i<110;i++){
 			freq_table[i]=0;
 		}
 		var raster_width:int=i_raster_size.w;
@@ -354,7 +370,8 @@ class PerspectivePixelReader
 		var cpara4:Number=cpara[4];
 		var cpara1:Number=cpara[1];
 		//基準点から4ピクセルを参照パターンとして抽出
-		for(var i:int=0;i<FREQ_SAMPLE_NUM;i++){
+		for (i = 0; i < FREQ_SAMPLE_NUM; i++) {
+			var i2:int;
 
 			var cx0:int=1+i+i_x1;
 			var cp6_0:Number=cpara[6]*cx0;
@@ -362,7 +379,7 @@ class PerspectivePixelReader
 			var cpx3_0:Number=cpara[3]*cx0+cpara[5];
 			
 			var pt:int=0;
-			for(var i2:int=0;i2<FRQ_POINTS;i2++)
+			for(i2=0;i2<FRQ_POINTS;i2++)
 			{
 				var cy:int=1+i2*FRQ_STEP+FRQ_EDGE;
 				
@@ -393,7 +410,7 @@ class PerspectivePixelReader
 			//検出カウンタを追加
 			freq_count_table[freq_t]++;
 			var table_st:int=(freq_t-1)*freq_t;
-			for(var i2:int=0;i2<freq_t*2;i2++){
+			for(i2=0;i2<freq_t*2;i2++){
 				freq_table[table_st+i2]+=o_edge_index[i2];
 			}
 		}
@@ -413,12 +430,13 @@ class PerspectivePixelReader
 		//トークンを解析して、周波数を計算
 		var i:int=0;
 		var frq_l2h:int=0;
-		var frq_h2l:int=0;
+		var frq_h2l:int = 0;
+		var index:int,pix:int;
 		while(i<FRQ_POINTS){
 			//L->Hトークンを検出する
 			while(i<FRQ_POINTS){
-				var index:int=i*3;
-				var pix:int=(i_pixcels[index+0]+i_pixcels[index+1]+i_pixcels[index+2])/3;
+				index=i*3;
+				pix=(i_pixcels[index+0]+i_pixcels[index+1]+i_pixcels[index+2])/3;
 				if(pix>i_th_h){
 					//トークン発見
 					o_edge_index[frq_l2h+frq_h2l]=i;
@@ -430,8 +448,8 @@ class PerspectivePixelReader
 			i++;
 			//L->Hトークンを検出する
 			while(i<FRQ_POINTS){
-				var index:int=i*3;
-				var pix:int=(i_pixcels[index+0]+i_pixcels[index+1]+i_pixcels[index+2])/3;
+				index=i*3;
+				pix=(i_pixcels[index+0]+i_pixcels[index+1]+i_pixcels[index+2])/3;
 				if(pix<=i_th_l){
 					//トークン発見
 					o_edge_index[frq_l2h+frq_h2l]=i;
@@ -445,13 +463,13 @@ class PerspectivePixelReader
 		return frq_l2h==frq_h2l?frq_l2h:-1;			
 	}
 
-	private const static THRESHOLD_EDGE:int=10;
-	private const static THRESHOLD_STEP:int=2;
-	private const static THRESHOLD_WIDTH:int=10;
-	private const static THRESHOLD_PIXEL:int=THRESHOLD_WIDTH/THRESHOLD_STEP;
-	private const static THRESHOLD_SAMPLE:int=THRESHOLD_PIXEL*THRESHOLD_PIXEL;
-	private const static THRESHOLD_SAMPLE_LT:int=THRESHOLD_EDGE;
-	private const static THRESHOLD_SAMPLE_RB:int=100-THRESHOLD_WIDTH-THRESHOLD_EDGE;
+	private static const THRESHOLD_EDGE:int=10;
+	private static const THRESHOLD_STEP:int=2;
+	private static const THRESHOLD_WIDTH:int=10;
+	private static const THRESHOLD_PIXEL:int=THRESHOLD_WIDTH/THRESHOLD_STEP;
+	private static const THRESHOLD_SAMPLE:int=THRESHOLD_PIXEL*THRESHOLD_PIXEL;
+	private static const THRESHOLD_SAMPLE_LT:int=THRESHOLD_EDGE;
+	private static const THRESHOLD_SAMPLE_RB:int=100-THRESHOLD_WIDTH-THRESHOLD_EDGE;
 	
 
 	/**
@@ -463,7 +481,7 @@ class PerspectivePixelReader
 	 */
 	private function getPtailHighAndLow(i_pixcel:Vector.<int>,i_out:THighAndLow ):void
 	{
-		var h3,h2,h1,h0,l3,l2,l1,l0:int;
+		var h3:int,h2:int,h1:int,h0:int,l3:int,l2:int,l1:int,l0:int;
 		h3=h2=h1=h0=l3=l2=l1=l0=i_pixcel[0];
 		
 		for(var i:int=i_pixcel.length-1;i>=1;i--){
@@ -558,7 +576,7 @@ class PerspectivePixelReader
 		o_threshold.th_l=th-th_sub;//ヒステリシス付き閾値
 
 		//エッジを計算(明点重心)
-		var lt_x,lt_y,lb_x,lb_y,rt_x,rt_y,rb_x,rb_y:int;
+		var lt_x:int,lt_y:int,lb_x:int,lb_y:int,rt_x:int,rt_y:int,rb_x:int,rb_y:int;
 		var tpt:NyARIntPoint2d=this.__detectThresholdValue_tpt;
 		//LT
 		if(getHighPixelCenter(0,th_pixels,THRESHOLD_PIXEL,THRESHOLD_PIXEL,th,tpt)){
@@ -629,6 +647,7 @@ class PerspectivePixelReader
 	private var __detectDataBitsIndex_freq_index2:Vector.<int>=new Vector.<int>(FRQ_POINTS);
 	private function detectDataBitsIndex(i_reader:INyARRgbPixelReader,i_raster_size:NyARIntSize,i_th:TThreshold,o_index_row:Vector.<Number>,o_index_col:Vector.<Number>):int
 	{
+		var i:int;
 		//周波数を測定
 		var freq_index1:Vector.<int>=this.__detectDataBitsIndex_freq_index1;
 		var freq_index2:Vector.<int>=this.__detectDataBitsIndex_freq_index2;
@@ -640,7 +659,7 @@ class PerspectivePixelReader
 			return -1;
 		}
 		//タイミングパターンからインデクスを作成
-		var freq_h,freq_v:int;
+		var freq_h:int,freq_v:int;
 		var index:Vector.<int>;
 		if(frq_t>frq_b){
 			freq_h=frq_t;
@@ -649,7 +668,7 @@ class PerspectivePixelReader
 			freq_h=frq_b;
 			index=freq_index2;
 		}
-		for(var i:int=0;i<freq_h+freq_h-1;i++){
+		for(i=0;i<freq_h+freq_h-1;i++){
 			o_index_row[i*2]=((index[i+1]-index[i])*2/5+index[i])+FRQ_EDGE;
 			o_index_row[i*2+1]=((index[i+1]-index[i])*3/5+index[i])+FRQ_EDGE;
 		}		
@@ -674,7 +693,7 @@ class PerspectivePixelReader
 			return -1;
 		}
 		
-		for(var i:int=0;i<freq_v+freq_v-1;i++){
+		for(i=0;i<freq_v+freq_v-1;i++){
 			var w:int=index[i];
 			var w2:int= index[i + 1] - w;
 			o_index_col[i*2]=((w2)*2/5+w)+FRQ_EDGE;
@@ -687,10 +706,10 @@ class PerspectivePixelReader
 		return freq_v;
 		
 	}
-	private var __readDataBits_index_bit_x:Vector.<Number>=new double[MAX_DATA_BITS*2];
-	private var __readDataBits_index_bit_y:Vector.<Number>=new double[MAX_DATA_BITS*2];
+	private var __readDataBits_index_bit_x:Vector.<Number>=new Vector.<Number>(MAX_DATA_BITS*2);
+	private var __readDataBits_index_bit_y:Vector.<Number>=new Vector.<Number>(MAX_DATA_BITS*2);
 	
-	public function readDataBits(i_reader:INyARRgbPixelReader, i_raster_size:NyARIntSize, i_th:TThreshold, o_bitbuffer:MarkerPattEncoder)
+	public function readDataBits(i_reader:INyARRgbPixelReader, i_raster_size:NyARIntSize, i_th:TThreshold, o_bitbuffer:MarkerPattEncoder):Boolean
 	{
 		var index_x:Vector.<Number>=this.__readDataBits_index_bit_x;
 		var index_y:Vector.<Number>=this.__readDataBits_index_bit_y;
@@ -719,19 +738,20 @@ class PerspectivePixelReader
 		
 		var th:int=i_th.th;
 		var p:int=0;
-		for(int i=0;i<resolution;i++){
+		for (var i:int = 0; i < resolution; i++) {
+			var i2:int;
 			//1列分のピクセルのインデックス値を計算する。
-			double cy0=1+index_y[i*2+0];
-			double cy1=1+index_y[i*2+1];			
-			double cpy0_12=cpara_1*cy0+cpara[2];
-			double cpy0_45=cpara[4]*cy0+cpara[5];
-			double cpy0_7=cpara[7]*cy0+1.0;
-			double cpy1_12=cpara_1*cy1+cpara[2];
-			double cpy1_45=cpara[4]*cy1+cpara[5];
-			double cpy1_7=cpara[7]*cy1+1.0;
+			var cy0:Number=1+index_y[i*2+0];
+			var cy1:Number=1+index_y[i*2+1];			
+			var cpy0_12:Number=cpara_1*cy0+cpara[2];
+			var cpy0_45:Number=cpara[4]*cy0+cpara[5];
+			var cpy0_7:Number=cpara[7]*cy0+1.0;
+			var cpy1_12:Number=cpara_1*cy1+cpara[2];
+			var cpy1_45:Number=cpara[4]*cy1+cpara[5];
+			var cpy1_7:Number=cpara[7]*cy1+1.0;
 			
-			int pt=0;
-			for(var i2:int=0;i2<resolution;i2++)
+			var pt:int=0;
+			for(i2=0;i2<resolution;i2++)
 			{			
 
 				var d:Number;
@@ -769,7 +789,7 @@ class PerspectivePixelReader
 			//1行分のピクセルを取得(場合によっては専用アクセサを書いた方がいい)
 			i_reader.getPixelSet(ref_x,ref_y,resolution*4,pixcel_temp);
 			//グレースケールにしながら、line→mapへの転写
-			for(var i2:int=0;i2<resolution;i2++){
+			for(i2=0;i2<resolution;i2++){
 				var index:int=i2*3*4;
 				var pixel:int=(	pixcel_temp[index+0]+pixcel_temp[index+1]+pixcel_temp[index+2]+
 							pixcel_temp[index+3]+pixcel_temp[index+4]+pixcel_temp[index+5]+
@@ -815,7 +835,7 @@ class MarkerPattDecoder
  */
 class MarkerPattEncoder
 {
-	private const static _bit_table_3:Vector.<int>=Vector.<int>(
+	private static const _bit_table_3:Vector.<int>=Vector.<int>([
 		25,	26,	27,	28,	29,	30,	31,
 		48,	9,	10,	11,	12,	13,	32,
 		47,	24,	1,	2,	3,	14,	33,
@@ -823,68 +843,68 @@ class MarkerPattEncoder
 		45,	22,	7,	6,	5,	16,	35,
 		44,	21,	20,	19,	18,	17,	36,
 		43,	42,	41,	40,	39,	38,	37
-		);	
-	private final static _bit_table_2:Vector.<int>=Vector.<int>(
+		]);
+	private static const _bit_table_2:Vector.<int>=Vector.<int>([
 		9,	10,	11,	12,	13,
 		24,	1,	2,	3,	14,
 		23,	8,	0,	4,	15,
 		22,	7,	6,	5,	16,
-		21,	20,	19,	18,	17);
-	private final static _bit_tables:Vector.<Vector.<int>>=Vector.<Vector.<int>>(
-		_bit_table_2,_bit_table_3,null,null,null,null,null);
+		21,	20,	19,	18,	17]);
+	private static const _bit_tables:Vector.<Vector.<int>>=Vector.<Vector.<int>>([
+		_bit_table_2,_bit_table_3,null,null,null,null,null]);
 	/**
 	 * RECT(0):[0]=(0)
 	 * RECT(1):[1]=(1-8)
 	 * RECT(2):[2]=(9-16),[3]=(17-24)
 	 * RECT(3):[4]=(25-32),[5]=(33-40),[6]=(41-48)
 	 */
-	int[] _bit_table;
-	int[] _bits=new int[16];
-	int[] _work=new int[16];
-	int _model;
-	public void setBitByBitIndex(int i_index_no,int i_value)
+	private var _bit_table:Vector.<int>;
+	private var _bits:Vector.<int>=new Vector.<int>(16);
+	private var _work:Vector.<int>=new Vector.<int>(16);
+	private var _model:int;
+	public function setBitByBitIndex(i_index_no:int,i_value:int):void
 	{
-		assert i_value==0 || i_value==1;
-		final int bit_no=this._bit_table[i_index_no];
+		NyAS3Utils.assert(i_value==0 || i_value==1);
+		var bit_no:int=this._bit_table[i_index_no];
 		if(bit_no==0){
 			this._bits[0]=i_value;
 		}else{
-			int bidx=(bit_no-1)/8+1;
-			int sidx=(bit_no-1)%8;
+			var bidx:int=(bit_no-1)/8+1;
+			var sidx:int=(bit_no-1)%8;
 			this._bits[bidx]=(this._bits[bidx]&(~(0x01<<sidx)))|(i_value<<sidx);
 		}
 		return;
 	}
 	
-	public void setBit(int i_bit_no,int i_value)
+	public function setBit(i_bit_no:int,i_value:int):void
 	{
-		assert i_value==0 || i_value==1;
+		NyAS3Utils.assert(i_value==0 || i_value==1);
 		if(i_bit_no==0){
 			this._bits[0]=i_value;
 		}else{
-			int bidx=(i_bit_no-1)/8+1;
-			int sidx=(i_bit_no-1)%8;
+			var bidx:int=(i_bit_no-1)/8+1;
+			var sidx:int=(i_bit_no-1)%8;
 			this._bits[bidx]=(this._bits[bidx]&(~(0x01<<sidx)))|(i_value<<sidx);
 		}
 		return;
 	}
-	public int getBit(int i_bit_no)
+	public function getBit(i_bit_no:int):int
 	{
 		if(i_bit_no==0){
 			return this._bits[0];
 		}else{
-			int bidx=(i_bit_no-1)/8+1;
-			int sidx=(i_bit_no-1)%8;
+			var bidx:int=(i_bit_no-1)/8+1;
+			var sidx:int=(i_bit_no-1)%8;
 			return (this._bits[bidx]>>(sidx))&(0x01);
 		}
 	}
-	public int getModel()
+	public function getModel():int
 	{
 		return this._model;
 	}
-	private static int getControlValue(int i_model,int[] i_data)
+	private static function getControlValue(i_model:int,i_data:Vector.<int>):int
 	{
-		int v;
+		var v:int;
 		switch(i_model){
 		case 2:
 			v=(i_data[2] & 0x0e)>>1;
@@ -932,7 +952,7 @@ class MarkerPattEncoder
 	}
 	private function getDirection():int
 	{
-		var l,t,r,b:int;
+		var l:int,t:int,r:int,b:int;
 		var timing_pat:int;
 		switch(this._model){
 		case 2:
@@ -1041,16 +1061,17 @@ class MarkerPattEncoder
 	}
 	public function shiftLeft(i_pack:Vector.<int>,i_start:int,i_length:int,i_ls:int):void
 	{
+		var i:int;
 		var work:Vector.<int>=this._work;
 		//端数シフト
 		var mod_shift:int=i_ls%8;
-		for(var i:int=i_length-1;i>=1;i--){
+		for(i=i_length-1;i>=1;i--){
 			work[i]=(i_pack[i+i_start]<<mod_shift)|(0xff&(i_pack[i+i_start-1]>>(8-mod_shift)));
 		}
 		work[0]=(i_pack[i_start]<<mod_shift)|(0xff&(i_pack[i_start+i_length-1]>>(8-mod_shift)));
 		//バイトシフト
 		var byte_shift:int=(i_ls/8)%i_length;
-		for(var i:int=i_length-1;i>=0;i--){
+		for(i=i_length-1;i>=0;i--){
 			i_pack[(byte_shift+i)%i_length+i_start]=0xff & work[i];
 		}
 		return;
@@ -1070,6 +1091,6 @@ class TThreshold
 
 
 class THighAndLow{
-	public int h;
-	public int l;
+	public var h:int;
+	public var l:int;
 }

@@ -30,6 +30,7 @@
  */
 package jp.nyatla.nyartoolkit.as3.core.types 
 {
+	import jp.nyatla.as3utils.*;
 	/**
 	 * ヒストグラムを格納するクラスです。
 	 */
@@ -38,7 +39,7 @@ package jp.nyatla.nyartoolkit.as3.core.types
 		/**
 		 * サンプリング値の格納変数
 		 */
-		public final var data:Vector.<int>;
+		public var data:Vector.<int>;
 		/**
 		 * 有効なサンプリング値の範囲。[0-data.length-1]
 		 */
@@ -64,7 +65,7 @@ package jp.nyatla.nyartoolkit.as3.core.types
 		 */
 		public function getTotal(i_st:int,i_ed:int):int
 		{
-			assert(i_st<i_ed && i_ed<this.length);
+			NyAS3Utils.assert(i_st<i_ed && i_ed<this.length);
 			var result:int=0;
 			var s:Vector.<int>=this.data;
 			for(var i:int=i_st;i<=i_ed;i++){

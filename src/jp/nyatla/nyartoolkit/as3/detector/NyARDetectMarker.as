@@ -30,7 +30,16 @@
  */
 package jp.nyatla.nyartoolkit.as3.detector 
 {
-
+	import jp.nyatla.nyartoolkit.as3.core.param.*;
+	import jp.nyatla.nyartoolkit.as3.core.*;
+	import jp.nyatla.nyartoolkit.as3.*;
+	import jp.nyatla.nyartoolkit.as3.core.transmat.*;
+	import jp.nyatla.nyartoolkit.as3.core.squaredetect.*;
+	import jp.nyatla.nyartoolkit.as3.core.rasterfilter.rgb2bin.*;
+	import jp.nyatla.nyartoolkit.as3.core.raster.*;
+	import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
+	import jp.nyatla.nyartoolkit.as3.core.types.*;
+	import jp.nyatla.nyartoolkit.as3.core.pickup.*;
 
 
 	/**
@@ -40,14 +49,12 @@ package jp.nyatla.nyartoolkit.as3.detector
 	public class NyARDetectMarker
 	{
 
-		private DetectSquareCB _detect_cb;
-		
-		
-		private static final int AR_SQUARE_MAX = 300;
-		private boolean _is_continue = false;
-		private INyARSquareContourDetector _square_detect;
-		protected INyARTransMat _transmat;
-		private NyARRectOffset[] _offset;	
+		private var _detect_cb:DetectSquareCB;
+		public static const AR_SQUARE_MAX:int = 300;
+		private var _is_continue:Boolean = false;
+		private var _square_detect:INyARSquareContourDetector;
+		protected var _transmat:INyARTransMat;
+		private var _offset:Vector.<NyARRectOffset>;
 
 
 		/**
@@ -67,12 +74,12 @@ package jp.nyatla.nyartoolkit.as3.detector
 		 * 入力ラスタのピクセルタイプを指定します。この値は、INyARBufferReaderインタフェイスのgetBufferTypeの戻り値を指定します。
 		 * @throws NyARException
 		 */
-		public NyARDetectMarker(i_param:NyARParam, i_code:Vector.<NyARCode>, i_marker_width:Vector.<Number>, i_number_of_code:int, i_input_raster_type:int)
+		public function NyARDetectMarker(i_param:NyARParam, i_code:Vector.<NyARCode>, i_marker_width:Vector.<Number>, i_number_of_code:int, i_input_raster_type:int)
 		{
 			initInstance(i_param,i_code,i_marker_width,i_number_of_code,i_input_raster_type);
 			return;
 		}
-		protected void initInstance(
+		protected function initInstance(
 			i_ref_param:NyARParam,
 			i_ref_code:Vector.<NyARCode>,
 			i_marker_width:Vector.<Number>,
@@ -121,12 +128,12 @@ package jp.nyatla.nyartoolkit.as3.detector
 		public function detectMarkerLite(i_raster:INyARRgbRaster,i_threshold:int):int
 		{
 			// サイズチェック
-			if (!this._bin_raster.getSize().isEqualSize(i_raster.getSize())) {
+			if (!this._bin_raster.getSize().isEqualSize_NyARIntSize(i_raster.getSize())) {
 				throw new NyARException();
 			}
 
 			// ラスタを２値イメージに変換する.
-			((NyARRasterFilter_ARToolkitThreshold)this._tobin_filter).setThreshold(i_threshold);
+			(NyARRasterFilter_ARToolkitThreshold(this._tobin_filter)).setThreshold(i_threshold);
 			this._tobin_filter.doFilter(i_raster, this._bin_raster);
 
 			//detect
@@ -196,10 +203,21 @@ package jp.nyatla.nyartoolkit.as3.detector
 	}
 }
 
+import jp.nyatla.nyartoolkit.as3.core.match.*;
+import jp.nyatla.nyartoolkit.as3.core.pickup.*;
+import jp.nyatla.nyartoolkit.as3.core.squaredetect.*;
+import jp.nyatla.nyartoolkit.as3.core.*;
+import jp.nyatla.nyartoolkit.as3.*;
+import jp.nyatla.nyartoolkit.as3.core.types.stack.*;
+import jp.nyatla.nyartoolkit.as3.core.match.*;
+import jp.nyatla.nyartoolkit.as3.core.param.*;
+import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
+import jp.nyatla.nyartoolkit.as3.detector.*;
+import jp.nyatla.nyartoolkit.as3.core.types.*;
 /**
  * detectMarkerのコールバック関数
  */
-private class DetectSquareCB implements INyARSquareContourDetector.DetectMarkerCallback
+class DetectSquareCB implements DetectMarkerCallback
 {
 	//公開プロパティ
 	public var result_stack:NyARDetectMarkerResultStack=new NyARDetectMarkerResultStack(NyARDetectMarker.AR_SQUARE_MAX);
@@ -212,7 +230,7 @@ private class DetectSquareCB implements INyARSquareContourDetector.DetectMarkerC
 	private var __detectMarkerLite_mr:NyARMatchPattResult=new NyARMatchPattResult();
 	private var _coordline:Coord2Linear;
 	
-	public DetectSquareCB(i_inst_patt:INyARColorPatt, i_ref_code:Vector.<NyARCode>, i_num_of_code:int, i_param:NyARParam)
+	public function DetectSquareCB(i_inst_patt:INyARColorPatt, i_ref_code:Vector.<NyARCode>, i_num_of_code:int, i_param:NyARParam)
 	{
 		var cw:int = i_ref_code[0].getWidth();
 		var ch:int = i_ref_code[0].getHeight();
@@ -222,7 +240,7 @@ private class DetectSquareCB implements INyARSquareContourDetector.DetectMarkerC
 		this._deviation_data=new NyARMatchPattDeviationColorData(cw,ch);
 
 		//NyARMatchPatt_Color_WITHOUT_PCA[]の作成
-		this._match_patt=new NyARMatchPatt_Color_WITHOUT_PCA[i_num_of_code];
+		this._match_patt=new Vector.<NyARMatchPatt_Color_WITHOUT_PCA>(i_num_of_code);
 		this._match_patt[0]=new NyARMatchPatt_Color_WITHOUT_PCA(i_ref_code[0]);
 		for (var i:int = 1; i < i_num_of_code; i++){
 			//解像度チェック
@@ -260,14 +278,15 @@ private class DetectSquareCB implements INyARSquareContourDetector.DetectMarkerC
 		this._deviation_data.setRaster(this._inst_patt);
 
 		//最も一致するパターンを割り当てる。
-		var square_index,direction:int;
+		var square_index:int,direction:int;
 		var confidence:Number;
 		this._match_patt[0].evaluate(this._deviation_data,mr);
 		square_index=0;
 		direction=mr.direction;
 		confidence=mr.confidence;
 		//2番目以降
-		for(var i:int=1;i<this._match_patt.length;i++){
+		var i:int;
+		for(i=1;i<this._match_patt.length;i++){
 			this._match_patt[i].evaluate(this._deviation_data,mr);
 			if (confidence > mr.confidence) {
 				continue;
@@ -284,11 +303,11 @@ private class DetectSquareCB implements INyARSquareContourDetector.DetectMarkerC
 
 		var sq:NyARSquare=result.square;
 		//directionを考慮して、squareを更新する。
-		for(var i:int=0;i<4;i++){
+		for(i=0;i<4;i++){
 			var idx:int=(i+4 - direction) % 4;
 			this._coordline.coord2Line(i_vertex_index[idx],i_vertex_index[(idx+1)%4],i_coordx,i_coordy,i_coor_num,sq.line[i]);
 		}
-		for (var i:int = 0; i < 4; i++) {
+		for (i = 0; i < 4; i++) {
 			//直線同士の交点計算
 			if(!NyARLinear.crossPos(sq.line[i],sq.line[(i + 3) % 4],sq.sqvertex[i])){
 				throw new NyARException();//ここのエラー復帰するならダブルバッファにすればOK
@@ -323,8 +342,8 @@ class NyARDetectMarkerResultStack extends NyObjectStack
 	{
 		var ret:Vector.<NyARDetectMarkerResult>= new Vector.<NyARDetectMarkerResult>(i_length);
 		for (var i:int =0; i < i_length; i++){
-			this._items[i] = new NyARDetectMarkerResult();
+			ret[i] = new NyARDetectMarkerResult();
 		}
-		return ret;
+		return Vector.<*>(ret);
 	}	
 }

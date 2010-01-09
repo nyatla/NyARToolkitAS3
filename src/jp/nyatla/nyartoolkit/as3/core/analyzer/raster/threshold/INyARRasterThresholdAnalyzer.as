@@ -30,13 +30,10 @@
  */
 package jp.nyatla.nyartoolkit.as3.core.analyzer.raster.threshold 
 {
-	internal class INyARRasterThresholdAnalyzer
+	import jp.nyatla.nyartoolkit.as3.core.raster.*;
+	public interface INyARRasterThresholdAnalyzer
 	{
-		public function INyARRasterThresholdAnalyzer() 
-		{
-			function analyzeRaster(i_input:INyARRaster):int;
-		}
-		
+		function analyzeRaster(i_input:INyARRaster):int;		
 	}
 
 }

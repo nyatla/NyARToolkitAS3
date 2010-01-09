@@ -30,13 +30,15 @@
  */
 package jp.nyatla.nyartoolkit.as3.nyidmarker.data 
 {
+	import jp.nyatla.nyartoolkit.as3.nyidmarker.*;
+	import jp.nyatla.nyartoolkit.as3.nyidmarker.data.*;
 	public class NyIdMarkerDataEncoder_RawBit implements INyIdMarkerDataEncoder
 	{	
-		private const static _DOMAIN_ID:int=0;
-		private const static _mod_data:Vector.<int>=Vector.<int>(7,31,127,511,2047,4095);
+		private static const _DOMAIN_ID:int=0;
+		private static const _mod_data:Vector.<int>=Vector.<int>([7,31,127,511,2047,4095]);
 		public function encode(i_data:NyIdMarkerPattern,o_dest:INyIdMarkerData):Boolean
 		{
-			var dest:NyIdMarkerData_RawBit=(NyIdMarkerData_RawBit)o_dest;
+			var dest:NyIdMarkerData_RawBit=NyIdMarkerData_RawBit(o_dest);
 			if(i_data.ctrl_domain!=_DOMAIN_ID){
 				return false;
 			}

@@ -30,16 +30,18 @@
  */
 package jp.nyatla.nyartoolkit.as3.core.analyzer.histgram 
 {
+	import jp.nyatla.nyartoolkit.as3.core.types.*;
+	import jp.nyatla.as3utils.*;
 	public class NyARHistgramAnalyzer_SlidePTile implements INyARHistgramAnalyzer_Threshold
 	{
 		private var _persentage:int;
 		public function NyARHistgramAnalyzer_SlidePTile(i_persentage:int)
 		{
-			assert (0 <= i_persentage && i_persentage <= 50);
+			NyAS3Utils.assert (0 <= i_persentage && i_persentage <= 50);
 			//初期化
 			this._persentage=i_persentage;
 		}	
-		public override function getThreshold(i_histgram:NyARHistgram):int
+		public function getThreshold(i_histgram:NyARHistgram):int
 		{
 			//総ピクセル数を計算
 			var n:int=i_histgram.length;
@@ -48,7 +50,7 @@ package jp.nyatla.nyartoolkit.as3.core.analyzer.histgram
 			// 閾値ピクセル数確定
 			var th_pixcels:int = sum_of_pixel * this._persentage / 100;
 			var th_wk:int;
-			var th_w, th_b:int;
+			var th_w:int, th_b:int;
 
 			// 黒点基準
 			th_wk = th_pixcels;

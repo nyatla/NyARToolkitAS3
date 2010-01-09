@@ -30,6 +30,21 @@
  */
 package jp.nyatla.nyartoolkit.as3.processor 
 {
+	import jp.nyatla.nyartoolkit.as3.core.param.*;
+	import jp.nyatla.nyartoolkit.as3.core.match.*;
+	import jp.nyatla.nyartoolkit.as3.core.pickup.*;
+	import jp.nyatla.nyartoolkit.as3.core.squaredetect.*;
+	import jp.nyatla.nyartoolkit.as3.core.transmat.*;
+	import jp.nyatla.nyartoolkit.as3.core.raster.*;
+	import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
+	import jp.nyatla.nyartoolkit.as3.core.*;
+	import jp.nyatla.nyartoolkit.as3.core.rasterfilter.rgb2bin.*;
+	import jp.nyatla.nyartoolkit.as3.core.types.*;
+	import jp.nyatla.nyartoolkit.as3.*;
+	import jp.nyatla.nyartoolkit.as3.core.analyzer.raster.*;
+	import jp.nyatla.nyartoolkit.as3.core.analyzer.raster.threshold.*;
+	import jp.nyatla.as3utils.*;
+	
 	/**
 	 * このクラスは、同時に１個のマーカを処理することのできる、アプリケーションプロセッサです。
 	 * マーカの出現・移動・消滅を、イベントで通知することができます。
@@ -68,7 +83,7 @@ package jp.nyatla.nyartoolkit.as3.processor
 
 		private var _threshold_detect:NyARRasterThresholdAnalyzer_SlidePTile;
 		
-		protected function SingleARMarkerProcesser()
+		public function SingleARMarkerProcesser()
 		{
 			return;
 		}
@@ -78,7 +93,7 @@ package jp.nyatla.nyartoolkit.as3.processor
 		protected function initInstance(i_param:NyARParam,i_raster_type:int):void
 		{
 			//初期化済？
-			assert(this._initialized==false);
+			NyAS3Utils.assert(this._initialized==false);
 			
 			var scr_size:NyARIntSize = i_param.getScreenSize();
 			// 解析オブジェクトを作る
@@ -132,7 +147,7 @@ package jp.nyatla.nyartoolkit.as3.processor
 		public function detectMarker(i_raster:INyARRgbRaster):void
 		{
 			// サイズチェック
-			assert(this._bin_raster.getSize().isEqualSize(i_raster.getSize().w, i_raster.getSize().h));
+			NyAS3Utils.assert(this._bin_raster.getSize().isEqualSize_int(i_raster.getSize().w, i_raster.getSize().h));
 
 			//BINイメージへの変換
 			this._tobin_filter.setThreshold(this._threshold);
@@ -202,7 +217,7 @@ package jp.nyatla.nyartoolkit.as3.processor
 			}
 		}
 
-		protected function onEnterHandler(int i_code):void
+		protected function onEnterHandler(i_code:int):void
 		{
 			throw new NyARException("onEnterHandler not implemented.");
 		}
@@ -218,12 +233,22 @@ package jp.nyatla.nyartoolkit.as3.processor
 		}
 	}
 }
-
+import jp.nyatla.nyartoolkit.as3.core.param.*;
+import jp.nyatla.nyartoolkit.as3.core.match.*;
+import jp.nyatla.nyartoolkit.as3.core.pickup.*;
+import jp.nyatla.nyartoolkit.as3.core.squaredetect.*;
+import jp.nyatla.nyartoolkit.as3.core.transmat.*;
+import jp.nyatla.nyartoolkit.as3.core.raster.*;
+import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
+import jp.nyatla.nyartoolkit.as3.core.*;
+import jp.nyatla.nyartoolkit.as3.core.rasterfilter.rgb2bin.*;
+import jp.nyatla.nyartoolkit.as3.core.types.*;
+import jp.nyatla.nyartoolkit.as3.*;
 
 /**
  * detectMarkerのコールバック関数
  */
-private class DetectSquareCB implements DetectMarkerCallback
+class DetectSquareCB implements DetectMarkerCallback
 {
 	//公開プロパティ
 	public var square:NyARSquare=new NyARSquare();
@@ -233,7 +258,7 @@ private class DetectSquareCB implements DetectMarkerCallback
 	public var cf_threshold_exist:Number = 0.15;
 	
 	//参照
-	private _ref_raster:INyARRgbRaster;
+	private var _ref_raster:INyARRgbRaster;
 	//所有インスタンス
 	private var _inst_patt:INyARColorPatt;
 	private var _deviation_data:NyARMatchPattDeviationColorData;
@@ -252,12 +277,12 @@ private class DetectSquareCB implements DetectMarkerCallback
 		/*unmanagedで実装するときは、ここでリソース解放をすること。*/
 		this._deviation_data=new NyARMatchPattDeviationColorData(i_code_resolution,i_code_resolution);
 		this._inst_patt=new NyARColorPatt_Perspective_O2(i_code_resolution,i_code_resolution,4,25);
-		this._match_patt = new NyARMatchPatt_Color_WITHOUT_PCA[i_ref_code.length];
+		this._match_patt = new Vector.<NyARMatchPatt_Color_WITHOUT_PCA>(i_ref_code.length);
 		for(var i:int=0;i<i_ref_code.length;i++){
 			this._match_patt[i]=new NyARMatchPatt_Color_WITHOUT_PCA(i_ref_code[i]);
 		}
 	}
-	private function __tmp_vertex:Vector.<NyARIntPoint2d>=NyARIntPoint2d.createArray(4);
+	private var __tmp_vertex:Vector.<NyARIntPoint2d>=NyARIntPoint2d.createArray(4);
 	/**
 	 * Initialize call back handler.
 	 */
@@ -265,14 +290,14 @@ private class DetectSquareCB implements DetectMarkerCallback
 	{
 		this._ref_raster=i_raster;
 		this.code_index=-1;
-		this.confidence=Double.MIN_NORMAL;
+		this.confidence = Number.MIN_VALUE;
 	}
 
 	/**
 	 * 矩形が見付かるたびに呼び出されます。
 	 * 発見した矩形のパターンを検査して、方位を考慮した頂点データを確保します。
 	 */
-	public function onSquareDetect(i_sender:INyARSquareContourDetector,i_coordx:Vector.<int>,i_coordy:Vector.<int>,i_coor_num:int,i_vertex_index::Vector.<int>):void
+	public function onSquareDetect(i_sender:INyARSquareContourDetector,i_coordx:Vector.<int>,i_coordy:Vector.<int>,i_coor_num:int,i_vertex_index:Vector.<int>):void
 	{
 		if (this._match_patt==null) {
 			return;
@@ -301,7 +326,8 @@ private class DetectSquareCB implements DetectMarkerCallback
 		var lcode_index:int = 0;
 		var dir:int = 0;
 		var c1:Number = 0;
-		for (var i:int = 0; i < this._match_patt.length; i++) {
+		var i:int;
+		for (i = 0; i < this._match_patt.length; i++) {
 			this._match_patt[i].evaluate(this._deviation_data,mr);
 			var c2:Number = mr.confidence;
 			if (c1 < c2) {
@@ -346,11 +372,11 @@ private class DetectSquareCB implements DetectMarkerCallback
 		this.confidence=c1;
 		var sq:NyARSquare=this.square;
 		//directionを考慮して、squareを更新する。
-		for(var i:int=0;i<4;i++){
+		for(i=0;i<4;i++){
 			var idx:int=(i+4 - dir) % 4;
 			this._coordline.coord2Line(i_vertex_index[idx],i_vertex_index[(idx+1)%4],i_coordx,i_coordy,i_coor_num,sq.line[i]);
 		}
-		for (var i:int = 0; i < 4; i++) {
+		for (i = 0; i < 4; i++) {
 			//直線同士の交点計算
 			if(!NyARLinear.crossPos(sq.line[i],sq.line[(i + 3) % 4],sq.sqvertex[i])){
 				throw new NyARException();//ここのエラー復帰するならダブルバッファにすればOK

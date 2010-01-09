@@ -30,10 +30,11 @@
  */
 package jp.nyatla.nyartoolkit.as3.nyidmarker.data 
 {
+	import jp.nyatla.nyartoolkit.as3.nyidmarker.*;
 	public interface INyIdMarkerDataEncoder
 	{
-		public function encode(NyIdMarkerPattern i_data,INyIdMarkerData o_dest):Boolean;
-		public function createDataInstance():INyIdMarkerData;
+		function encode(i_data:NyIdMarkerPattern,o_dest:INyIdMarkerData):Boolean;
+		function createDataInstance():INyIdMarkerData;
 	}
 
 

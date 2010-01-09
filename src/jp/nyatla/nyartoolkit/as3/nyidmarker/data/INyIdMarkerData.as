@@ -40,11 +40,11 @@ package jp.nyatla.nyartoolkit.as3.nyidmarker.data
 		 * @return
 		 * 等しいかの真偽値
 		 */
-		public function isEqual(i_target:INyIdMarkerData):Boolean;
+		function isEqual(i_target:INyIdMarkerData):Boolean;
 		/**
 		 * i_sourceからマーカデータをコピーします。
 		 * @param i_source
 		 */
-		public function copyFrom(i_source:INyIdMarkerData):void;
+		function copyFrom(i_source:INyIdMarkerData):void;
 	}
 }
