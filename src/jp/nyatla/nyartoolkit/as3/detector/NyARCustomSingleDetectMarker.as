@@ -55,6 +55,7 @@ package jp.nyatla.nyartoolkit.as3.detector
 
 		public function NyARCustomSingleDetectMarker()
 		{
+
 			return;
 		}
 		protected function initInstance(

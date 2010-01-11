@@ -31,6 +31,8 @@
 package jp.nyatla.nyartoolkit.as3.core.labeling.rlelabeling
 {
 	import jp.nyatla.nyartoolkit.as3.core.raster.*;
+	import jp.nyatla.nyartoolkit.as3.core.rasterreader.*;
+	import jp.nyatla.as3utils.*;
 
 
 	// RleImageをラベリングする。
@@ -162,6 +164,7 @@ package jp.nyatla.nyartoolkit.as3.core.labeling.rlelabeling
 		 */
 		public function labeling_NyARBinRaster(i_bin_raster:NyARBinRaster,i_top:int,i_bottom:int,o_stack:RleLabelFragmentInfoStack):int
 		{
+			NyAS3Utils.assert(i_bin_raster.getBufferReader().isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_BIN_8));
 			return this.imple_labeling(i_bin_raster,0,i_top,i_bottom,o_stack);
 		}
 		/**
@@ -177,6 +180,7 @@ package jp.nyatla.nyartoolkit.as3.core.labeling.rlelabeling
 		 */
 		public function labeling_NyARGrayscaleRaster(i_gs_raster:NyARGrayscaleRaster,i_th:int,i_top:int,i_bottom:int,o_stack:RleLabelFragmentInfoStack):int
 		{
+			NyAS3Utils.assert(i_gs_raster.getBufferReader().isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8));
 			return this.imple_labeling(i_gs_raster,i_th,i_top,i_bottom,o_stack);
 		}
 		private function imple_labeling(i_raster:INyARRaster,i_th:int,i_top:int,i_bottom:int,o_stack:RleLabelFragmentInfoStack):int

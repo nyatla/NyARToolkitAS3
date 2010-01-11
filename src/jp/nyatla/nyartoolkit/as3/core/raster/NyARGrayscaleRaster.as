@@ -33,71 +33,56 @@ package jp.nyatla.nyartoolkit.as3.core.raster
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
 	import jp.nyatla.nyartoolkit.as3.utils.as3.*;
 	import jp.nyatla.nyartoolkit.as3.core.rasterreader.*;
+	import jp.nyatla.nyartoolkit.as3.*;
+	
 	public final class NyARGrayscaleRaster extends NyARRaster_BasicClass
 	{
 
-		protected var _ref_buf:Vector.<int>;
-		private var _buffer_reader:INyARBufferReader;
-		
-		public function NyARGrayscaleRaster(i_width:int,i_height:int)
+		protected var _buf:Object;
+		protected var _buffer_reader:INyARBufferReader;
+		public function NyARGrayscaleRaster(...args:Array)
 		{
-			super(new NyARIntSize(i_width,i_height));
-			this._ref_buf = new Vector.<int>(i_height*i_width);
-			this._buffer_reader=new NyARBufferReader(this._ref_buf,INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8);
-		}
+			super(new NyARIntSize(int(args[0]),int(args[1])));
+			switch(args.length){
+			case 2:
+				{	//public function NyARGrayscaleRaster(i_width:int,i_height:int)
+					if(!initInstance(this._size,INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8)){
+						throw new NyARException();
+					}
+					return;
+				}
+				break;
+			case 3:
+				{	//public function NyARGrayscaleRaster(i_width:int,i_height:int,i_raster_type:int)
+					if(!initInstance(this._size,int(args[2]))){
+						throw new NyARException();
+					}	
+					return;				
+				}
+				break;
+			default:
+				break;
+			}
+			throw new NyARException();
+		}		
+
 		public override function getBufferReader():INyARBufferReader
 		{
 			return this._buffer_reader;
 		}
-		/**
-		 * 4近傍の画素ベクトルを取得します。
-		 * 0,1,0
-		 * 1,x,1
-		 * 0,1,0
-		 * @param i_raster
-		 * @param x
-		 * @param y
-		 * @param o_v
-		 */
-		public function getPixelVector4(x:int,y:int,o_v:NyARIntPoint2d):void
+		protected function initInstance(i_size:NyARIntSize,i_buf_type:int):Boolean
 		{
-			var buf:Vector.<int>=this._ref_buf;
-			var w:int=this._size.w;
-			var idx:int=w*y+x;
-			o_v.x=buf[idx+1]-buf[idx-1];
-			o_v.y=buf[idx+w]-buf[idx-w];
+			switch(i_buf_type)
+			{
+				case INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8:
+					this._buf = new Vector.<int>(i_size.w*i_size.h);
+					break;
+				default:
+					return false;
+			}
+			this._buffer_reader=new NyARBufferReader(this._buf,i_buf_type);
+			return true;
 		}
-		/**
-		 * 8近傍画素ベクトル
-		 * 1,2,1
-		 * 2,x,2
-		 * 1,2,1
-		 * @param i_raster
-		 * @param x
-		 * @param y
-		 * @param o_v
-		 */
-		public function getPixelVector8(x:int,y:int,o_v:NyARIntPoint2d):void
-		{
-			var buf:Vector.<int>=this._ref_buf;
-			var s:NyARIntSize=this._size;
-			var idx_0:int =s.w*y+x;
-			var idx_p1:int=idx_0+s.w;
-			var idx_m1:int=idx_0-s.w;
-			var b:int=buf[idx_m1-1];
-			var d:int=buf[idx_m1+1];
-			var h:int=buf[idx_p1-1];
-			var f:int=buf[idx_p1+1];
-			o_v.x=buf[idx_0+1]-buf[idx_0-1]+(d-b+f-h)/2;
-			o_v.y=buf[idx_p1]-buf[idx_m1]+(f-d+h-b)/2;
-		}
-		
-		public function copyFrom(i_input:NyARGrayscaleRaster):void
-		{
-			var out_buf:Vector.<int> = Vector.<int>(this._ref_buf);
-			var in_buf:Vector.<int> = Vector.<int>(i_input._ref_buf);
-			ArrayUtils.copyInt(in_buf,0,out_buf,0,this._size.h*this._size.w);
-			return;
-		}	
 	}
+
 }

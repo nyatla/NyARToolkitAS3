@@ -54,6 +54,7 @@ import jp.nyatla.nyartoolkit.as3.core.raster.*;
 import jp.nyatla.nyartoolkit.as3.core.rasterfilter.*;
 import jp.nyatla.nyartoolkit.as3.core.rasterreader.*;
 import jp.nyatla.nyartoolkit.as3.core.types.*;
+import jp.nyatla.as3utils.*;
 /*
  * ここから各ラスタ用のフィルタ実装
  */
@@ -67,6 +68,7 @@ class doThFilterImpl_BUFFERFORMAT_INT1D_X8R8G8B8_32 implements IdoThFilterImpl
 {
 	public function doThFilter(i_input:INyARBufferReader,i_output:INyARBufferReader,i_size:NyARIntSize,i_threshold:int):void
 	{
+		NyAS3Utils.assert (i_output.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_BIN_8));
 		var out_buf:Vector.<int> = (Vector.<int>)(i_output.getBuffer());
 		var in_buf:Vector.<int> = (Vector.<int>)(i_input.getBuffer());
 		

@@ -40,30 +40,34 @@ package jp.nyatla.nyartoolkit.as3.core.raster
 	 */
 	public final class NyARRaster extends NyARRaster_BasicClass
 	{
-		private var _reader:NyARBufferReader;
+		protected var _reader:NyARBufferReader;
+		protected var _buf:Object;
+		
+		public function NyARRaster(i_size:NyARIntSize, i_buf_type:int)
+		{
+			super(i_size);
+			if(!initInstance(i_size,i_buf_type)){
+				throw new NyARException();
+			}
+			return;
+		}
+		protected function initInstance(i_size:NyARIntSize,i_buf_type:int):Boolean
+		{
+			switch(i_buf_type)
+			{
+				case INyARBufferReader.BUFFERFORMAT_INT1D_X8R8G8B8_32:
+					this._buf=new Vector.<int>(i_size.w*i_size.h);
+					break;
+				default:
+					return false;
+			}
+			this._reader=new NyARBufferReader(this._buf,i_buf_type);
+			return true;
+		}
 		public override function getBufferReader():INyARBufferReader
 		{
 			return this._reader;
 		}	
-		public function NyARRaster(i_size:NyARIntSize, i_buf_type:int)
-		{
-			super(i_size);
-			init(i_size,i_buf_type);
-			return;
-		}
-		private function init(i_size:NyARIntSize,i_buf_type:int):void
-		{
-			var buf:Object;
-			switch(i_buf_type)
-			{
-				case INyARBufferReader.BUFFERFORMAT_INT1D_X8R8G8B8_32:
-					buf=new Vector.<int>(i_size.w*i_size.h);
-					break;
-				default:
-					throw new NyARException();
-			}
-			this._reader=new NyARBufferReader(buf,i_buf_type);
-		}
 	}
 
 }

@@ -57,7 +57,7 @@ package jp.nyatla.nyartoolkit.as3.core.match
 				}
 				break;
 			case 2:
-				{//public function NyARMatchPatt_Color_WITHOUT_PCA(i_width:int,i_height:int)
+				{	//public function NyARMatchPatt_Color_WITHOUT_PCA(i_width:int,i_height:int)
 				
 					var i_width:int = int(args[0]), i_height:int = int(args[1]);
 					//最適化定数の計算

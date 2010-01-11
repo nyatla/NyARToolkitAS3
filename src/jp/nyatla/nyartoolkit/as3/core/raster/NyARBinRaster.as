@@ -33,22 +33,58 @@ package jp.nyatla.nyartoolkit.as3.core.raster
 	import jp.nyatla.nyartoolkit.as3.core.rasterreader.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
 	import jp.nyatla.nyartoolkit.as3.utils.*;	
+	import jp.nyatla.nyartoolkit.as3.*;
 
-	public final class NyARBinRaster extends NyARRaster_BasicClass
+	public class NyARBinRaster extends NyARRaster_BasicClass
 	{
-		private var _buffer_reader:INyARBufferReader;
-		protected var _ref_buf:Vector.<int>;
+		protected var _buf:Object;
+		protected var _buffer_reader:INyARBufferReader;
 
-		public function NyARBinRaster(i_width:int,i_height:int)
+		public function NyARBinRaster(...args:Array)
 		{
-			super(new NyARIntSize(i_width,i_height));
-			this._ref_buf = new Vector.<int>(i_height*i_width);
-			this._buffer_reader=new NyARBufferReader(this._ref_buf,INyARBufferReader.BUFFERFORMAT_INT1D_BIN_8);
-		}
-		public override function getBufferReader():INyARBufferReader
+			super(new NyARIntSize(int(args[0]),int(args[1])));
+			switch(args.length){
+			case 2:
+				{	//public function NyARBinRaster(i_width:int,i_height:int)
+					if(!initInstance(this._size,INyARBufferReader.BUFFERFORMAT_INT1D_BIN_8)){
+						throw new NyARException();
+					}
+					return;
+				}
+				break;
+			case 3:
+				{	//public function NyARBinRaster(i_width:int,i_height:int,i_raster_type:int)
+					if(!initInstance(this._size,int(args[2]))){
+						throw new NyARException();
+					}	
+					return;				
+				}
+				break;
+			default:
+				break;
+			}
+			throw new NyARException();
+		}		
+
+		public override function getBufferReader():INyARBufferReader 
 		{
 			return this._buffer_reader;
 		}
+		protected function initInstance(i_size:NyARIntSize,i_buf_type:int):Boolean
+		{
+			switch(i_buf_type)
+			{
+				case INyARBufferReader.BUFFERFORMAT_INT1D_BIN_8:
+					this._buf = new Vector.<int>(i_size.w*i_size.h);
+					this._buffer_reader=new NyARBufferReader(this._buf,INyARBufferReader.BUFFERFORMAT_INT1D_BIN_8);
+					break;
+				default:
+					return false;
+			}
+			this._buffer_reader=new NyARBufferReader(this._buf,i_buf_type);
+			return true;
+		}	
 	}
+
 
 }

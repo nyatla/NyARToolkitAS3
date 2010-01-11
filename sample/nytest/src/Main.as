@@ -16,7 +16,6 @@ package
     import flash.display.*; 
     import flash.events.*;
     import flash.utils.*;
-	import org.libspark.flartoolkit.core.raster.rgb.*;
 	/**
 	 * ...
 	 * @author 
