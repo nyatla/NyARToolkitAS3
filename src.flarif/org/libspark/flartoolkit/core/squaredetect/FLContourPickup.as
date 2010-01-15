@@ -35,7 +35,7 @@ package org.libspark.flartoolkit.core.squaredetect
 	import jp.nyatla.as3utils.*;
 	import jp.nyatla.nyartoolkit.as3.*;
 	
-	public class FLContourPickup extends ContourPickup
+	public class FLContourPickup extends NyARContourPickup
 	{
 		
 		public function FLContourPickup() 

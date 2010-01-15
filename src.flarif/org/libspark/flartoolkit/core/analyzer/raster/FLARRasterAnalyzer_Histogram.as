@@ -28,7 +28,7 @@
  */
 package org.libspark.flartoolkit.core.analyzer.raster
 {
-	import jp.nyatla.nyartoolkit.as3.core.analyzer.raster.NyARRasterAnalyzer_Histgram;
+	import jp.nyatla.nyartoolkit.as3.core.analyzer.raster.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
 	import jp.nyatla.nyartoolkit.as3.*;
 	import jp.nyatla.nyartoolkit.as3.core.raster.*;
@@ -36,7 +36,7 @@ package org.libspark.flartoolkit.core.analyzer.raster
 	import jp.nyatla.as3utils.*;
 	import flash.display.BitmapData;
 	
-	public class FLARRasterAnalyzer_Histgram extends NyARRasterAnalyzer_Histgram
+	public class FLARRasterAnalyzer_Histgram extends NyARRasterAnalyzer_Histogram
 	{
 		public function FLARRasterAnalyzer_Histgram(i_vertical_interval:int)
 		{
@@ -56,7 +56,7 @@ package org.libspark.flartoolkit.core.analyzer.raster
 		 * @return
 		 * @throws NyARException
 		 */
-		public override function analyzeRaster(i_input:INyARRaster,o_histgram:NyARHistgram):int
+		public override function analyzeRaster(i_input:INyARRaster,o_histgram:NyARHistogram):int
 		{
 			var size:NyARIntSize=i_input.getSize();
 			//最大画像サイズの制限

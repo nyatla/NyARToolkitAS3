@@ -28,7 +28,7 @@
  */
 package org.libspark.flartoolkit.core.rasterfilter.rgb2bin
 {
-	import jp.nyatla.nyartoolkit.as3.core.rasterfilter.rgb2bin.INyARRasterFilter_RgbToBin;
+	import jp.nyatla.nyartoolkit.as3.core.rasterfilter.rgb2bin.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
 	import jp.nyatla.nyartoolkit.as3.core.raster.*;
 	import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
@@ -43,7 +43,7 @@ package org.libspark.flartoolkit.core.rasterfilter.rgb2bin
 	 * 定数閾値による2値化をする。
 	 * 
 	 */
-	public class FLARRasterFilter_Threshold implements INyARRasterFilter_RgbToBin
+	public class FLARRasterFilter_Threshold implements INyARRasterFilter_Rgb2Bin
 	{
 		private var _threshold:int;
 		private var _do_threshold_impl:IdoThFilterImpl;
