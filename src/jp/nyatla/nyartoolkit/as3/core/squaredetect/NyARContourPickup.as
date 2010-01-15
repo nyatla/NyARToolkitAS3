@@ -33,7 +33,7 @@ package jp.nyatla.nyartoolkit.as3.core.squaredetect
 	import jp.nyatla.nyartoolkit.as3.core.raster.*;
 	import jp.nyatla.nyartoolkit.as3.core.labeling.*;
 	import jp.nyatla.nyartoolkit.as3.*;
-	public class ContourPickup
+	public class NyARContourPickup
 	{
 		//巡回参照できるように、テーブルを二重化
 		//                                           0  1  2  3  4  5  6  7   0  1  2  3  4  5  6

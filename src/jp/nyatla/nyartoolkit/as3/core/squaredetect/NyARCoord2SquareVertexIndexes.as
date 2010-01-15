@@ -30,12 +30,12 @@
  */
 package jp.nyatla.nyartoolkit.as3.core.squaredetect 
 {
-	public class Coord2SquareVertexIndexes
+	public class NyARCoord2SquareVertexIndexes
 	{
 		private static const VERTEX_FACTOR:Number = 1.0;// 線検出のファクタ	
 		private var __getSquareVertex_wv1:NyARVertexCounter= new NyARVertexCounter();
 		private var __getSquareVertex_wv2:NyARVertexCounter= new NyARVertexCounter();
-		public function Coord2SquareVertexIndexes()
+		public function NyARCoord2SquareVertexIndexes()
 		{
 			return;
 		}

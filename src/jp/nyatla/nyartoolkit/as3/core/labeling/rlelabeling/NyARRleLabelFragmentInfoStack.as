@@ -31,11 +31,21 @@
 package jp.nyatla.nyartoolkit.as3.core.labeling.rlelabeling 
 {
 	import jp.nyatla.nyartoolkit.as3.core.labeling.*;
-	final public class RleLabelFragmentInfo extends NyARLabelInfo
-	{
-		//継承メンバ
-		//int area; // フラグメントラベルの領域数
-		public var entry_x:int; // フラグメントラベルの位置
+	final public class NyARRleLabelFragmentInfoStack  extends NyARLabelInfoStack
+	{	
+		public function NyARRleLabelFragmentInfoStack(i_length:int)
+		{
+			super(i_length);
+			return;
+		}
+		protected override function createArray(i_length:int):Vector.<*>
+		{
+			var ret:Vector.<NyARRleLabelFragmentInfo>= new Vector.<NyARRleLabelFragmentInfo>(i_length);
+			for (var i:int =0; i < i_length; i++){
+				ret[i] = new NyARRleLabelFragmentInfo();
+			}
+			return Vector.<*>(ret);
+		}	
 	}
-
 }
+

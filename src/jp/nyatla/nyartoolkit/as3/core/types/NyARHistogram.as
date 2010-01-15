@@ -34,7 +34,7 @@ package jp.nyatla.nyartoolkit.as3.core.types
 	/**
 	 * ヒストグラムを格納するクラスです。
 	 */
-	public class NyARHistgram
+	public class NyARHistogram
 	{
 		/**
 		 * サンプリング値の格納変数
@@ -51,7 +51,7 @@ package jp.nyatla.nyartoolkit.as3.core.types
 		
 		
 		
-		public function NyARHistgram(i_length:int)
+		public function NyARHistogram(i_length:int)
 		{
 			this.data=new Vector.<int>(i_length);
 			this.length=i_length;

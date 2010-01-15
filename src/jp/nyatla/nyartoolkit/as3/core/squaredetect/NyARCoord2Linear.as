@@ -35,7 +35,7 @@ package jp.nyatla.nyartoolkit.as3.core.squaredetect
 	import jp.nyatla.nyartoolkit.as3.core.types.matrix.*;
 	import jp.nyatla.nyartoolkit.as3.core.param.*;
 	
-	public class Coord2Linear
+	public class NyARCoord2Linear
 	{
 		private var _xpos:Vector.<Number>;
 		private var _ypos:Vector.<Number>;	
@@ -44,7 +44,7 @@ package jp.nyatla.nyartoolkit.as3.core.squaredetect
 		private var __getSquareLine_mean:Vector.<Number> = new Vector.<Number>(2);
 		private var __getSquareLine_ev:Vector.<Number> = new Vector.<Number>(2);
 		private var _dist_factor:NyARObserv2IdealMap;
-		public function Coord2Linear(i_size:NyARIntSize,i_distfactor_ref:NyARCameraDistortionFactor)
+		public function NyARCoord2Linear(i_size:NyARIntSize,i_distfactor_ref:NyARCameraDistortionFactor)
 		{
 			//歪み計算テーブルを作ると、8*width/height*2の領域を消費します。
 			//領域を取りたくない場合は、i_dist_factor_refの値をそのまま使ってください。

@@ -28,24 +28,10 @@
  *	<airmail(at)ebony.plala.or.jp> or <nyatla(at)nyatla.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.as3.core.labeling.rlelabeling 
+package jp.nyatla.nyartoolkit.as3.core.squaredetect 
 {
-	import jp.nyatla.nyartoolkit.as3.core.labeling.*;
-	final public class RleLabelFragmentInfoStack  extends NyARLabelInfoStack
-	{	
-		public function RleLabelFragmentInfoStack(i_length:int)
-		{
-			super(i_length);
-			return;
-		}
-		protected override function createArray(i_length:int):Vector.<*>
-		{
-			var ret:Vector.<RleLabelFragmentInfo>= new Vector.<RleLabelFragmentInfo>(i_length);
-			for (var i:int =0; i < i_length; i++){
-				ret[i] = new RleLabelFragmentInfo();
-			}
-			return Vector.<*>(ret);
-		}	
+	public interface NyARSquareContourDetector_IDetectMarkerCallback
+	{
+		function onSquareDetect(i_sender:NyARSquareContourDetector,i_coordx:Vector.<int>,i_coordy:Vector.<int>,i_coor_num:int,i_vertex_index:Vector.<int>):void
 	}
 }
-

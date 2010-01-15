@@ -36,7 +36,7 @@ package jp.nyatla.nyartoolkit.as3.core.types.stack
 	 * スタック型の可変長配列。
 	 * 配列には実体を格納します。
 	 */
-	public class NyObjectStack
+	public class NyARObjectStack
 	{
 		protected var _items:Vector.<*>;
 		protected var _length:int;
@@ -48,7 +48,7 @@ package jp.nyatla.nyartoolkit.as3.core.types.stack
 		 * @param i_element_type
 		 * JavaのGenedicsの制限突破
 		 */
-		public function NyObjectStack(i_length:int)
+		public function NyARObjectStack(i_length:int)
 		{
 			//領域確保
 			this._items = createArray(i_length);

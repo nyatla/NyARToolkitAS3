@@ -35,7 +35,7 @@ package jp.nyatla.nyartoolkit.as3.core.squaredetect
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
 	import jp.nyatla.nyartoolkit.as3.core.raster.*;
 	
-	public class NyARSquareContourDetector_Rle implements INyARSquareContourDetector
+	public class NyARSquareContourDetector_Rle extends NyARSquareContourDetector
 	{
 		private static const AR_AREA_MAX:int = 100000;// #define AR_AREA_MAX 100000
 		private static const AR_AREA_MIN:int = 70;// #define AR_AREA_MIN 70
@@ -45,9 +45,9 @@ package jp.nyatla.nyartoolkit.as3.core.squaredetect
 		private var _labeling:NyARLabeling_Rle;
 
 		private var _overlap_checker:RleLabelOverlapChecker = new RleLabelOverlapChecker(32);
-		private var _cpickup:ContourPickup=new ContourPickup();
-		private var _stack:RleLabelFragmentInfoStack;
-		private var _coord2vertex:Coord2SquareVertexIndexes=new Coord2SquareVertexIndexes();
+		private var _cpickup:NyARContourPickup=new NyARContourPickup();
+		private var _stack:NyARRleLabelFragmentInfoStack;
+		private var _coord2vertex:NyARCoord2SquareVertexIndexes=new NyARCoord2SquareVertexIndexes();
 		
 		private var _max_coord:int;
 		private var _xcoord:Vector.<int>;
@@ -64,7 +64,7 @@ package jp.nyatla.nyartoolkit.as3.core.squaredetect
 			//ラベリングのサイズを指定したいときはsetAreaRangeを使ってね。
 			this._labeling = new NyARLabeling_Rle(this._width,this._height);
 			this._labeling.setAreaRange(AR_AREA_MAX, AR_AREA_MIN);
-			this._stack=new RleLabelFragmentInfoStack(i_size.w*i_size.h*2048/(320*240)+32);//検出可能な最大ラベル数
+			this._stack=new NyARRleLabelFragmentInfoStack(i_size.w*i_size.h*2048/(320*240)+32);//検出可能な最大ラベル数
 			
 
 			// 輪郭の最大長は画面に映りうる最大の長方形サイズ。
@@ -79,9 +79,9 @@ package jp.nyatla.nyartoolkit.as3.core.squaredetect
 
 		private var __detectMarker_mkvertex:Vector.<int> = new Vector.<int>(4);
 		
-		public function detectMarkerCB(i_raster:NyARBinRaster ,i_callback:DetectMarkerCallback):void
+		public override function detectMarkerCB(i_raster:NyARBinRaster ,i_callback:NyARSquareContourDetector_IDetectMarkerCallback):void
 		{
-			var flagment:RleLabelFragmentInfoStack=this._stack;
+			var flagment:NyARRleLabelFragmentInfoStack=this._stack;
 			var overlap:RleLabelOverlapChecker = this._overlap_checker;
 
 			// ラベル数が0ならここまで
@@ -92,7 +92,7 @@ package jp.nyatla.nyartoolkit.as3.core.squaredetect
 			//ラベルをソートしておく
 			flagment.sortByArea();
 			//ラベルリストを取得
-			var labels:Vector.<RleLabelFragmentInfo>=Vector.<RleLabelFragmentInfo>(flagment.getArray());
+			var labels:Vector.<NyARRleLabelFragmentInfo>=Vector.<NyARRleLabelFragmentInfo>(flagment.getArray());
 
 			var xsize:int = this._width;
 			var ysize:int = this._height;
@@ -106,7 +106,7 @@ package jp.nyatla.nyartoolkit.as3.core.squaredetect
 			overlap.setMaxLabels(label_num);
 
 			for (var i:int=0; i < label_num; i++) {
-				var label_pt:RleLabelFragmentInfo=labels[i];
+				var label_pt:NyARRleLabelFragmentInfo=labels[i];
 				var label_area:int = label_pt.area;
 			
 				// クリップ領域が画面の枠に接していれば除外
@@ -147,7 +147,7 @@ package jp.nyatla.nyartoolkit.as3.core.squaredetect
 import jp.nyatla.nyartoolkit.as3.core.labeling.*;
 import jp.nyatla.nyartoolkit.as3.core.labeling.rlelabeling.*;
 
-class RleLabelOverlapChecker extends LabelOverlapChecker
+class RleLabelOverlapChecker extends NyARLabelOverlapChecker
 {
 	public function RleLabelOverlapChecker(i_max_label:int)
 	{
@@ -155,6 +155,6 @@ class RleLabelOverlapChecker extends LabelOverlapChecker
 	}
 	protected override function createArray(i_length:int):Vector.<*>
 	{
-		return new Vector.<RleLabelFragmentInfo>(i_length);
+		return new Vector.<NyARRleLabelFragmentInfo>(i_length);
 	}	
 }

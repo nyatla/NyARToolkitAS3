@@ -32,7 +32,7 @@ package jp.nyatla.nyartoolkit.as3.core.labeling
 {
 	import jp.nyatla.nyartoolkit.as3.core.types.stack.*;
 	
-	public class NyARLabelInfoStack extends NyObjectStack
+	public class NyARLabelInfoStack extends NyARObjectStack
 	{
 		public function NyARLabelInfoStack(i_length:int)
 		{

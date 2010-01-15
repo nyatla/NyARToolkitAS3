@@ -12,7 +12,7 @@ package jp.nyatla.nyartoolkit.as3.core.rasterfilter.rgb2bin
 	 * 定数閾値による2値化をする。
 	 * 
 	 */
-	public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter_RgbToBin
+	public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter_Rgb2Bin
 	{
 		private var _threshold:int;
 		private var _do_threshold_impl:IdoThFilterImpl;

@@ -28,10 +28,12 @@
  *	<airmail(at)ebony.plala.or.jp> or <nyatla(at)nyatla.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.as3.core.squaredetect 
+package jp.nyatla.nyartoolkit.as3.core.analyzer.histogram 
 {
-	public interface DetectMarkerCallback
+	import jp.nyatla.nyartoolkit.as3.core.types.*;
+	public interface INyARHistogramAnalyzer_Threshold
 	{
-		function onSquareDetect(i_sender:INyARSquareContourDetector,i_coordx:Vector.<int>,i_coordy:Vector.<int>,i_coor_num:int,i_vertex_index:Vector.<int>):void
+		function getThreshold(i_histgram:NyARHistogram):int;
 	}
+
 }

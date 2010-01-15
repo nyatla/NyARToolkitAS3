@@ -28,12 +28,14 @@
  *	<airmail(at)ebony.plala.or.jp> or <nyatla(at)nyatla.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.as3.core.analyzer.histgram 
+package jp.nyatla.nyartoolkit.as3.core.labeling.rlelabeling 
 {
-	import jp.nyatla.nyartoolkit.as3.core.types.*;
-	public interface INyARHistgramAnalyzer_Threshold
+	import jp.nyatla.nyartoolkit.as3.core.labeling.*;
+	final public class NyARRleLabelFragmentInfo extends NyARLabelInfo
 	{
-		function getThreshold(i_histgram:NyARHistgram):int;
+		//継承メンバ
+		//int area; // フラグメントラベルの領域数
+		public var entry_x:int; // フラグメントラベルの位置
 	}
 
 }

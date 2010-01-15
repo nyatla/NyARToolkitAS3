@@ -162,7 +162,7 @@ package jp.nyatla.nyartoolkit.as3.core.labeling.rlelabeling
 		 * @return
 		 * @throws NyARException
 		 */
-		public function labeling_NyARBinRaster(i_bin_raster:NyARBinRaster,i_top:int,i_bottom:int,o_stack:RleLabelFragmentInfoStack):int
+		public function labeling_NyARBinRaster(i_bin_raster:NyARBinRaster,i_top:int,i_bottom:int,o_stack:NyARRleLabelFragmentInfoStack):int
 		{
 			NyAS3Utils.assert(i_bin_raster.getBufferReader().isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_BIN_8));
 			return this.imple_labeling(i_bin_raster,0,i_top,i_bottom,o_stack);
@@ -178,12 +178,12 @@ package jp.nyatla.nyartoolkit.as3.core.labeling.rlelabeling
 		 * @return
 		 * @throws NyARException
 		 */
-		public function labeling_NyARGrayscaleRaster(i_gs_raster:NyARGrayscaleRaster,i_th:int,i_top:int,i_bottom:int,o_stack:RleLabelFragmentInfoStack):int
+		public function labeling_NyARGrayscaleRaster(i_gs_raster:NyARGrayscaleRaster,i_th:int,i_top:int,i_bottom:int,o_stack:NyARRleLabelFragmentInfoStack):int
 		{
 			NyAS3Utils.assert(i_gs_raster.getBufferReader().isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8));
 			return this.imple_labeling(i_gs_raster,i_th,i_top,i_bottom,o_stack);
 		}
-		private function imple_labeling(i_raster:INyARRaster,i_th:int,i_top:int,i_bottom:int,o_stack:RleLabelFragmentInfoStack):int
+		private function imple_labeling(i_raster:INyARRaster,i_th:int,i_top:int,i_bottom:int,o_stack:NyARRleLabelFragmentInfoStack):int
 		{
 			// リセット処理
 			var rlestack:RleInfoStack=this._rlestack;
@@ -339,7 +339,7 @@ package jp.nyatla.nyartoolkit.as3.core.labeling.rlelabeling
 			}
 			//対象のラベルだけ転写
 			o_stack.init(label_count);
-			var o_dest_array:Vector.<RleLabelFragmentInfo>=Vector.<RleLabelFragmentInfo>(o_stack.getArray());
+			var o_dest_array:Vector.<NyARRleLabelFragmentInfo>=Vector.<NyARRleLabelFragmentInfo>(o_stack.getArray());
 			var max:int=this._max_area;
 			var min:int=this._min_area;
 			var active_labels:int=0;
@@ -350,7 +350,7 @@ package jp.nyatla.nyartoolkit.as3.core.labeling.rlelabeling
 				}
 				//
 				var src_info:RleInfo=f_array[i];
-				var dest_info:RleLabelFragmentInfo=o_dest_array[active_labels];
+				var dest_info:NyARRleLabelFragmentInfo=o_dest_array[active_labels];
 				dest_info.area=area;
 				dest_info.clip_b=src_info.clip_b;
 				dest_info.clip_r=src_info.clip_r;
@@ -383,7 +383,7 @@ final class RleInfo
 	public var pos_y:Number;		
 }
 
-final class RleInfoStack extends NyObjectStack
+final class RleInfoStack extends NyARObjectStack
 {
 	public function RleInfoStack(i_length:int)
 	{

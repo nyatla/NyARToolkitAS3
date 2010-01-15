@@ -28,18 +28,50 @@
  *	<airmail(at)ebony.plala.or.jp> or <nyatla(at)nyatla.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.as3.core.squaredetect 
+package jp.nyatla.nyartoolkit.as3.core.analyzer.histogram 
 {
-	import jp.nyatla.nyartoolkit.as3.core.raster.*;
-	public interface INyARSquareContourDetector
+	import jp.nyatla.nyartoolkit.as3.core.types.*;
+	import jp.nyatla.as3utils.*;
+	public class NyARHistogramAnalyzer_SlidePTile implements INyARHistogramAnalyzer_Threshold
 	{
-		/**
-		 *
-		 * @param i_raster
-		 * @param o_square_stack
-		 * @throws NyARException
-		 */
-		function detectMarkerCB(i_raster:NyARBinRaster, i_callback:DetectMarkerCallback):void;
+		private var _persentage:int;
+		public function NyARHistogramAnalyzer_SlidePTile(i_persentage:int)
+		{
+			NyAS3Utils.assert (0 <= i_persentage && i_persentage <= 50);
+			//初期化
+			this._persentage=i_persentage;
+		}	
+		public function getThreshold(i_histgram:NyARHistogram):int
+		{
+			//総ピクセル数を計算
+			var n:int=i_histgram.length;
+			var sum_of_pixel:int=i_histgram.total_of_data;
+			var hist:Vector.<int>=i_histgram.data;
+			// 閾値ピクセル数確定
+			var th_pixcels:int = sum_of_pixel * this._persentage / 100;
+			var th_wk:int;
+			var th_w:int, th_b:int;
+
+			// 黒点基準
+			th_wk = th_pixcels;
+			for (th_b = 0; th_b < n-2; th_b++) {
+				th_wk -= hist[th_b];
+				if (th_wk <= 0) {
+					break;
+				}
+			}
+			// 白点基準
+			th_wk = th_pixcels;
+			for (th_w = n-1; th_w > 1; th_w--) {
+				th_wk -= hist[th_w];
+				if (th_wk <= 0) {
+					break;
+				}
+			}
+			// 閾値の保存
+			return (th_w + th_b) / 2;
+		}
 	}
+
 
 }

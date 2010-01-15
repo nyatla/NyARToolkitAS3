@@ -36,9 +36,9 @@ package jp.nyatla.nyartoolkit.as3.core.analyzer.raster
 	import jp.nyatla.nyartoolkit.as3.core.rasterreader.*;
 	import jp.nyatla.as3utils.*;
 	
-	public class NyARRasterAnalyzer_Histgram
+	public class NyARRasterAnalyzer_Histogram
 	{
-		protected var _histImpl:ICreateHistgramImpl;
+		protected var _histImpl:ICreateHistogramImpl;
 		/**
 		 * ヒストグラム解析の縦方向スキップ数。継承クラスはこのライン数づつ
 		 * スキップしながらヒストグラム計算を行うこと。
@@ -46,7 +46,7 @@ package jp.nyatla.nyartoolkit.as3.core.analyzer.raster
 		protected var _vertical_skip:int;
 		
 		
-		public function NyARRasterAnalyzer_Histgram(i_raster_format:int, i_vertical_interval:int)
+		public function NyARRasterAnalyzer_Histogram(i_raster_format:int, i_vertical_interval:int)
 		{
 			if(!initInstance(i_raster_format,i_vertical_interval)){
 				throw new NyARException();
@@ -56,10 +56,10 @@ package jp.nyatla.nyartoolkit.as3.core.analyzer.raster
 		{
 			switch (i_raster_format) {
 			case INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8:
-				this._histImpl = new NyARRasterThresholdAnalyzer_Histgram_INT1D_GRAY_8();
+				this._histImpl = new NyARRasterThresholdAnalyzer_Histogram_INT1D_GRAY_8();
 				break;
 			case INyARBufferReader.BUFFERFORMAT_INT1D_X8R8G8B8_32:
-				this._histImpl = new NyARRasterThresholdAnalyzer_Histgram_INT1D_X8R8G8B8_32();
+				this._histImpl = new NyARRasterThresholdAnalyzer_Histogram_INT1D_X8R8G8B8_32();
 				break;
 			default:
 				return false;
@@ -81,7 +81,7 @@ package jp.nyatla.nyartoolkit.as3.core.analyzer.raster
 		 * @return
 		 * @throws NyARException
 		 */
-		public function analyzeRaster(i_input:INyARRaster,o_histgram:NyARHistgram):int
+		public function analyzeRaster(i_input:INyARRaster,o_histgram:NyARHistogram):int
 		{
 			var size:NyARIntSize=i_input.getSize();
 			//最大画像サイズの制限
@@ -94,7 +94,7 @@ package jp.nyatla.nyartoolkit.as3.core.analyzer.raster
 				h[i] = 0;
 			}
 			o_histgram.total_of_data=size.w*size.h/this._vertical_skip;
-			return this._histImpl.createHistgram(i_input.getBufferReader(), size,h,this._vertical_skip);		
+			return this._histImpl.createHistogram(i_input.getBufferReader(), size,h,this._vertical_skip);		
 		}		
 	}
 }
@@ -105,14 +105,14 @@ import jp.nyatla.as3utils.*;
 import jp.nyatla.nyartoolkit.as3.core.rasterreader.*;
 import jp.nyatla.nyartoolkit.as3.core.types.*;
 
-interface ICreateHistgramImpl
+interface ICreateHistogramImpl
 {
-	function createHistgram(i_reader:INyARBufferReader,i_size:NyARIntSize,o_histgram:Vector.<int>,i_skip:int):int;
+	function createHistogram(i_reader:INyARBufferReader,i_size:NyARIntSize,o_histgram:Vector.<int>,i_skip:int):int;
 }
 
-class NyARRasterThresholdAnalyzer_Histgram_INT1D_GRAY_8 implements ICreateHistgramImpl
+class NyARRasterThresholdAnalyzer_Histogram_INT1D_GRAY_8 implements ICreateHistogramImpl
 {
-	public function createHistgram(i_reader:INyARBufferReader,i_size:NyARIntSize,o_histgram:Vector.<int>,i_skip:int):int
+	public function createHistogram(i_reader:INyARBufferReader,i_size:NyARIntSize,o_histgram:Vector.<int>,i_skip:int):int
 	{
 		NyAS3Utils.assert (i_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8));
 		var input:Vector.<int>=(Vector.<int>)(i_reader.getBuffer());
@@ -127,9 +127,9 @@ class NyARRasterThresholdAnalyzer_Histgram_INT1D_GRAY_8 implements ICreateHistgr
 	}	
 }
 
-class NyARRasterThresholdAnalyzer_Histgram_INT1D_X8R8G8B8_32 implements ICreateHistgramImpl
+class NyARRasterThresholdAnalyzer_Histogram_INT1D_X8R8G8B8_32 implements ICreateHistogramImpl
 {
-	public function createHistgram(i_reader:INyARBufferReader,i_size:NyARIntSize,o_histgram:Vector.<int>,i_skip:int):int
+	public function createHistogram(i_reader:INyARBufferReader,i_size:NyARIntSize,o_histgram:Vector.<int>,i_skip:int):int
 	{
 		NyAS3Utils.assert (i_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_X8R8G8B8_32));
 		var input:Vector.<int> =Vector.<int>(i_reader.getBuffer());

@@ -30,7 +30,7 @@
  */
 package jp.nyatla.nyartoolkit.as3.core
 {	
-	import jp.nyatla.nyartoolkit.as3.core.analyzer.histgram.INyARHistgramAnalyzer_Threshold;
+	import jp.nyatla.nyartoolkit.as3.core.analyzer.histogram.*;
 	import jp.nyatla.nyartoolkit.as3.utils.as3.*;
 	import jp.nyatla.nyartoolkit.as3.*;
 	/**

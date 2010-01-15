@@ -30,13 +30,13 @@
  */
 package jp.nyatla.nyartoolkit.as3.core.labeling 
 {
-	public class LabelOverlapChecker
+	public class NyARLabelOverlapChecker
 	{
 		private var _labels:Vector.<*>;
 		private var _length:int;
 		/*
 		*/
-		public function LabelOverlapChecker(i_max_label:int)
+		public function NyARLabelOverlapChecker(i_max_label:int)
 		{
 			this._labels = createArray(i_max_label);
 		}

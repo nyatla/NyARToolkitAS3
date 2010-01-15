@@ -32,7 +32,7 @@ package jp.nyatla.nyartoolkit.as3.core.rasterfilter.rgb2bin
 {
 	import jp.nyatla.nyartoolkit.as3.core.raster.*;
 	import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
-	public interface INyARRasterFilter_RgbToBin
+	public interface INyARRasterFilter_Rgb2Bin
 	{
 		function doFilter(i_input:INyARRgbRaster, i_output:NyARBinRaster):void
 	}
