@@ -36,16 +36,17 @@ package jp.nyatla.nyartoolkit.as3.core.pickup
 	import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
 	import jp.nyatla.nyartoolkit.as3.core.rasterreader.*;
 	import jp.nyatla.nyartoolkit.as3.core.utils.*;
+	import jp.nyatla.nyartoolkit.as3.*;
 	public class NyARColorPatt_Perspective implements INyARColorPatt
 	{
 		protected var _patdata:Vector.<int>;
 		protected var _pickup_lt:NyARIntPoint2d=new NyARIntPoint2d();	
 		protected var _resolution:int;
-		protected var _buf_reader:NyARBufferReader;
 		protected var _size:NyARIntSize;
 		protected var _perspective_gen:NyARPerspectiveParamGenerator_O1;
 		private var _pixelreader:NyARRgbPixelReader_INT1D_X8R8G8B8_32;
 		private static const LOCAL_LT:int=1;
+		private static const BUFFER_FORMAT:int=NyARBufferType.INT1D_X8R8G8B8_32;
 		
 		private function initializeInstance(i_width:int,i_height:int,i_point_per_pix:int):void
 		{
@@ -53,7 +54,6 @@ package jp.nyatla.nyartoolkit.as3.core.pickup
 			this._resolution=i_point_per_pix;	
 			this._size=new NyARIntSize(i_width,i_height);
 			this._patdata = new Vector.<int>(i_height*i_width);
-			this._buf_reader=new NyARBufferReader(this._patdata,INyARBufferReader.BUFFERFORMAT_INT1D_X8R8G8B8_32);
 			this._pixelreader=new NyARRgbPixelReader_INT1D_X8R8G8B8_32(this._patdata,this._size);
 			return;		
 		}
@@ -121,26 +121,43 @@ package jp.nyatla.nyartoolkit.as3.core.pickup
 		}
 
 		
-		public function getWidth():int
+		public final function getWidth():int
 		{
 			return this._size.w;
 		}
-		public function getHeight():int
+		public final function getHeight():int
 		{
 			return this._size.h;
 		}
-		public function getSize():NyARIntSize
+		public final function getSize():NyARIntSize
 		{
 			return 	this._size;
 		}
-		public function getBufferReader():INyARBufferReader
-		{
-			return this._buf_reader;
-		}
-		public function getRgbPixelReader():INyARRgbPixelReader
+		public final function getRgbPixelReader():INyARRgbPixelReader
 		{
 			return this._pixelreader;
 		}
+		public final function getBuffer():Object
+		{
+			return this._patdata;
+		}
+		public final function hasBuffer():Boolean
+		{
+			return this._patdata!=null;
+		}
+		public final function wrapBuffer(i_ref_buf:Object):void
+		{
+			NyARException.notImplement();
+		}
+		public final function getBufferType():int
+		{
+			return BUFFER_FORMAT;
+		}
+		public final function isEqualBufferType(i_type_value:int):Boolean
+		{
+			return BUFFER_FORMAT==i_type_value;
+		}
+		
 		private var __pickFromRaster_rgb_tmp:Vector.<int> = new Vector.<int>(3);
 		protected var __pickFromRaster_cpara:Vector.<Number> = new Vector.<Number>(8);
 		

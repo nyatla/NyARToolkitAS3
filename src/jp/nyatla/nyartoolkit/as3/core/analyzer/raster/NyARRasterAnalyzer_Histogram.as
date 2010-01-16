@@ -55,10 +55,10 @@ package jp.nyatla.nyartoolkit.as3.core.analyzer.raster
 		protected function initInstance(i_raster_format:int,i_vertical_interval:int):Boolean
 		{
 			switch (i_raster_format) {
-			case INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8:
+			case NyARBufferType.INT1D_GRAY_8:
 				this._histImpl = new NyARRasterThresholdAnalyzer_Histogram_INT1D_GRAY_8();
 				break;
-			case INyARBufferReader.BUFFERFORMAT_INT1D_X8R8G8B8_32:
+			case NyARBufferType.INT1D_X8R8G8B8_32:
 				this._histImpl = new NyARRasterThresholdAnalyzer_Histogram_INT1D_X8R8G8B8_32();
 				break;
 			default:
@@ -94,7 +94,7 @@ package jp.nyatla.nyartoolkit.as3.core.analyzer.raster
 				h[i] = 0;
 			}
 			o_histgram.total_of_data=size.w*size.h/this._vertical_skip;
-			return this._histImpl.createHistogram(i_input.getBufferReader(), size,h,this._vertical_skip);		
+			return this._histImpl.createHistogram(i_input, size,h,this._vertical_skip);		
 		}		
 	}
 }
@@ -107,14 +107,14 @@ import jp.nyatla.nyartoolkit.as3.core.types.*;
 
 interface ICreateHistogramImpl
 {
-	function createHistogram(i_reader:INyARBufferReader,i_size:NyARIntSize,o_histgram:Vector.<int>,i_skip:int):int;
+	function createHistogram(i_reader:INyARRaster,i_size:NyARIntSize,o_histgram:Vector.<int>,i_skip:int):int;
 }
 
 class NyARRasterThresholdAnalyzer_Histogram_INT1D_GRAY_8 implements ICreateHistogramImpl
 {
-	public function createHistogram(i_reader:INyARBufferReader,i_size:NyARIntSize,o_histgram:Vector.<int>,i_skip:int):int
+	public function createHistogram(i_reader:INyARRaster,i_size:NyARIntSize,o_histgram:Vector.<int>,i_skip:int):int
 	{
-		NyAS3Utils.assert (i_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8));
+		NyAS3Utils.assert (i_reader.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
 		var input:Vector.<int>=(Vector.<int>)(i_reader.getBuffer());
 		for (var y:int = i_size.h-1; y >=0 ; y-=i_skip){
 			var pt:int=y*i_size.w;
@@ -129,9 +129,9 @@ class NyARRasterThresholdAnalyzer_Histogram_INT1D_GRAY_8 implements ICreateHisto
 
 class NyARRasterThresholdAnalyzer_Histogram_INT1D_X8R8G8B8_32 implements ICreateHistogramImpl
 {
-	public function createHistogram(i_reader:INyARBufferReader,i_size:NyARIntSize,o_histgram:Vector.<int>,i_skip:int):int
+	public function createHistogram(i_reader:INyARRaster,i_size:NyARIntSize,o_histgram:Vector.<int>,i_skip:int):int
 	{
-		NyAS3Utils.assert (i_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_X8R8G8B8_32));
+		NyAS3Utils.assert (i_reader.isEqualBufferType(NyARBufferType.INT1D_X8R8G8B8_32));
 		var input:Vector.<int> =Vector.<int>(i_reader.getBuffer());
 		for (var y:int = i_size.h-1; y >=0 ; y-=i_skip){
 			var pt:int=y*i_size.w;

@@ -89,7 +89,7 @@ public class NyARSingleDetectMarker extends NyARCustomSingleDetectMarker
 	{
 		var th:NyARRasterFilter_ARToolkitThreshold=new NyARRasterFilter_ARToolkitThreshold(100,i_input_raster_type);
 		var patt_inst:INyARColorPatt;
-		var sqdetect_inst:INyARSquareContourDetector;
+		var sqdetect_inst:NyARSquareContourDetector;
 		var transmat_inst:INyARTransMat;
 
 		switch(i_profile_id){

@@ -44,11 +44,11 @@ package jp.nyatla.nyartoolkit.as3.detector
 	public class NyARCustomSingleDetectMarker
 	{	
 		private var _is_continue:Boolean = false;
-		private var _square_detect:INyARSquareContourDetector;
+		private var _square_detect:NyARSquareContourDetector;
 		protected var _transmat:INyARTransMat;
 		//画処理用
 		private var _bin_raster:NyARBinRaster;
-		protected var _tobin_filter:INyARRasterFilter_RgbToBin;
+		protected var _tobin_filter:INyARRasterFilter_Rgb2Bin;
 		private var _detect_cb:DetectSquareCB;
 		private var _offset:NyARRectOffset; 
 
@@ -60,9 +60,9 @@ package jp.nyatla.nyartoolkit.as3.detector
 		}
 		protected function initInstance(
 			i_patt_inst:INyARColorPatt,
-			i_sqdetect_inst:INyARSquareContourDetector,
+			i_sqdetect_inst:NyARSquareContourDetector,
 			i_transmat_inst:INyARTransMat,
-			i_filter:INyARRasterFilter_RgbToBin,
+			i_filter:INyARRasterFilter_Rgb2Bin,
 			i_ref_param:NyARParam,
 			i_ref_code:NyARCode,
 			i_marker_width:Number):void
@@ -165,7 +165,7 @@ import jp.nyatla.nyartoolkit.as3.core.types.*;
 /**
  * detectMarkerのコールバック関数
  */
-class DetectSquareCB implements DetectMarkerCallback
+class DetectSquareCB implements NyARSquareContourDetector_IDetectMarkerCallback
 {
 	//公開プロパティ
 	public var confidence:Number;
@@ -178,13 +178,13 @@ class DetectSquareCB implements DetectMarkerCallback
 	private var _deviation_data:NyARMatchPattDeviationColorData;
 	private var _match_patt:NyARMatchPatt_Color_WITHOUT_PCA;
 	private var __detectMarkerLite_mr:NyARMatchPattResult=new NyARMatchPattResult();
-	private var _coordline:Coord2Linear;
+	private var _coordline:NyARCoord2Linear;
 	
 	public function DetectSquareCB(i_inst_patt:INyARColorPatt,i_ref_code:NyARCode,i_param:NyARParam)
 	{
 		this._inst_patt=i_inst_patt;
 		this._deviation_data=new NyARMatchPattDeviationColorData(i_ref_code.getWidth(),i_ref_code.getHeight());
-		this._coordline=new Coord2Linear(i_param.getScreenSize(),i_param.getDistortionFactor());
+		this._coordline=new NyARCoord2Linear(i_param.getScreenSize(),i_param.getDistortionFactor());
 		this._match_patt=new NyARMatchPatt_Color_WITHOUT_PCA(i_ref_code);
 		return;
 	}
@@ -193,7 +193,7 @@ class DetectSquareCB implements DetectMarkerCallback
 	 * 矩形が見付かるたびに呼び出されます。
 	 * 発見した矩形のパターンを検査して、方位を考慮した頂点データを確保します。
 	 */
-	public function onSquareDetect(i_sender:INyARSquareContourDetector,i_coordx:Vector.<int>,i_coordy:Vector.<int>,i_coor_num:int,i_vertex_index:Vector.<int>):void
+	public function onSquareDetect(i_sender:NyARSquareContourDetector,i_coordx:Vector.<int>,i_coordy:Vector.<int>,i_coor_num:int,i_vertex_index:Vector.<int>):void
 	{
 		var i:int;
 		var mr:NyARMatchPattResult=this.__detectMarkerLite_mr;

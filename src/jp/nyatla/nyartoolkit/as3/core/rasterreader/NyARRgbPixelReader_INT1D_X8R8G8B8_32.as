@@ -32,6 +32,8 @@ package jp.nyatla.nyartoolkit.as3.core.rasterreader
 {
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
 	import jp.nyatla.nyartoolkit.as3.*;
+	import jp.nyatla.nyartoolkit.as3.core.utils.NyAREquationSolver;
+	import jp.nyatla.as3utils.*;
 	public class NyARRgbPixelReader_INT1D_X8R8G8B8_32 implements INyARRgbPixelReader
 	{
 		protected var _ref_buf:Vector.<int>;
@@ -71,7 +73,18 @@ package jp.nyatla.nyartoolkit.as3.core.rasterreader
 		}
 		public function setPixels(i_x:Vector.<int>,i_y:Vector.<int>, i_num:int,i_intrgb:Vector.<int>):void
 		{
-			NyARException.notImplement();		
+			throw new NyARException();		
+		}
+		/**
+		 * 参照しているバッファをi_ref_bufferへ切り替えます。
+		 * 内部パラメータのチェックは、実装依存です。
+		 * @param i_ref_buffer
+		 * @throws NyARException
+		 */
+		public function switchBuffer(i_ref_buffer:Object):void
+		{
+			NyAS3Utils.assert((Vector.<int>(i_ref_buffer)).length>=this._size.w*this._size.h);
+			this._ref_buf = Vector.<int>(i_ref_buffer);
 		}
 		
 	}

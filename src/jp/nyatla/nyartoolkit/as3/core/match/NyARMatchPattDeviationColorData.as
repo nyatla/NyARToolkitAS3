@@ -32,6 +32,7 @@ package jp.nyatla.nyartoolkit.as3.core.match
 {
 	import jp.nyatla.nyartoolkit.as3.core.raster.*;
 	import jp.nyatla.nyartoolkit.as3.core.rasterreader.*;
+	import jp.nyatla.nyartoolkit.as3.core.types.*;
 	import jp.nyatla.as3utils.*;
 	
 	public class NyARMatchPattDeviationColorData
@@ -67,10 +68,10 @@ package jp.nyatla.nyartoolkit.as3.core.match
 		public function setRaster(i_raster:INyARRaster):void
 		{
 			//画素フォーマット、サイズ制限
-			NyAS3Utils.assert(i_raster.getBufferReader().isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_X8R8G8B8_32));
+			NyAS3Utils.assert(i_raster.isEqualBufferType(NyARBufferType.INT1D_X8R8G8B8_32));
 			NyAS3Utils.assert(i_raster.getSize().isEqualSize_NyARIntSize(i_raster.getSize()));
 
-			var buf:Vector.<int>=(Vector.<int>)(i_raster.getBufferReader().getBuffer());
+			var buf:Vector.<int>=(Vector.<int>)(i_raster.getBuffer());
 			//i_buffer[XRGB]→差分[R,G,B]変換			
 			var i:int;
 			var ave:int;//<PV/>

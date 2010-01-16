@@ -64,7 +64,7 @@ package jp.nyatla.nyartoolkit.as3.core.match
 			var ave:int;//<PV/>
 			var rgb:int;//<PV/>
 			var linput:Vector.<int>=this._data;//<PV/>
-			var buf:Vector.<int>=Vector.<int>(i_raster.getBufferReader().getBuffer());
+			var buf:Vector.<int>=Vector.<int>(i_raster.getBuffer());
 
 			// input配列のサイズとwhも更新// input=new int[height][width][3];
 			var number_of_pixels:int=this._number_of_pixels;

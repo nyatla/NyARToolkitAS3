@@ -33,30 +33,76 @@ package jp.nyatla.nyartoolkit.as3.core.raster
 	import jp.nyatla.nyartoolkit.as3.core.raster.*;
 	import jp.nyatla.nyartoolkit.as3.core.rasterreader.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
+	import jp.nyatla.nyartoolkit.as3.*;
+	import jp.nyatla.as3utils.*;
 
 	public class NyARRaster_BasicClass implements INyARRaster
 	{
-
-		protected var  _size:NyARIntSize;
-
-		public function NyARRaster_BasicClass(i_size:NyARIntSize) {
-			this._size = i_size;
+		protected var _size:NyARIntSize;
+		private var _buffer_type:int;
+		/*
+		 * public function NyARRaster_BasicClass(i_size:NyARIntSize,i_buffer_type:int)
+		 */
+		public function NyARRaster_BasicClass(...args:Array)
+		{
+			switch(args.length) {
+			case 1:
+				if (args[0] is NyAS3Const_Inherited) {
+					//blank
+				}
+				break;
+			case 2:
+				if (args[0] is NyARIntSize && args[1] is int){
+					overload_NyARRaster_BasicClass(NyARIntSize(args[0]),int(args[1]));
+				}
+				break;
+			default:
+				throw new NyARException();
+			}
+		}
+		protected function overload_NyARRaster_BasicClass(i_size:NyARIntSize,i_buffer_type:int):void
+		{
+			this._size= i_size;
+			this._buffer_type=i_buffer_type;
 		}
 
-		public function getWidth():int {
+		final public function getWidth():int
+		{
 			return this._size.w;
 		}
 
-		public function getHeight():int {
+		final public function getHeight():int
+		{
 			return this._size.h;
 		}
 
-		public function getSize():NyARIntSize {
+		final public function getSize():NyARIntSize
+		{
 			return this._size;
 		}
-		
-		public function getBufferReader():INyARBufferReader {
-			return null;
+		final public function getBufferType():int
+		{
+			return _buffer_type;
 		}
+		final public function isEqualBufferType(i_type_value:int):Boolean
+		{
+			return this._buffer_type==i_type_value;
+		}
+
+		public function getBuffer():Object
+		{
+			throw new NyARException();
+		}
+		public function hasBuffer():Boolean
+		{
+			throw new NyARException();
+		}		
+		public function wrapBuffer(i_ref_buf:Object):void
+		{
+			throw new NyARException();
+		}
+		
+
+		
 	}
 }

@@ -28,7 +28,7 @@
  *	<airmail(at)ebony.plala.or.jp> or <nyatla(at)nyatla.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.as3.core.raster 
+package jp.nyatla.nyartoolkit.as3.core.types
 {
 	public class NyARBufferType
 	{
@@ -90,7 +90,7 @@ package jp.nyatla.nyartoolkit.as3.core.raster
 		/**
 		 * int[][]で0-255のグレイスケール画像
 		 */
-		public static const int INT2D_GRAY_8:int = T_INT2D|0x0001;
+		public static const INT2D_GRAY_8:int = T_INT2D|0x0001;
 		/**
 		 * int[][]で0/1の2値画像
 		 * これは、階調値1bitのBUFFERFORMAT_INT2D_GRAY_1と同じです。
@@ -133,7 +133,7 @@ package jp.nyatla.nyartoolkit.as3.core.raster
 		/**
 		 * JavaのBufferedImageを格納するラスタ
 		 */
-		public static const int OBJECT_Java_BufferedImage:int= OBJECT_Java|0x01;
+		public static const OBJECT_Java_BufferedImage:int= OBJECT_Java|0x01;
 		
 		
 		/**

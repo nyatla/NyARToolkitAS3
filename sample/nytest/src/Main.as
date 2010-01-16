@@ -5,8 +5,7 @@ package
 	import jp.nyatla.nyartoolkit.as3.*;
 	import jp.nyatla.nyartoolkit.as3.core.param.*;
 	import jp.nyatla.nyartoolkit.as3.core.*;
-	import jp.nyatla.nyartoolkit.as3.core.types.NyARDoublePoint3d;
-	import jp.nyatla.nyartoolkit.as3.core.types.NyARIntSize;
+	import jp.nyatla.nyartoolkit.as3.core.types.*;
 	import jp.nyatla.nyartoolkit.as3.detector.*;
 	import jp.nyatla.nyartoolkit.as3.core.rasterreader.*;
 	import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
@@ -64,8 +63,8 @@ package
 				"../../../data/320x240ABGR.raw",URLLoaderDataFormat.BINARY,
 				function(data:ByteArray):void
 				{
-					var r:NyARRgbRaster = new NyARRgbRaster(new NyARIntSize(320, 240), INyARBufferReader.BUFFERFORMAT_INT1D_X8R8G8B8_32);
-					var b:Vector.<int> =	Vector.<int>(r.getBufferReader().getBuffer());
+					var r:NyARRgbRaster = new NyARRgbRaster(320, 240, NyARBufferType.INT1D_X8R8G8B8_32);
+					var b:Vector.<int> =	Vector.<int>(r.getBuffer());
 					data.endian = Endian.LITTLE_ENDIAN;
 					for (var i:int = 0; i < 320 * 240; i++) {
 						b[i]=data.readInt();
@@ -77,8 +76,8 @@ package
 				"../../../data/320x240NyId.raw",URLLoaderDataFormat.BINARY,
 				function(data:ByteArray):void
 				{
-					var r:NyARRgbRaster = new NyARRgbRaster(new NyARIntSize(320, 240), INyARBufferReader.BUFFERFORMAT_INT1D_X8R8G8B8_32);
-					var b:Vector.<int> =	Vector.<int>(r.getBufferReader().getBuffer());
+					var r:NyARRgbRaster = new NyARRgbRaster(320, 240, NyARBufferType.INT1D_X8R8G8B8_32);
+					var b:Vector.<int> =	Vector.<int>(r.getBuffer());
 					data.endian = Endian.LITTLE_ENDIAN;
 					for (var i:int = 0; i < 320 * 240; i++) {
 						b[i]=data.readInt();
@@ -94,7 +93,7 @@ package
 		{
 			var mat:NyARTransMatResult=new NyARTransMatResult();
 			var ang:NyARDoublePoint3d = new NyARDoublePoint3d();
-			var d:NyARSingleDetectMarker=new NyARSingleDetectMarker(this.param, this.code, 80.0, INyARBufferReader.BUFFERFORMAT_INT1D_X8R8G8B8_32);
+			var d:NyARSingleDetectMarker=new NyARSingleDetectMarker(this.param, this.code, 80.0, NyARBufferType.INT1D_X8R8G8B8_32);
 			d.detectMarkerLite(raster_bgra,100);
 			msg("cf=" + d.getConfidence());
 			{
@@ -127,7 +126,7 @@ package
 			var codes_width:Vector.<Number>=new Vector.<Number>();
 			codes[0]=code;
 			codes_width[0]=80.0;
-			var t:NyARDetectMarker=new NyARDetectMarker(param,codes,codes_width,1,INyARBufferReader.BUFFERFORMAT_INT1D_X8R8G8B8_32);
+			var t:NyARDetectMarker=new NyARDetectMarker(param,codes,codes_width,1,NyARBufferType.INT1D_X8R8G8B8_32);
 			var num_of_detect:int=t.detectMarkerLite(raster_bgra,100);
 			msg("found="+num_of_detect);
 			for(var i:int=0;i<num_of_detect;i++){
@@ -149,13 +148,13 @@ package
 			var codes_width:Vector.<Number>=new Vector.<Number>();
 			codes[0]=code;
 			codes_width[0]=80.0;
-			var t3:SingleProcessor=new SingleProcessor(param,INyARBufferReader.BUFFERFORMAT_INT1D_X8R8G8B8_32,this);
+			var t3:SingleProcessor=new SingleProcessor(param,NyARBufferType.INT1D_X8R8G8B8_32,this);
 			t3.setARCodeTable(codes,16,80.0);
 			t3.detectMarker(raster_bgra);
 		}
 		private function testIdMarkerProcessor():void
 		{
-			var t:IdMarkerProcessor=new IdMarkerProcessor(param,INyARBufferReader.BUFFERFORMAT_INT1D_X8R8G8B8_32,this);
+			var t:IdMarkerProcessor=new IdMarkerProcessor(param,NyARBufferType.INT1D_X8R8G8B8_32,this);
 			t.detectMarker(id_bgra);
 		}		
 		private function main(e:Event):void

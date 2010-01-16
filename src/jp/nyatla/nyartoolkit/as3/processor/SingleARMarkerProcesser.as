@@ -68,7 +68,7 @@ package jp.nyatla.nyartoolkit.as3.processor
 
 		private var _lost_delay:int = 5;
 
-		private var _square_detect:INyARSquareContourDetector;
+		private var _square_detect:NyARSquareContourDetector;
 
 		protected var _transmat:INyARTransMat;
 
@@ -248,7 +248,7 @@ import jp.nyatla.nyartoolkit.as3.*;
 /**
  * detectMarkerのコールバック関数
  */
-class DetectSquareCB implements DetectMarkerCallback
+class DetectSquareCB implements NyARSquareContourDetector_IDetectMarkerCallback
 {
 	//公開プロパティ
 	public var square:NyARSquare=new NyARSquare();
@@ -264,12 +264,12 @@ class DetectSquareCB implements DetectMarkerCallback
 	private var _deviation_data:NyARMatchPattDeviationColorData;
 	private var _match_patt:Vector.<NyARMatchPatt_Color_WITHOUT_PCA>;
 	private var __detectMarkerLite_mr:NyARMatchPattResult=new NyARMatchPattResult();
-	private var _coordline:Coord2Linear;
+	private var _coordline:NyARCoord2Linear;
 	
 	public function DetectSquareCB(i_param:NyARParam)
 	{
 		this._match_patt=null;
-		this._coordline=new Coord2Linear(i_param.getScreenSize(),i_param.getDistortionFactor());
+		this._coordline=new NyARCoord2Linear(i_param.getScreenSize(),i_param.getDistortionFactor());
 		return;
 	}
 	public function setNyARCodeTable(i_ref_code:Vector.<NyARCode>,i_code_resolution:int):void
@@ -297,7 +297,7 @@ class DetectSquareCB implements DetectMarkerCallback
 	 * 矩形が見付かるたびに呼び出されます。
 	 * 発見した矩形のパターンを検査して、方位を考慮した頂点データを確保します。
 	 */
-	public function onSquareDetect(i_sender:INyARSquareContourDetector,i_coordx:Vector.<int>,i_coordy:Vector.<int>,i_coor_num:int,i_vertex_index:Vector.<int>):void
+	public function onSquareDetect(i_sender:NyARSquareContourDetector,i_coordx:Vector.<int>,i_coordy:Vector.<int>,i_coor_num:int,i_vertex_index:Vector.<int>):void
 	{
 		if (this._match_patt==null) {
 			return;

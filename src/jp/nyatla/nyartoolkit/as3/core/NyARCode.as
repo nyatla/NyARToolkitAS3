@@ -108,10 +108,10 @@ class NyARCodeFileReader
 	{
 		var width:int=o_code.getWidth();
 		var height:int=o_code.getHeight();
-		var tmp_raster:NyARRaster=new NyARRaster(new NyARIntSize(width,height),INyARBufferReader.BUFFERFORMAT_INT1D_X8R8G8B8_32);
+		var tmp_raster:NyARRaster=new NyARRaster(width,height,NyARBufferType.INT1D_X8R8G8B8_32);
 		//4個の要素をラスタにセットする。
 		var token:Array = i_stream.match(/\d+/g);
-		var buf:Vector.<int>=Vector.<int>(tmp_raster.getBufferReader().getBuffer());
+		var buf:Vector.<int>=Vector.<int>(tmp_raster.getBuffer());
 		//GBRAで一度読みだす。
 		for (var h:int = 0; h < 4; h++){
 			readBlock(token,width,height,buf);

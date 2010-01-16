@@ -21,7 +21,7 @@ package jp.nyatla.nyartoolkit.as3.core.rasterfilter.rgb2bin
 		{
 			this._threshold = i_threshold;
 			switch (i_input_raster_type) {
-			case INyARBufferReader.BUFFERFORMAT_INT1D_X8R8G8B8_32:
+			case NyARBufferType.INT1D_X8R8G8B8_32:
 				this._do_threshold_impl=new doThFilterImpl_BUFFERFORMAT_INT1D_X8R8G8B8_32();
 				break;
 			default:
@@ -40,12 +40,9 @@ package jp.nyatla.nyartoolkit.as3.core.rasterfilter.rgb2bin
 		}
 		public function doFilter(i_input:INyARRgbRaster,i_output:NyARBinRaster):void
 		{
-			var in_buffer_reader:INyARBufferReader=i_input.getBufferReader();	
-			var out_buffer_reader:INyARBufferReader=i_output.getBufferReader();
-
-			NyAS3Utils.assert (out_buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_BIN_8));
+			NyAS3Utils.assert (i_output.isEqualBufferType(NyARBufferType.INT1D_BIN_8));
 			NyAS3Utils.assert (i_input.getSize().isEqualSize_NyARIntSize(i_output.getSize()) == true);
-			this._do_threshold_impl.doThFilter(in_buffer_reader,out_buffer_reader,i_output.getSize(), this._threshold);
+			this._do_threshold_impl.doThFilter(i_input,i_output,i_output.getSize(), this._threshold);
 			return;
 		}
 	}
@@ -60,15 +57,15 @@ import jp.nyatla.as3utils.*;
  */
 interface IdoThFilterImpl
 {
-	function doThFilter(i_input:INyARBufferReader,i_output:INyARBufferReader,i_size:NyARIntSize,i_threshold:int):void;
+	function doThFilter(i_input:INyARRaster,i_output:INyARRaster,i_size:NyARIntSize,i_threshold:int):void;
 }
 
 
 class doThFilterImpl_BUFFERFORMAT_INT1D_X8R8G8B8_32 implements IdoThFilterImpl
 {
-	public function doThFilter(i_input:INyARBufferReader,i_output:INyARBufferReader,i_size:NyARIntSize,i_threshold:int):void
+	public function doThFilter(i_input:INyARRaster,i_output:INyARRaster,i_size:NyARIntSize,i_threshold:int):void
 	{
-		NyAS3Utils.assert (i_output.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_BIN_8));
+		NyAS3Utils.assert (i_output.isEqualBufferType(NyARBufferType.INT1D_BIN_8));
 		var out_buf:Vector.<int> = (Vector.<int>)(i_output.getBuffer());
 		var in_buf:Vector.<int> = (Vector.<int>)(i_input.getBuffer());
 		

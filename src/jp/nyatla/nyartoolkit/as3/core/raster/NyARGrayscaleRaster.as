@@ -34,55 +34,100 @@ package jp.nyatla.nyartoolkit.as3.core.raster
 	import jp.nyatla.nyartoolkit.as3.utils.as3.*;
 	import jp.nyatla.nyartoolkit.as3.core.rasterreader.*;
 	import jp.nyatla.nyartoolkit.as3.*;
+	import jp.nyatla.as3utils.*;
 	
 	public final class NyARGrayscaleRaster extends NyARRaster_BasicClass
 	{
 
 		protected var _buf:Object;
-		protected var _buffer_reader:INyARBufferReader;
+		/**
+		 * バッファオブジェクトがアタッチされていればtrue
+		 */
+		protected var _is_attached_buffer: Boolean;
 		public function NyARGrayscaleRaster(...args:Array)
 		{
-			super(new NyARIntSize(int(args[0]),int(args[1])));
-			switch(args.length){
-			case 2:
-				{	//public function NyARGrayscaleRaster(i_width:int,i_height:int)
-					if(!initInstance(this._size,INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8)){
-						throw new NyARException();
-					}
-					return;
+			super(NyAS3Const_Inherited);
+			switch(args.length) {
+			case 1:
+				if (args[0] is NyAS3Const_Inherited) {
+					//blank
 				}
+				break;
+			case 2:
+				overload_NyARGrayscaleRaster2(int(args[0]), int(args[1]));
 				break;
 			case 3:
-				{	//public function NyARGrayscaleRaster(i_width:int,i_height:int,i_raster_type:int)
-					if(!initInstance(this._size,int(args[2]))){
-						throw new NyARException();
-					}	
-					return;				
-				}
+				overload_NyARGrayscaleRaster3(int(args[0]), int(args[1]),Boolean(args[2]));
+				break;
+			case 4:
+				overload_NyARGrayscaleRaster4(int(args[0]), int(args[1]),int(args[2]),Boolean(args[3]));
 				break;
 			default:
-				break;
-			}
-			throw new NyARException();
-		}		
-
-		public override function getBufferReader():INyARBufferReader
-		{
-			return this._buffer_reader;
+				throw new NyARException();
+			}			
 		}
-		protected function initInstance(i_size:NyARIntSize,i_buf_type:int):Boolean
+
+		protected function overload_NyARGrayscaleRaster2(i_width:int,i_height:int):void
+		{
+			super.overload_NyARRaster_BasicClass(new NyARIntSize(i_width,i_height),NyARBufferType.INT1D_GRAY_8);
+			if(!initInstance(this._size,NyARBufferType.INT1D_GRAY_8,true)){
+				throw new NyARException();
+			}
+		}	
+		protected function overload_NyARGrayscaleRaster3(i_width:int,i_height:int,i_is_alloc:Boolean):void
+		{
+			super.overload_NyARRaster_BasicClass(new NyARIntSize(i_width,i_height),NyARBufferType.INT1D_GRAY_8);
+			if(!initInstance(this._size,NyARBufferType.INT1D_GRAY_8,i_is_alloc)){
+				throw new NyARException();
+			}
+		}
+		/**
+		 * @param i_width
+		 * @param i_height
+		 * @param i_raster_type
+		 * NyARBufferTypeに定義された定数値を指定してください。
+		 * @param i_is_alloc
+		 * @throws NyARException
+		 */
+		protected function overload_NyARGrayscaleRaster4(i_width:int, i_height:int, i_raster_type:int, i_is_alloc:Boolean):void
+		{
+			super.overload_NyARRaster_BasicClass(new NyARIntSize(i_width,i_height),i_raster_type);
+			if(!initInstance(this._size,i_raster_type,i_is_alloc)){
+				throw new NyARException();
+			}
+		}
+		protected function initInstance(i_size:NyARIntSize,i_buf_type:int,i_is_alloc:Boolean):Boolean
 		{
 			switch(i_buf_type)
 			{
-				case INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8:
-					this._buf = new Vector.<int>(i_size.w*i_size.h);
+				case NyARBufferType.INT1D_GRAY_8:
+					this._buf =i_is_alloc?new Vector.<int>(i_size.w*i_size.h):null;
 					break;
 				default:
 					return false;
 			}
-			this._buffer_reader=new NyARBufferReader(this._buf,i_buf_type);
+			this._is_attached_buffer=i_is_alloc;
 			return true;
 		}
+		public override function getBuffer():Object
+		{
+			return this._buf;
+		}
+		/**
+		 * インスタンスがバッファを所有するかを返します。
+		 * コンストラクタでi_is_allocをfalseにしてラスタを作成した場合、
+		 * バッファにアクセスするまえに、バッファの有無をこの関数でチェックしてください。
+		 * @return
+		 */
+		public override function hasBuffer():Boolean
+		{
+			return this._buf!=null;
+		}
+		public override function wrapBuffer(i_ref_buf:Object):void
+		{
+			NyAS3Utils.assert(!this._is_attached_buffer);//バッファがアタッチされていたら機能しない。
+			this._buf=i_ref_buf;
+		}	
 	}
 
 }

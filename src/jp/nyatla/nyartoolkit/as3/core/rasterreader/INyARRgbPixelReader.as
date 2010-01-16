@@ -75,5 +75,7 @@ package jp.nyatla.nyartoolkit.as3.core.rasterreader {
 		 * @throws NyARException
 		 */
 		function setPixels(i_x:Vector.<int>, i_y:Vector.<int>, i_num:int, i_intrgb:Vector.<int>):void;
+		function switchBuffer(i_ref_buffer:Object):void;
+
 	}
 }
