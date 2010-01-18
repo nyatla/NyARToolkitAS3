@@ -65,7 +65,7 @@ package org.libspark.flartoolkit.core.labeling.fllabeling
 			label_img.fillRect(label_img.rect, 0x0);
 			var rect:Rectangle = label_img.rect.clone();
 			rect.inflate(-1, -1);
-			label_img.copyPixels(BitmapData(i_bin_raster.getBufferReader().getBuffer()), rect, ONE_POINT);
+			label_img.copyPixels(BitmapData(i_bin_raster.getBuffer()), rect, ONE_POINT);
 			
 			var currentRect:Rectangle = label_img.getColorBoundsRect(0xffffff, 0xffffff, true);
 			hLineRect.y = 0;
