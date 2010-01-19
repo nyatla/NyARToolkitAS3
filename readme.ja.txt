@@ -1,7 +1,7 @@
 ARToolKit ActionScript3 class library NyARToolkit.
-Copyright (C)2010 R.Iizuka
+Copyright (C)2010 Ryo Iizuka
 
-version 2.4.0
+version 2.5.0
 
 http://nyatla.jp/nyartoolkit/
 airmail(at)ebony.plala.or.jp
@@ -11,21 +11,21 @@ wm(at)nyatla.jp
 
 
 
-・NyARToolkit/2.4
+・NyARToolkit/2.5
 
 NyARToolkitAS3は、NyARToolkitのActionScript版です。
-NyARToolkit 2.4aをベースに構築されています。
+NyARToolkit 2.5.0をベースに構築されています。
 
 
 NyARToolkitAS3は、FLARToolKitへ最新のAPIを供給する目的で実装されています。
-実際のご利用には、FLARToolKitの利用をお勧めします。
+単独でも動作しますが、FLARToolKitと組み合わせての利用をお勧めします。
 http://www.libspark.org/wiki/saqoosha/FLARToolKit
 
 
 ・ライセンス
 
 NyARToolkitは、商用ライセンスとGPLv3以降のデュアルライセンスを採用しています。
-(Version/2.4.0より、GPLv3ライセンスになりました。)
+
 
  -GPL
  GPLについては、LICENCE.txtをお読みください。
@@ -41,10 +41,6 @@ NyARToolkitは、商用ライセンスとGPLv3以降のデュアルライセン�
 
 
 ・謝辞
-
-arc@dmzさん
-http://digitalmuseum.jp/
-QuickTimeキャプチャモジュールを提供をして頂きました。有難うございます。
 
 加藤博一先生
 http://www.hitl.washington.edu/artoolkit/
