@@ -21,6 +21,7 @@ package
 	 */
 	public class Main extends Sprite 
 	{
+
         private var textbox:TextField = new TextField();
 		private var param:NyARParam;
 		private var code:NyARCode;
