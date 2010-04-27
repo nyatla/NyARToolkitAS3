@@ -85,14 +85,14 @@ package org.libspark.flartoolkit.processor
 			return;
 		}
 		private var _initialized:Boolean=false;
-		protected function initInstance(i_param:FLARParam, i_encoder:INyIdMarkerDataEncoder ,i_marker_width:int):void
+		protected function initInstance(i_param:FLARParam, i_encoder:INyIdMarkerDataEncoder ,i_marker_width:Number):void
 		{
 			//初期化済？
 			NyAS3Utils.assert(this._initialized==false);
 			
 			var scr_size:NyARIntSize = i_param.getScreenSize();
 			// 解析オブジェクトを作る
-			this._square_detect = new FLARSquareContourDetector(i_param.getDistortionFactor(), scr_size);
+			this._square_detect = new FLARSquareContourDetector(scr_size);
 			this._transmat = new NyARTransMat(i_param);
 			this._callback=new DetectSquareCB(i_param,i_encoder);
 

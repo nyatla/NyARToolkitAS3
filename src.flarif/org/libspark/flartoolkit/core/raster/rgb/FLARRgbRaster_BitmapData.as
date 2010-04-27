@@ -41,7 +41,7 @@ package org.libspark.flartoolkit.core.raster.rgb
 
 		public function FLARRgbRaster_BitmapData(i_width:int,i_height:int)
 		{
-			super(new NyARIntSize(i_width, i_height),NyARBufferType.OBJECT_AS3_BitmapData);
+			super(i_width, i_height,NyARBufferType.OBJECT_AS3_BitmapData);
 			this._bitmapData = new BitmapData(i_width,i_height,false);
 			this._rgb_reader = new FLARRgbPixelReader_BitmapData(this._bitmapData);
 		}

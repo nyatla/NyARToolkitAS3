@@ -97,7 +97,7 @@ package jp.nyatla.nyartoolkit.as3.processor
 			
 			var scr_size:NyARIntSize = i_param.getScreenSize();
 			// 解析オブジェクトを作る
-			this._square_detect = new NyARSquareContourDetector_Rle(i_param.getDistortionFactor(), scr_size);
+			this._square_detect = new NyARSquareContourDetector_Rle(scr_size);
 			this._transmat = new NyARTransMat(i_param);
 			this._tobin_filter=new NyARRasterFilter_ARToolkitThreshold(110,i_raster_type);
 
@@ -158,7 +158,7 @@ package jp.nyatla.nyartoolkit.as3.processor
 			this._square_detect.detectMarkerCB(this._bin_raster,this._detectmarker_cb);
 			
 			// 認識状態を更新
-			var is_id_found:Boolean=updateStatus(this._detectmarker_cb.square,this._detectmarker_cb.code_index);
+			var is_id_found:Boolean=this.updateStatus(this._detectmarker_cb.square,this._detectmarker_cb.code_index);
 			//閾値フィードバック(detectExistMarkerにもあるよ)
 			if(!is_id_found){
 				//マーカがなければ、探索+DualPTailで基準輝度検索

@@ -74,14 +74,14 @@ package jp.nyatla.nyartoolkit.as3.processor
 			return;
 		}
 		private var _initialized:Boolean=false;
-		protected function initInstance(i_param:NyARParam, i_encoder:INyIdMarkerDataEncoder ,i_marker_width:int, i_raster_format:int):void
+		protected function initInstance(i_param:NyARParam, i_encoder:INyIdMarkerDataEncoder ,i_marker_width:Number, i_raster_format:int):void
 		{
 			//初期化済？
 			NyAS3Utils.assert(this._initialized==false);
 			
 			var scr_size:NyARIntSize = i_param.getScreenSize();
 			// 解析オブジェクトを作る
-			this._square_detect = new NyARSquareContourDetector_Rle(i_param.getDistortionFactor(), scr_size);
+			this._square_detect = new NyARSquareContourDetector_Rle(scr_size);
 			this._transmat = new NyARTransMat(i_param);
 			this._callback=new DetectSquareCB(i_param,i_encoder);
 
