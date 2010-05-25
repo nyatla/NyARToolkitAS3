@@ -43,8 +43,9 @@ package jp.nyatla.nyartoolkit.as3.nyidmarker.data
 				return false;
 			}
 			//パケット数計算
-			var resolution_len:int=(i_data.model+1);
+			var resolution_len:int=(i_data.model+i_data.model-1);      //データドットの数
 			var packet_length:int=(resolution_len*resolution_len)/8+1;
+
 			var sum:int=0;
 			for(var i:int=0;i<packet_length;i++){
 				dest.packet[i]=i_data.data[i];
