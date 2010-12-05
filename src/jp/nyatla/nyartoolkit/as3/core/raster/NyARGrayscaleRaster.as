@@ -36,10 +36,14 @@ package jp.nyatla.nyartoolkit.as3.core.raster
 	import jp.nyatla.nyartoolkit.as3.*;
 	import jp.nyatla.as3utils.*;
 	
+	/**
+	 * 1枚のグレースケール画像を定義するクラスです。画像データは内部保持/外部保持が選択可能です。
+	 */
 	public final class NyARGrayscaleRaster extends NyARRaster_BasicClass
 	{
 
 		protected var _buf:Object;
+		private var _impl:IdoFilterImpl;
 		/**
 		 * バッファオブジェクトがアタッチされていればtrue
 		 */
@@ -54,15 +58,15 @@ package jp.nyatla.nyartoolkit.as3.core.raster
 				}
 				break;
 			case 2:
-				//(int,int)
+				//NyARGrayscaleRaster(int i_width, int i_height)
 				overload_NyARGrayscaleRaster2(int(args[0]), int(args[1]));
 				break;
 			case 3:
-				//(int,int,boolean)
+				//NyARGrayscaleRaster(int i_width, int i_height, boolean i_is_alloc)
 				overload_NyARGrayscaleRaster3(int(args[0]), int(args[1]),Boolean(args[2]));
 				break;
 			case 4:
-				//(int,int,int,boolean)
+				//NyARGrayscaleRaster(int i_width, int i_height, int i_raster_type,boolean i_is_alloc)
 				overload_NyARGrayscaleRaster4(int(args[0]), int(args[1]),int(args[2]),Boolean(args[3]));
 				break;
 			default:
@@ -99,17 +103,24 @@ package jp.nyatla.nyartoolkit.as3.core.raster
 				throw new NyARException();
 			}
 		}
+		/**
+		 * このクラスの初期化シーケンスです。コンストラクタから呼び出します。
+		 * @param i_size
+		 * @param i_buf_type
+		 * @param i_is_alloc
+		 * @return
+		 */
 		protected function initInstance(i_size:NyARIntSize,i_buf_type:int,i_is_alloc:Boolean):Boolean
 		{
-			switch(i_buf_type)
-			{
-				case NyARBufferType.INT1D_GRAY_8:
-					this._buf =i_is_alloc?new Vector.<int>(i_size.w*i_size.h):null;
-					break;
-				default:
-					return false;
+			switch (i_buf_type) {
+			case NyARBufferType.INT1D_GRAY_8:
+				this._impl=new IdoFilterImpl_INT1D_GRAY_8();
+				this._buf = i_is_alloc ? new int[i_size.w * i_size.h] : null;
+				break;
+			default:
+				return false;
 			}
-			this._is_attached_buffer=i_is_alloc;
+			this._is_attached_buffer = i_is_alloc;
 			return true;
 		}
 		public override function getBuffer():Object
@@ -130,7 +141,105 @@ package jp.nyatla.nyartoolkit.as3.core.raster
 		{
 			NyAS3Utils.assert(!this._is_attached_buffer);//バッファがアタッチされていたら機能しない。
 			this._buf=i_ref_buf;
-		}	
+		}
+		/**
+		 * 指定した数値でラスタを埋めます。
+		 * この関数は高速化していません。
+		 * @param i_value
+		 */
+		public function fill(i_value:int):void
+		{
+			//assert (this.isEqualBufferType(this.getBufferType()));
+			this._impl.fill(this,i_value);
+		}
+
+		/**
+		 * ラスタの異解像度間コピーをします。
+		 * @param i_input
+		 * 入力ラスタ
+		 * @param i_top
+		 * 入力ラスタの左上点を指定します。
+		 * @param i_left
+		 * 入力ラスタの左上点を指定します。
+		 * @param i_skip
+		 * skip値。1なら等倍、2なら1/2倍、3なら1/3倍の偏重の画像を出力します。
+		 * @param o_output
+		 * 出力先ラスタ。このラスタの解像度は、w=(i_input.w-i_left)/i_skip,h=(i_input.h-i_height)/i_skipを満たす必要があります。
+		 * 出力先ラスタと入力ラスタのバッファタイプは、同じである必要があります。
+		 */
+		public function copyTo(i_left:int,i_top:int,i_skip:int,o_output:NyARGrayscaleRaster):void
+		{
+			//assert (this.getSize().isInnerSize(i_left + o_output.getWidth() * i_skip, i_top+ o_output.getHeight() * i_skip));		
+			//assert (this.isEqualBufferType(o_output.getBufferType()));
+			this._impl.copyTo(this, i_left, i_top, i_skip, o_output);
+			return;
+		}
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//ここからラスタドライバ
+import jp.nyatla.nyartoolkit.as3.core.raster.*;
+import jp.nyatla.nyartoolkit.as3.core.types.*;
+interface IdoFilterImpl 
+{
+	function fill( i_raster:NyARGrayscaleRaster , i_value:int ):void ; 
+	function copyTo( i_input:NyARGrayscaleRaster , i_left:int , i_top:int , i_skip:int , o_output:NyARGrayscaleRaster ):void;
+}
+
+class IdoFilterImpl_INT1D_GRAY_8 implements IdoFilterImpl
+{
+	public function fill(i_raster:NyARGrayscaleRaster,i_value:int):void
+	{
+		//assert (i_raster._buffer_type == NyARBufferType.INT1D_GRAY_8);
+		var buf:Vector.<int> = (Vector.<int>)(i_raster.getBuffer());
+		var size:NyARIntSize = i_raster.getSize();
+		for (var i:int = size.h * size.w - 1; i >= 0; i--) {
+			buf[i] = i_value;
+		}			
 	}
 
+	public function copyTo(i_input:NyARGrayscaleRaster,i_left:int,i_top:int,i_skip:int,o_output:NyARGrayscaleRaster):void
+	{
+		//assert (i_input.getSize().isInnerSize(i_left + o_output.getWidth() * i_skip, i_top+ o_output.getHeight() * i_skip));		
+		var input:Vector.<int> = (Vector.<int>)(i_input.getBuffer());
+		var output:Vector.<int> = (Vector.<int>)(o_output.getBuffer());
+		var pt_src:int, pt_dst:int;
+		var dest_size:NyARIntSize = o_output.getSize();
+		var src_size:NyARIntSize = i_input.getSize();
+		var skip_src_y:int = (src_size.w - dest_size.w * i_skip) + src_size.w * (i_skip - 1);
+		var pix_count:int = dest_size.w;
+		var pix_mod_part:int = pix_count - (pix_count % 8);
+		// 左上から1行づつ走査していく
+		pt_dst = 0;
+		pt_src = (i_top * src_size.w + i_left);
+		for (var y:int = dest_size.h - 1; y >= 0; y -= 1) {
+			var x:int;
+			for (x = pix_count - 1; x >= pix_mod_part; x--) {
+					output[pt_dst++] = input[pt_src];
+					pt_src += i_skip;
+			}
+			for (; x >= 0; x -= 8) {
+				output[pt_dst++] = input[pt_src];
+				pt_src += i_skip;
+				output[pt_dst++] = input[pt_src];
+				pt_src += i_skip;
+				output[pt_dst++] = input[pt_src];
+				pt_src += i_skip;
+				output[pt_dst++] = input[pt_src];
+				pt_src += i_skip;
+				output[pt_dst++] = input[pt_src];
+				pt_src += i_skip;
+				output[pt_dst++] = input[pt_src];
+				pt_src += i_skip;
+				output[pt_dst++] = input[pt_src];
+				pt_src += i_skip;
+				output[pt_dst++] = input[pt_src];
+				pt_src += i_skip;
+			}
+			// スキップ
+			pt_src += skip_src_y;
+		}
+		return;
+	}
 }

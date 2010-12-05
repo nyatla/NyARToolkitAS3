@@ -31,26 +31,26 @@
 package jp.nyatla.nyartoolkit.as3.core.utils 
 {
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
-	public class NyARPerspectiveParamGenerator_O1
+	public class NyARPerspectiveParamGenerator_O1 extends NyARPerspectiveParamGenerator
 	{
-		protected var _local_x:int;
-		protected var _local_y:int;
-		protected var _width:int;
-		protected var _height:int;
-		public function NyARPerspectiveParamGenerator_O1(i_local_x:int,i_local_y:int,i_width:int,i_height:int)
+		/**
+		 * コンストラクタです。
+		 * @param i_local_x
+		 * パラメータ計算の基準点を指定します。
+		 * @param i_local_y
+		 * パラメータ計算の基準点を指定します。
+		 */
+		public function NyARPerspectiveParamGenerator_O1(i_local_x:int,i_local_y:int)
 		{
-			this._height=i_height;
-			this._width=i_width;
-			this._local_x=i_local_x;
-			this._local_y=i_local_y;
+			super(i_local_x, i_local_y);
 			return;
 		}
-		final public function getParam(i_vertex:Vector.<NyARIntPoint2d>,o_param:Vector.<Number>):Boolean
+		public override function getParam_5(i_dest_w:int,i_dest_h:int,x1:Number,y1:Number,x2:Number,y2:Number,x3:Number,y3:Number,x4:Number,y4:Number,o_param:Vector.<Number>):Boolean
 		{
 			var ltx:Number = this._local_x;
 			var lty:Number = this._local_y;
-			var rbx:Number = ltx + this._width;
-			var rby:Number = lty + this._height;
+			var rbx:Number = ltx + i_dest_w;
+			var rby:Number = lty + i_dest_h;
 
 			var det_1:Number;
 			var a13:Number, a14:Number, a23:Number, a24:Number, a33:Number, a34:Number, a43:Number, a44:Number;
@@ -60,18 +60,14 @@ package jp.nyatla.nyartoolkit.as3.core.utils
 			var kx0:Number, kx1:Number, kx2:Number, kx3:Number, kx4:Number, kx5:Number, kx6:Number, kx7:Number;
 			var ky0:Number, ky1:Number, ky2:Number, ky3:Number, ky4:Number, ky5:Number, ky6:Number, ky7:Number;
 			{
-				v1 = i_vertex[0].x;
-				v2 = i_vertex[1].x;
-				v3 = i_vertex[2].x;
-				v4 = i_vertex[3].x;
-				a13 = -ltx * v1;
-				a14 = -lty * v1;
-				a23 = -rbx * v2;
-				a24 = -lty * v2;
-				a33 = -rbx * v3;
-				a34 = -rby * v3;
-				a43 = -ltx * v4;
-				a44 = -rby * v4;
+				a13 = -ltx * x1;
+				a14 = -lty * x1;
+				a23 = -rbx * x2;
+				a24 = -lty * x2;
+				a33 = -rbx * x3;
+				a34 = -rby * x3;
+				a43 = -ltx * x4;
+				a44 = -rby * x4;
 
 				t1 = a33 * a44 - a34 * a43;
 				t4 = a34 * ltx - rbx * a44;
@@ -129,28 +125,25 @@ package jp.nyatla.nyartoolkit.as3.core.utils
 				}
 				det_1 = 1 / det_1;
 
-				kx0 = (b11 * v1 + b12 * v2 + b13 * v3 + b14 * v4) * det_1;
+				kx0 = (b11 * x1 + b12 * x2 + b13 * x3 + b14 * x4) * det_1;
 				kx1 = (b11 + b12 + b13 + b14) * det_1;
-				kx2 = (b21 * v1 + b22 * v2 + b23 * v3 + b24 * v4) * det_1;
+				kx2 = (b21 * x1 + b22 * x2 + b23 * x3 + b24 * x4) * det_1;
 				kx3 = (b21 + b22 + b23 + b24) * det_1;
-				kx4 = (b31 * v1 + b32 * v2 + b33 * v3 + b34 * v4) * det_1;
+				kx4 = (b31 * x1 + b32 * x2 + b33 * x3 + b34 * x4) * det_1;
 				kx5 = (b31 + b32 + b33 + b34) * det_1;
-				kx6 = (b41 * v1 + b42 * v2 + b43 * v3 + b44 * v4) * det_1;
+				kx6 = (b41 * x1 + b42 * x2 + b43 * x3 + b44 * x4) * det_1;
 				kx7 = (b41 + b42 + b43 + b44) * det_1;
+
 			}
 			{
-				v1 = i_vertex[0].y;
-				v2 = i_vertex[1].y;
-				v3 = i_vertex[2].y;
-				v4 = i_vertex[3].y;
-				a13 = -ltx * v1;
-				a14 = -lty * v1;
-				a23 = -rbx * v2;
-				a24 = -lty * v2;
-				a33 = -rbx * v3;
-				a34 = -rby * v3;
-				a43 = -ltx * v4;
-				a44 = -rby * v4;
+				a13 = -ltx * y1;
+				a14 = -lty * y1;
+				a23 = -rbx * y2;
+				a24 = -lty * y2;
+				a33 = -rbx * y3;
+				a34 = -rby * y3;
+				a43 = -ltx * y4;
+				a44 = -rby * y4;
 
 				t1 = a33 * a44 - a34 * a43;
 				t4 = a34 * ltx - rbx * a44;
@@ -208,14 +201,15 @@ package jp.nyatla.nyartoolkit.as3.core.utils
 				}
 				det_1 = 1 / det_1;
 
-				ky0 = (b11 * v1 + b12 * v2 + b13 * v3 + b14 * v4) * det_1;
+				ky0 = (b11 * y1 + b12 * y2 + b13 * y3 + b14 * y4) * det_1;
 				ky1 = (b11 + b12 + b13 + b14) * det_1;
-				ky2 = (b21 * v1 + b22 * v2 + b23 * v3 + b24 * v4) * det_1;
+				ky2 = (b21 * y1 + b22 * y2 + b23 * y3 + b24 * y4) * det_1;
 				ky3 = (b21 + b22 + b23 + b24) * det_1;
-				ky4 = (b31 * v1 + b32 * v2 + b33 * v3 + b34 * v4) * det_1;
+				ky4 = (b31 * y1 + b32 * y2 + b33 * y3 + b34 * y4) * det_1;
 				ky5 = (b31 + b32 + b33 + b34) * det_1;
-				ky6 = (b41 * v1 + b42 * v2 + b43 * v3 + b44 * v4) * det_1;
+				ky6 = (b41 * y1 + b42 * y2 + b43 * y3 + b44 * y4) * det_1;
 				ky7 = (b41 + b42 + b43 + b44) * det_1;
+
 			}
 
 			det_1 = kx5 * (-ky7) - (-ky5) * kx7;

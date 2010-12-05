@@ -44,13 +44,19 @@ package jp.nyatla.nyartoolkit.as3.core.squaredetect
 		private var __getSquareLine_mean:Vector.<Number> = new Vector.<Number>(2);
 		private var __getSquareLine_ev:Vector.<Number> = new Vector.<Number>(2);
 		private var _dist_factor:NyARObserv2IdealMap;
-		public function NyARCoord2Linear(i_size:NyARIntSize,i_distfactor_ref:NyARCameraDistortionFactor)
+		/**
+		 * @param i_size
+		 * @param i_distfactor_ref
+		 * カメラ歪みを補正する場合のパラメータを指定します。
+		 * nullの場合、補正マップを使用しません。
+		 */
+		public function NyARCoord2Linear(i_size:NyARIntSize,i_distfactor:NyARCameraDistortionFactor)
 		{
-			//歪み計算テーブルを作ると、8*width/height*2の領域を消費します。
-			//領域を取りたくない場合は、i_dist_factor_refの値をそのまま使ってください。
-			this._dist_factor = new NyARObserv2IdealMap(i_distfactor_ref,i_size);
-
-
+			if(i_distfactor!=null){
+				this._dist_factor = new NyARObserv2IdealMap(i_distfactor,i_size);
+			}else{
+				this._dist_factor=null;
+			}
 			// 輪郭バッファ
 			this._pca=new NyARPca2d_MatrixPCA_O2();
 			this._xpos=new Vector.<Number>(i_size.w+i_size.h);//最大辺長はthis._width+this._height
@@ -63,18 +69,17 @@ package jp.nyatla.nyartoolkit.as3.core.squaredetect
 		 * 輪郭点集合からay+bx+c=0の直線式を計算します。
 		 * @param i_st
 		 * @param i_ed
-		 * @param i_xcoord
-		 * @param i_ycoord
-		 * @param i_cood_num
+		 * @param i_coord
 		 * @param o_line
 		 * @return
 		 * @throws NyARException
 		 */
-		public function coord2Line(i_st:int,i_ed:int,i_xcoord:Vector.<int>,i_ycoord:Vector.<int>,i_cood_num:int,o_line:NyARLinear):Boolean
+		public function coord2Line(i_st:int,i_ed:int,i_coord:NyARIntCoordinates,o_line:NyARLinear):Boolean
 		{
 			//頂点を取得
 			var n:int,st:int,ed:int;
 			var w1:Number;
+			var cood_num:int=i_coord.length;
 		
 			//探索区間の決定
 			if(i_ed>=i_st){
@@ -85,21 +90,25 @@ package jp.nyatla.nyartoolkit.as3.core.squaredetect
 				ed = (int) (i_ed - w1);
 			}else{
 				//頂点[i]から頂点[i+1]までの輪郭が、2区間に分かれているとき
-				w1 = (Number) ((i_ed+i_cood_num-i_st+1)%i_cood_num) * 0.05 + 0.5;
+				w1 = (Number) ((i_ed+cood_num-i_st+1)%cood_num) * 0.05 + 0.5;
 				//探索区間の決定
-				st = ((int) (i_st+w1))%i_cood_num;
-				ed = ((int) (i_ed+i_cood_num-w1))%i_cood_num;
+				st = ((int) (i_st+w1))%cood_num;
+				ed = ((int) (i_ed+cood_num-w1))%cood_num;
 			}
 			//探索区間数を確認
 			if(st<=ed){
 				//探索区間は1区間
 				n = ed - st + 1;
-				this._dist_factor.observ2IdealBatch(i_xcoord, i_ycoord, st, n,this._xpos,this._ypos,0);
+				if(this._dist_factor!=null){
+					this._dist_factor.observ2IdealBatch(i_coord.items, st, n,this._xpos,this._ypos,0);
+				}
 			}else{
 				//探索区間は2区間
-				n=ed+1+i_cood_num-st;
-				this._dist_factor.observ2IdealBatch(i_xcoord, i_ycoord, st,i_cood_num-st,this._xpos,this._ypos,0);
-				this._dist_factor.observ2IdealBatch(i_xcoord, i_ycoord, 0,ed+1,this._xpos,this._ypos,i_cood_num-st);
+				n=ed+1+cood_num-st;
+				if(this._dist_factor!=null){
+					this._dist_factor.observ2IdealBatch(i_coord.items, st,cood_num-st,this._xpos,this._ypos,0);
+					this._dist_factor.observ2IdealBatch(i_coord.items, 0,ed+1,this._xpos,this._ypos,cood_num-st);
+				}
 			}
 			//要素数の確認
 			if (n < 2) {
@@ -112,9 +121,9 @@ package jp.nyatla.nyartoolkit.as3.core.squaredetect
 
 			
 			this._pca.pca(this._xpos,this._ypos,n,evec, this.__getSquareLine_ev,mean);
-			o_line.dy = evec.m01;// line[i][0] = evec->m[1];
-			o_line.dx = -evec.m00;// line[i][1] = -evec->m[0];
-			o_line.c = -(o_line.dy * mean[0] + o_line.dx * mean[1]);// line[i][2] = -(line[i][0]*mean->v[0] + line[i][1]*mean->v[1]);
+			o_line.a = evec.m01;// line[i][0] = evec->m[1];
+			o_line.b = -evec.m00;// line[i][1] = -evec->m[0];
+			o_line.c = -(o_line.a * mean[0] + o_line.b * mean[1]);// line[i][2] = -(line[i][0]*mean->v[0] + line[i][1]*mean->v[1]);
 
 			return true;
 		}

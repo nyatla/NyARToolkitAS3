@@ -65,10 +65,14 @@ package jp.nyatla.nyartoolkit.as3.core.analyzer.raster.threshold
 		}
 
 		
-		public function analyzeRaster(i_input:INyARRaster):int
+		public function analyzeRaster_1(i_input:INyARRaster):int
 		{
-			this._raster_analyzer.analyzeRaster(i_input, this._histgram);
+			this._raster_analyzer.analyzeRaster_1(i_input, this._histgram);
 			return this._sptile.getThreshold(this._histgram);
 		}
+		public function analyzeRaster_2(i_input:INyARRaster,i_area:NyARIntRect):int
+		{
+			throw new NyARException();
+		}		
 	}
 }

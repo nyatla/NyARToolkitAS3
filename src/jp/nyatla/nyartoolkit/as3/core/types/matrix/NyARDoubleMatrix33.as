@@ -55,7 +55,7 @@ package jp.nyatla.nyartoolkit.as3.core.types.matrix
 		/**
 		 * 遅いからあんまり使わないでね。
 		 */
-		public function setValue(i_value:Vector.<Number>):void
+		public function setValue_1(i_value:Vector.<Number>):void
 		{
 			this.m00=i_value[0];
 			this.m01=i_value[1];
@@ -68,7 +68,7 @@ package jp.nyatla.nyartoolkit.as3.core.types.matrix
 			this.m22=i_value[8];
 			return;
 		}
-		public function setValue_NyARDoubleMatrix33(i_value:NyARDoubleMatrix33):void
+		public function setValue_2(i_value:NyARDoubleMatrix33):void
 		{
 			this.m00=i_value.m00;
 			this.m01=i_value.m01;
@@ -158,12 +158,12 @@ package jp.nyatla.nyartoolkit.as3.core.types.matrix
 				o_out.y = Math.atan2(-this.m20, this.m22);
 			}
 		}
-		public final function setZXYAngle_NyARDoublePoint3d(i_angle:NyARDoublePoint3d):void
+		public final function setZXYAngle_1(i_angle:NyARDoublePoint3d):void
 		{
-			setZXYAngle_Number(i_angle.x,i_angle.y,i_angle.z);
+			setZXYAngle_2(i_angle.x,i_angle.y,i_angle.z);
 			return;
 		}
-		public final function setZXYAngle_Number(i_x:Number,i_y:Number,i_z:Number):void
+		public final function setZXYAngle_2(i_x:Number,i_y:Number,i_z:Number):void
 		{
 			var sina:Number = Math.sin(i_x);
 			var cosa:Number = Math.cos(i_x);
@@ -187,13 +187,13 @@ package jp.nyatla.nyartoolkit.as3.core.types.matrix
 		 * @param i_angle
 		 * @param o_out
 		 */
-		public final function transformVertex_NyARDoublePoint3d(i_position:NyARDoublePoint3d,o_out:NyARDoublePoint3d):void
+		public final function transformVertex_1(i_position:NyARDoublePoint3d,o_out:NyARDoublePoint3d):void
 		{
-			transformVertex_double(i_position.x,i_position.y,i_position.z,o_out);
+			transformVertex_2(i_position.x,i_position.y,i_position.z,o_out);
 			return;
 		}
 		
-		public final function transformVertex_double(i_x:Number,i_y:Number,i_z:Number,o_out:NyARDoublePoint3d):void
+		public final function transformVertex_2(i_x:Number,i_y:Number,i_z:Number,o_out:NyARDoublePoint3d):void
 		{
 			o_out.x=this.m00*i_x+this.m01*i_y+this.m02*i_z;
 			o_out.y=this.m10*i_x+this.m11*i_y+this.m12*i_z;

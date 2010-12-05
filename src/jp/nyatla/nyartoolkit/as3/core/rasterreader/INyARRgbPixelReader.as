@@ -65,7 +65,17 @@ package jp.nyatla.nyartoolkit.as3.core.rasterreader {
 		 * @param i_rgb
 		 * @throws NyARException
 		 */
-		function setPixel(i_x:int, i_y:int, i_rgb:Vector.<int>):void;
+		function setPixel_1(i_x:int, i_y:int, i_rgb:Vector.<int>):void;
+		/**
+		 * 1ピクセルを設定します。
+		 * @param i_x
+		 * @param i_y
+		 * @param i_r
+		 * @param i_g
+		 * @param i_b
+		 * @throws NyARException
+		 */
+		function setPixel_2(i_x:int,i_y:int,i_r:int,i_g:int,i_b:int):void;
 		/**
 		 * 複数のピクセル値をint配列から設定します。
 		 * @param i_x

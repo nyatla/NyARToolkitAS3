@@ -34,6 +34,6 @@ package jp.nyatla.nyartoolkit.as3.core.rasterfilter.rgb2bin
 	import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
 	public interface INyARRasterFilter_Rgb2Bin
 	{
-		function doFilter(i_input:INyARRgbRaster, i_output:NyARBinRaster):void
+		function doFilter_1(i_input:INyARRgbRaster, i_output:NyARBinRaster):void
 	}
 }

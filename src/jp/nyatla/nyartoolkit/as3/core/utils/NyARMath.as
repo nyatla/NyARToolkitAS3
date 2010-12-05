@@ -33,39 +33,31 @@ package jp.nyatla.nyartoolkit.as3.core.utils
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
 	public class NyARMath
 	{
-		/**
-		 * p2-p1ベクトルのsquare normを計算する。
-		 * @param i_p1
-		 * @param i_p2
-		 * @return
-		 */
-		public static function sqNorm_NyARDoublePoint2d(i_p1:NyARDoublePoint2d,i_p2:NyARDoublePoint2d ):Number
-		{
-			var x:Number,y:Number;
-			x=i_p2.x-i_p1.x;
-			y=i_p2.y-i_p1.y;
-			return x*x+y*y;
-		}
-		public static function sqNorm_Number(i_p1x:Number,i_p1y:Number,i_p2x:Number,i_p2y:Number):Number
+		public static const SQ_40:int=40*40;
+		public static const SQ_20:int=20*20;
+		public static const SQ_10:int=10*10;
+		public static const SQ_8:int=8*8;
+		public static const SQ_5:int=5*5;
+		public static const SQ_2:int=2*2;
+
+		
+		public static const COS_DEG_30:Number=0.8660;
+		public static const COS_DEG_25:Number=0.9063;
+		public static const COS_DEG_20:Number=0.9396;
+		public static const COS_DEG_15:Number=0.9395;
+		public static const COS_DEG_10:Number=0.9848;
+		public static const COS_DEG_8:Number =0.9902;
+		public static const COS_DEG_5:Number =0.9961;
+		public static function sqNorm(i_p1x:Number,i_p1y:Number,i_p2x:Number,i_p2y:Number):Number
 		{
 			var x:Number,y:Number;
 			x=i_p2x-i_p1x;
 			y=i_p2y-i_p1y;
 			return x*x+y*y;
 		}
-		/**
-		 * p2-p1ベクトルのsquare normを計算する。
-		 * @param i_p1
-		 * @param i_p2
-		 * @return
-		 */	
-		public static function sqNorm_NyARDoublePoint3d(i_p1:NyARDoublePoint3d,i_p2:NyARDoublePoint3d):Number
+		public static function dist(i_x1:Number,i_y1:Number,i_x2:Number,i_y2:Number):Number
 		{
-			var x:Number, y:Number, z:Number;
-			x=i_p2.x-i_p1.x;
-			y=i_p2.y-i_p1.y;
-			z=i_p2.z-i_p1.z;
-			return x*x+y*y+z*z;
+			return Math.sqrt(i_x1*i_y1+i_x2+i_y2);
 		}
 		/**
 		 * 3乗根を求められないシステムで、３乗根を求めます。
@@ -77,6 +69,25 @@ package jp.nyatla.nyartoolkit.as3.core.utils
 		{
 			var res:Number = Math.pow(Math.abs(i_in), 1.0 / 3.0);
 			return (i_in >= 0) ? res : -res;
+		}
+		/**
+		 * ユークリッドの互除法により、2変数の最大公約数を求める。
+		 * http://ja.wikipedia.org/wiki/%E3%83%A6%E3%83%BC%E3%82%AF%E3%83%AA%E3%83%83%E3%83%89%E3%81%AE%E4%BA%92%E9%99%A4%E6%B3%95
+		 * @param i_x
+		 * @param i_y
+		 * @return
+		 */
+		public static function gcd(i_x:int,i_y:int):int
+		{
+			var x:int=i_x;
+			var y:int=i_y;
+			var r:int;
+			while (y != 0) {
+				r = x % y;
+				x = y;
+				y = r;
+			}
+			return x;
 		}
 
 	}

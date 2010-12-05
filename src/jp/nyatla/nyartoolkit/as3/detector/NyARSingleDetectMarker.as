@@ -40,86 +40,110 @@ package jp.nyatla.nyartoolkit.as3.detector
 	import jp.nyatla.nyartoolkit.as3.core.pickup.*;
 	import jp.nyatla.nyartoolkit.as3.core.squaredetect.*;
 	import jp.nyatla.nyartoolkit.as3.core.transmat.*;
-	
-/**
- * 画像からARCodeに最も一致するマーカーを1個検出し、その変換行列を計算するクラスです。
- * 
- */
-public class NyARSingleDetectMarker extends NyARCustomSingleDetectMarker
-{
-	public static const PF_ARTOOLKIT_COMPATIBLE:int=1;
-	public static const PF_NYARTOOLKIT:int=2;
-	public static const PF_NYARTOOLKIT_ARTOOLKIT_FITTING:int=100;
-	public static const PF_TEST2:int=201;
+	import jp.nyatla.nyartoolkit.as3.core.labeling.rlelabeling.*;
+	import jp.nyatla.nyartoolkit.as3.core.squaredetect.*;
 	
 	/**
-	 * 検出するARCodeとカメラパラメータから、1個のARCodeを検出するNyARSingleDetectMarkerインスタンスを作ります。
+	 * 画像からARCodeに最も一致するマーカーを1個検出し、その変換行列を計算するクラスです。
 	 * 
-	 * @param i_param
-	 * カメラパラメータを指定します。
-	 * @param i_code
-	 * 検出するARCodeを指定します。
-	 * @param i_marker_width
-	 * ARコードの物理サイズを、ミリメートルで指定します。
-	 * @param i_input_raster_type
-	 * 入力ラスタのピクセルタイプを指定します。この値は、INyARBufferReaderインタフェイスのgetBufferTypeの戻り値を指定します。
-	 * @throws NyARException
 	 */
-	public function NyARSingleDetectMarker(i_param:NyARParam,i_code:NyARCode,i_marker_width:Number,i_input_raster_type:int,i_profile_id:int=PF_NYARTOOLKIT)
+	public class NyARSingleDetectMarker extends NyARCustomSingleDetectMarker
 	{
-		super();
-		initInstance2(i_param,i_code,i_marker_width,i_input_raster_type,i_profile_id);
-		return;
-	}
-	/**
-	 * コンストラクタから呼び出す関数です。
-	 * @param i_ref_param
-	 * @param i_ref_code
-	 * @param i_marker_width
-	 * @param i_input_raster_type
-	 * @param i_profile_id
-	 * @throws NyARException
-	 */
-	protected function initInstance2(
-		i_ref_param:NyARParam,
-		i_ref_code:NyARCode,
-		i_marker_width:Number,
-		i_input_raster_type:int,
-		i_profile_id:int):void
-	{
-		var th:NyARRasterFilter_ARToolkitThreshold=new NyARRasterFilter_ARToolkitThreshold(100,i_input_raster_type);
-		var patt_inst:INyARColorPatt;
-		var sqdetect_inst:NyARSquareContourDetector;
-		var transmat_inst:INyARTransMat;
-
-		switch(i_profile_id){
-		case PF_NYARTOOLKIT://default
-			patt_inst=new NyARColorPatt_Perspective_O2(i_ref_code.getWidth(), i_ref_code.getHeight(),4,25);
-			sqdetect_inst=new NyARSquareContourDetector_Rle(i_ref_param.getScreenSize());
-			transmat_inst=new NyARTransMat(i_ref_param);
-			break;
-		default:
-			throw new NyARException();
-		}
-		super.initInstance(patt_inst,sqdetect_inst,transmat_inst,th,i_ref_param,i_ref_code,i_marker_width);
+		public static const PF_ARTOOLKIT_COMPATIBLE:int=1;
+		public static const PF_NYARTOOLKIT:int=2;
+		public static const PF_NYARTOOLKIT_ARTOOLKIT_FITTING:int=100;
+		public static const PF_TEST2:int=201;
 		
-	}
+		/**
+		 * 検出するARCodeとカメラパラメータから、1個のARCodeを検出するNyARSingleDetectMarkerインスタンスを作ります。
+		 * 
+		 * @param i_param
+		 * カメラパラメータを指定します。
+		 * @param i_code
+		 * 検出するARCodeを指定します。
+		 * @param i_marker_width
+		 * ARコードの物理サイズを、ミリメートルで指定します。
+		 * @param i_input_raster_type
+		 * 入力ラスタのピクセルタイプを指定します。この値は、INyARBufferReaderインタフェイスのgetBufferTypeの戻り値を指定します。
+		 * @throws NyARException
+		 */
+		public function NyARSingleDetectMarker(i_param:NyARParam,i_code:NyARCode,i_marker_width:Number,i_input_raster_type:int,i_profile_id:int=PF_NYARTOOLKIT)
+		{
+			super();
+			this.initialize(i_param,i_code,i_marker_width,i_input_raster_type,i_profile_id);
+			return;
+		}
+		/**
+		 * コンストラクタから呼び出す関数です。
+		 * @param i_ref_param
+		 * @param i_ref_code
+		 * @param i_marker_width
+		 * @param i_input_raster_type
+		 * @param i_profile_id
+		 * @throws NyARException
+		 */
+		protected function initialize(
+			i_ref_param:NyARParam,
+			i_ref_code:NyARCode,
+			i_marker_width:Number,
+			i_input_raster_type:int,
+			i_profile_id:int):void
+		{
+			var th:NyARRasterFilter_ARToolkitThreshold=new NyARRasterFilter_ARToolkitThreshold(100,i_input_raster_type);
+			var patt_inst:INyARColorPatt;
+			var sqdetect_inst:NyARSquareContourDetector;
+			var transmat_inst:INyARTransMat;
 
-	/**
-	 * i_imageにマーカー検出処理を実行し、結果を記録します。
-	 * 
-	 * @param i_raster
-	 * マーカーを検出するイメージを指定します。イメージサイズは、コンストラクタで指定i_paramの
-	 * スクリーンサイズと一致し、かつi_input_raster_typeに指定した形式でなければいけません。
-	 * @return マーカーが検出できたかを真偽値で返します。
-	 * @throws NyARException
-	 */
-	public function detectMarkerLite(i_raster:INyARRgbRaster,i_threshold:int):Boolean
+			switch(i_profile_id){
+			case PF_NYARTOOLKIT://default
+				patt_inst=new NyARColorPatt_Perspective_O2(i_ref_code.getWidth(), i_ref_code.getHeight(),4,25,i_input_raster_type);
+				sqdetect_inst = new RleDetector(this,i_ref_param.getScreenSize());
+				transmat_inst=new NyARTransMat(i_ref_param);
+				break;
+			default:
+				throw new NyARException();
+			}
+			super.initInstance(patt_inst,sqdetect_inst,transmat_inst,th,i_ref_param,i_ref_code,i_marker_width);
+			
+		}
+
+		/**
+		 * i_imageにマーカー検出処理を実行し、結果を記録します。
+		 * 
+		 * @param i_raster
+		 * マーカーを検出するイメージを指定します。イメージサイズは、コンストラクタで指定i_paramの
+		 * スクリーンサイズと一致し、かつi_input_raster_typeに指定した形式でなければいけません。
+		 * @return マーカーが検出できたかを真偽値で返します。
+		 * @throws NyARException
+		 */
+		public function detectMarkerLite(i_raster:INyARRgbRaster,i_threshold:int):Boolean
+		{
+			(NyARRasterFilter_ARToolkitThreshold(this._tobin_filter)).setThreshold(i_threshold);
+			return super.detectMarkerLite_1(i_raster);
+		}
+	}
+}
+import jp.nyatla.nyartoolkit.as3.detector.*;
+import jp.nyatla.nyartoolkit.as3.core.squaredetect.*;
+import jp.nyatla.nyartoolkit.as3.core.types.*;
+
+
+/**
+ * Rleラ矩形Detectorのブリッジ
+ *
+ */
+class RleDetector extends NyARSquareContourDetector_Rle
+{
+	private var _parent:NyARCustomSingleDetectMarker;
+	public function RleDetector(i_parent:NyARCustomSingleDetectMarker,i_size:NyARIntSize):void
 	{
-		(NyARRasterFilter_ARToolkitThreshold(this._tobin_filter)).setThreshold(i_threshold);
-		return super.detectMarkerLiteB(i_raster);
+		super(i_size);
+		this._parent=i_parent;
 	}
-}
+	protected override function onSquareDetect(i_coord:NyARIntCoordinates, i_vertex_index:Vector.<int>):void
+	{
 
-
+		this._parent.updateSquareInfo(i_coord, i_vertex_index);
+	}	
 }
+	

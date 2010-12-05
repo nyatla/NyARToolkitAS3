@@ -52,28 +52,45 @@ package jp.nyatla.nyartoolkit.as3.nyidmarker
 			this._perspective_reader=new PerspectivePixelReader();
 			return;
 		}
+		public function pickFromRaster_1(image:INyARRgbRaster,i_vertex:Vector.<NyARDoublePoint2d>,o_data:NyIdMarkerPattern,o_param:NyIdMarkerParam):Boolean
+		{
+			//遠近法のパラメータを計算
+			if(!this._perspective_reader.setSourceSquare_2(i_vertex)){
+				return false;
+			}
+			return this._pickFromRaster(image,o_data,o_param);
+		}
 		/**
-		 * i_imageから、idマーカを読みだします。
-		 * o_dataにはマーカデータ、o_paramにはまーかのパラメータを返却します。
+		 * imageの4頂点で囲まれた矩形からidマーカを読みだします。
 		 * @param image
-		 * @param i_square
+		 * @param i_vertex
 		 * @param o_data
 		 * @param o_param
 		 * @return
 		 * @throws NyARException
 		 */
-		public function pickFromRaster(image:INyARRgbRaster,i_vertex:Vector.<NyARIntPoint2d>,o_data:NyIdMarkerPattern,o_param:NyIdMarkerParam):Boolean
+		public function pickFromRaster_2(image:INyARRgbRaster,i_vertex:Vector.<NyARIntPoint2d>,o_data:NyIdMarkerPattern,o_param:NyIdMarkerParam):Boolean
 		{
-			
-			//遠近法のパラメータを計算
-			if(!this._perspective_reader.setSourceSquare(i_vertex)){
+			if(!this._perspective_reader.setSourceSquare_1(i_vertex)){
 				return false;
-			};
-			
+			}
+			return this._pickFromRaster(image,o_data,o_param);
+		}
+		
+		/**
+		 * i_imageから、idマーカを読みだします。
+		 * o_dataにはマーカデータ、o_paramにはマーカのパラメータを返却します。
+		 * @param image
+		 * @param i_vertex
+		 * @param o_data
+		 * @param o_param
+		 * @return
+		 * @throws NyARException
+		 */
+		private function _pickFromRaster(image:INyARRgbRaster, o_data:NyIdMarkerPattern , o_param:NyIdMarkerParam):Boolean
+		{
 			var reader:INyARRgbPixelReader=image.getRgbPixelReader();
 			var raster_size:NyARIntSize=image.getSize();
-			
-
 
 			var th:TThreshold=this.__pickFromRaster_th;
 			var encoder:MarkerPattEncoder=this.__pickFromRaster_encoder;
@@ -108,7 +125,8 @@ import jp.nyatla.nyartoolkit.as3.nyidmarker.data.*;
  */
 class PerspectivePixelReader
 {
-	private var _param_gen:NyARPerspectiveParamGenerator_O1=new NyARPerspectiveParamGenerator_O1(1,1,100,100);
+	private static const READ_RESOLUTION:int=100;
+	private var _param_gen:NyARPerspectiveParamGenerator=new NyARPerspectiveParamGenerator_O1(1,1);
 	private var _cparam:Vector.<Number>=new Vector.<Number>(8);
 
 
@@ -117,11 +135,14 @@ class PerspectivePixelReader
 		return;
 	}
 
-	public function setSourceSquare(i_vertex:Vector.<NyARIntPoint2d>):Boolean
+	public function setSourceSquare_1(i_vertex:Vector.<NyARIntPoint2d>):Boolean
 	{
-		return this._param_gen.getParam(i_vertex, this._cparam);
+		return this._param_gen.getParam_4(READ_RESOLUTION,READ_RESOLUTION,i_vertex, this._cparam);
 	}
-
+	public function setSourceSquare_2(i_vertex:Vector.<NyARDoublePoint2d>):Boolean
+	{
+		return this._param_gen.getParam_3(READ_RESOLUTION,READ_RESOLUTION,i_vertex, this._cparam);
+	}
 	/**
 	 * 矩形からピクセルを切り出します
 	 * @param i_lt_x
@@ -278,7 +299,6 @@ class PerspectivePixelReader
 		var freq_table:Vector.<int>=this._freq_table;
 		//初期化
 		var cpara:Vector.<Number>=this._cparam;
-//		final INyARRgbPixelReader reader=this._raster.getRgbPixelReader();
 		var ref_x:Vector.<int>=this._ref_x;
 		var ref_y:Vector.<int>=this._ref_y;
 		var pixcel_temp:Vector.<int>=this._pixcel_temp;
@@ -711,6 +731,9 @@ class PerspectivePixelReader
 	
 	public function readDataBits(i_reader:INyARRgbPixelReader, i_raster_size:NyARIntSize, i_th:TThreshold, o_bitbuffer:MarkerPattEncoder):Boolean
 	{
+		var raster_width:int=i_raster_size.w;
+		var raster_height:int=i_raster_size.h;
+		
 		var index_x:Vector.<Number>=this.__readDataBits_index_bit_x;
 		var index_y:Vector.<Number>=this.__readDataBits_index_bit_y;
 		
@@ -753,7 +776,7 @@ class PerspectivePixelReader
 			var pt:int=0;
 			for(i2=0;i2<resolution;i2++)
 			{			
-
+				var xx:int,yy:int;
 				var d:Number;
 				var cx0:Number=1+index_x[i2*2+0];
 				var cx1:Number=1+index_x[i2*2+1];
@@ -767,23 +790,43 @@ class PerspectivePixelReader
 				var cpx3_1:Number=cpara_3*cx1;
 				
 				d=cp6_0+cpy0_7;
-				ref_x[pt]=(int)((cpx0_0+cpy0_12)/d);
-				ref_y[pt]=(int)((cpx3_0+cpy0_45)/d);
+				ref_x[pt]=xx=(int)((cpx0_0+cpy0_12)/d);
+				ref_y[pt]=yy=(int)((cpx3_0+cpy0_45)/d);
+				if(xx<0 || xx>=raster_width || yy<0 || yy>=raster_height)
+				{
+					ref_x[pt]=xx<0?0:(xx>=raster_width?raster_width-1:raster_width);
+					ref_y[pt]=yy<0?0:(yy>=raster_height?raster_height-1:raster_height);
+				}
 				pt++;
 
 				d=cp6_0+cpy1_7;
-				ref_x[pt]=(int)((cpx0_0+cpy1_12)/d);
-				ref_y[pt]=(int)((cpx3_0+cpy1_45)/d);
+				ref_x[pt]=xx=(int)((cpx0_0+cpy1_12)/d);
+				ref_y[pt]=yy=(int)((cpx3_0+cpy1_45)/d);
+				if(xx<0 || xx>=raster_width || yy<0 || yy>=raster_height)
+				{
+					ref_x[pt]=xx<0?0:(xx>=raster_width?raster_width-1:raster_width);
+					ref_y[pt]=yy<0?0:(yy>=raster_height?raster_height-1:raster_height);
+				}
 				pt++;
 
 				d=cp6_1+cpy0_7;
-				ref_x[pt]=(int)((cpx0_1+cpy0_12)/d);
-				ref_y[pt]=(int)((cpx3_1+cpy0_45)/d);
+				ref_x[pt]=xx=(int)((cpx0_1+cpy0_12)/d);
+				ref_y[pt]=yy=(int)((cpx3_1+cpy0_45)/d);
+				if(xx<0 || xx>=raster_width || yy<0 || yy>=raster_height)
+				{
+					ref_x[pt]=xx<0?0:(xx>=raster_width?raster_width-1:raster_width);
+					ref_y[pt]=yy<0?0:(yy>=raster_height?raster_height-1:raster_height);
+				}
 				pt++;
 
 				d=cp6_1+cpy1_7;
-				ref_x[pt]=(int)((cpx0_1+cpy1_12)/d);
-				ref_y[pt]=(int)((cpx3_1+cpy1_45)/d);
+				ref_x[pt]=xx=(int)((cpx0_1+cpy1_12)/d);
+				ref_y[pt]=yy=(int)((cpx3_1+cpy1_45)/d);
+				if(xx<0 || xx>=raster_width || yy<0 || yy>=raster_height)
+				{
+					ref_x[pt]=xx<0?0:(xx>=raster_width?raster_width-1:raster_width);
+					ref_y[pt]=yy<0?0:(yy>=raster_height?raster_height-1:raster_height);
+				}
 				pt++;
 			}
 			//1行分のピクセルを取得(場合によっては専用アクセサを書いた方がいい)
@@ -816,7 +859,7 @@ class PerspectivePixelReader
 	}
 	public function setSquare(i_vertex:Vector.<NyARIntPoint2d>):Boolean
 	{
-		if (!this._param_gen.getParam(i_vertex,this._cparam)) {
+		if (!this._param_gen.getParam_4(READ_RESOLUTION,READ_RESOLUTION,i_vertex,this._cparam)) {
 			return false;
 		}
 		return true;

@@ -30,6 +30,7 @@
  */
 package jp.nyatla.nyartoolkit.as3.core.types.matrix 
 {
+	import jp.nyatla.nyartoolkit.as3.core.types.*;
 	public class NyARDoubleMatrix44 implements INyARDoubleMatrix
 	{
 		public var m00:Number;
@@ -58,9 +59,9 @@ package jp.nyatla.nyartoolkit.as3.core.types.matrix
 			return ret;
 		}
 		/**
-		 * 遅いからあんまり使わないでね。
+		 * 配列の内容をセットします。順番は、00,01,02,03,10...の順です。
 		 */
-		public function setValue(i_value:Vector.<Number>):void
+		public function setValue_1(i_value:Vector.<Number>):void
 		{
 			this.m00=i_value[ 0];
 			this.m01=i_value[ 1];
@@ -81,7 +82,31 @@ package jp.nyatla.nyartoolkit.as3.core.types.matrix
 			return;
 		}
 		/**
-		 * 遅いからあんまり使わないでね。
+		 * i_valueの内容を、このインスタンスにセットします。
+		 * @param i_value
+		 */
+		public function setValue_2(i_value:NyARDoubleMatrix44):void
+		{
+			this.m00=i_value.m00;
+			this.m01=i_value.m01;
+			this.m02=i_value.m02;
+			this.m03=i_value.m03;
+			this.m10=i_value.m10;
+			this.m11=i_value.m11;
+			this.m12=i_value.m12;
+			this.m13=i_value.m13;
+			this.m20=i_value.m20;
+			this.m21=i_value.m21;
+			this.m22=i_value.m22;
+			this.m23=i_value.m23;
+			this.m30=i_value.m30;
+			this.m31=i_value.m31;
+			this.m32=i_value.m32;
+			this.m33=i_value.m33;
+			return;
+		}
+		/**
+		 * 行列の内容を配列に出力します。順番は、00,01,02,03,10...の順です。
 		 */
 		public function getValue(o_value:Vector.<Number>):void
 		{
@@ -103,6 +128,35 @@ package jp.nyatla.nyartoolkit.as3.core.types.matrix
 			o_value[15]=this.m33;
 			return;
 		}
+		/**
+		 * 行列の内容を転置してから配列に出力します。
+		 * 順番は、00,10,20,30,01...の順です。
+		 */	
+		public function getValueT(o_value:Vector.<Number>):void
+		{
+			o_value[ 0]=this.m00;
+			o_value[ 1]=this.m10;
+			o_value[ 2]=this.m20;
+			o_value[ 3]=this.m30;
+			o_value[ 4]=this.m01;
+			o_value[ 5]=this.m11;
+			o_value[ 6]=this.m21;
+			o_value[ 7]=this.m31;
+			o_value[ 8]=this.m02;
+			o_value[ 9]=this.m12;
+			o_value[10]=this.m22;
+			o_value[11]=this.m32;
+			o_value[12]=this.m03;
+			o_value[13]=this.m13;
+			o_value[14]=this.m23;
+			o_value[15]=this.m33;
+			return;
+		}
+		/**
+		 * 逆行列を計算して、i_srcのthisへ格納します。i_srcにはthisも指定可能です。
+		 * @param i_src
+		 * @return
+		 */
 		public function inverse(i_src:NyARDoubleMatrix44):Boolean
 		{
 			var a11:Number,a12:Number,a13:Number,a14:Number,a21:Number,a22:Number,a23:Number,a24:Number,a31:Number,a32:Number,a33:Number,a34:Number,a41:Number,a42:Number,a43:Number,a44:Number;
@@ -189,7 +243,191 @@ package jp.nyatla.nyartoolkit.as3.core.types.matrix
 			
 			return true;
 		}	
+		public function transform3d_1( i_x:Number , i_y:Number , i_z:Number , o_out:NyARDoublePoint3d ):void
+		{ 
+			o_out.x = this.m00 * i_x + this.m01 * i_y + this.m02 * i_z + this.m03 ;
+			o_out.y = this.m10 * i_x + this.m11 * i_y + this.m12 * i_z + this.m13 ;
+			o_out.z = this.m20 * i_x + this.m21 * i_y + this.m22 * i_z + this.m23 ;
+			return  ;
+		}
+		
+		public function transform3d_2( i_in:NyARDoublePoint3d , o_out:NyARDoublePoint3d ):void
+		{ 
+			transform3d_1(i_in.x , i_in.y , i_in.z , o_out) ;
+		}
+		
+		public function getZXYAngle( o_out:NyARDoublePoint3d ):void
+		{ 
+			var sina:Number = this.m21 ;
+			if( sina >= 1.0 ) {
+				o_out.x = Math.PI / 2 ;
+				o_out.y = 0 ;
+				o_out.z = Math.atan2(-this.m10 , this.m00) ;
+			}
+			else if( sina <= -1.0 ) {
+				o_out.x = -Math.PI / 2 ;
+				o_out.y = 0 ;
+				o_out.z = Math.atan2(-this.m10 , this.m00) ;
+			}
+			else {
+				o_out.x = Math.asin(sina) ;
+				o_out.z = Math.atan2(-this.m01 , this.m11) ;
+				o_out.y = Math.atan2(-this.m20 , this.m22) ;
+			}
+		}
+		
+		public function mul( i_mat_l:NyARDoubleMatrix44 , i_mat_r:NyARDoubleMatrix44 ):void
+		{ 
+			//assert( ! (( this != i_mat_l ) ) );
+			//assert( ! (( this != i_mat_r ) ) );
+			this.m00 = i_mat_l.m00 * i_mat_r.m00 + i_mat_l.m01 * i_mat_r.m10 + i_mat_l.m02 * i_mat_r.m20 + i_mat_l.m03 * i_mat_r.m30 ;
+			this.m01 = i_mat_l.m00 * i_mat_r.m01 + i_mat_l.m01 * i_mat_r.m11 + i_mat_l.m02 * i_mat_r.m21 + i_mat_l.m03 * i_mat_r.m31 ;
+			this.m02 = i_mat_l.m00 * i_mat_r.m02 + i_mat_l.m01 * i_mat_r.m12 + i_mat_l.m02 * i_mat_r.m22 + i_mat_l.m03 * i_mat_r.m32 ;
+			this.m03 = i_mat_l.m00 * i_mat_r.m03 + i_mat_l.m01 * i_mat_r.m13 + i_mat_l.m02 * i_mat_r.m23 + i_mat_l.m03 * i_mat_r.m33 ;
+			this.m10 = i_mat_l.m10 * i_mat_r.m00 + i_mat_l.m11 * i_mat_r.m10 + i_mat_l.m12 * i_mat_r.m20 + i_mat_l.m13 * i_mat_r.m30 ;
+			this.m11 = i_mat_l.m10 * i_mat_r.m01 + i_mat_l.m11 * i_mat_r.m11 + i_mat_l.m12 * i_mat_r.m21 + i_mat_l.m13 * i_mat_r.m31 ;
+			this.m12 = i_mat_l.m10 * i_mat_r.m02 + i_mat_l.m11 * i_mat_r.m12 + i_mat_l.m12 * i_mat_r.m22 + i_mat_l.m13 * i_mat_r.m32 ;
+			this.m13 = i_mat_l.m10 * i_mat_r.m03 + i_mat_l.m11 * i_mat_r.m13 + i_mat_l.m12 * i_mat_r.m23 + i_mat_l.m13 * i_mat_r.m33 ;
+			this.m20 = i_mat_l.m20 * i_mat_r.m00 + i_mat_l.m21 * i_mat_r.m10 + i_mat_l.m22 * i_mat_r.m20 + i_mat_l.m23 * i_mat_r.m30 ;
+			this.m21 = i_mat_l.m20 * i_mat_r.m01 + i_mat_l.m21 * i_mat_r.m11 + i_mat_l.m22 * i_mat_r.m21 + i_mat_l.m23 * i_mat_r.m31 ;
+			this.m22 = i_mat_l.m20 * i_mat_r.m02 + i_mat_l.m21 * i_mat_r.m12 + i_mat_l.m22 * i_mat_r.m22 + i_mat_l.m23 * i_mat_r.m32 ;
+			this.m23 = i_mat_l.m20 * i_mat_r.m03 + i_mat_l.m21 * i_mat_r.m13 + i_mat_l.m22 * i_mat_r.m23 + i_mat_l.m23 * i_mat_r.m33 ;
+			this.m30 = i_mat_l.m30 * i_mat_r.m00 + i_mat_l.m31 * i_mat_r.m10 + i_mat_l.m32 * i_mat_r.m20 + i_mat_l.m33 * i_mat_r.m30 ;
+			this.m31 = i_mat_l.m30 * i_mat_r.m01 + i_mat_l.m31 * i_mat_r.m11 + i_mat_l.m32 * i_mat_r.m21 + i_mat_l.m33 * i_mat_r.m31 ;
+			this.m32 = i_mat_l.m30 * i_mat_r.m02 + i_mat_l.m31 * i_mat_r.m12 + i_mat_l.m32 * i_mat_r.m22 + i_mat_l.m33 * i_mat_r.m32 ;
+			this.m33 = i_mat_l.m30 * i_mat_r.m03 + i_mat_l.m31 * i_mat_r.m13 + i_mat_l.m32 * i_mat_r.m23 + i_mat_l.m33 * i_mat_r.m33 ;
+			return  ;
+		}
+		
+		public function identity():void
+		{ 
+			this.m00 = this.m11 = this.m22 = this.m33 = 1 ;
+			this.m01 = this.m02 = this.m03 = this.m10 = this.m12 = this.m13 = this.m20 = this.m21 = this.m23 = this.m30 = this.m31 = this.m32 = 0 ;
+			return;
+		}
+		
+		public function setRotateX( i_radian:Number ):void
+		{ 
+			var s:Number = Math.sin(i_radian) ;
+			var c:Number = Math.cos(i_radian) ;
+			this.identity() ;
+			this.m11 = c ;
+			this.m12 = -s ;
+			this.m21 = s ;
+			this.m22 = c ;
+			return  ;
+		}
+		
+		public function setRotateY( i_radian:Number ):void
+		{ 
+			var s:Number = Math.sin(i_radian) ;
+			var c:Number = Math.cos(i_radian) ;
+			this.identity() ;
+			this.m00 = c ;
+			this.m02 = s ;
+			this.m20 = -s ;
+			this.m22 = c ;
+		}
+		
+		public function setRotateZ( i_radian:Number ):void
+		{ 
+			var s:Number = Math.sin(i_radian) ;
+			var c:Number = Math.cos(i_radian) ;
+			this.identity() ;
+			this.m00 = c ;
+			this.m01 = -s ;
+			this.m10 = s ;
+			this.m11 = c ;
+		}
+		
+		public function setTranslate( i_x:Number , i_y:Number , i_z:Number ):void
+		{ 
+			this.identity() ;
+			this.m03 = i_x ;
+			this.m13 = i_y ;
+			this.m23 = i_z ;
+		}
+		
+		public function rotateX( i_radian:Number ):void
+		{ 
+			var s:Number = Math.sin(i_radian) ;
+			var c:Number = Math.cos(i_radian) ;
+			var t1:Number , t2:Number ;
+			t1 = this.m01 ;
+			t2 = this.m02 ;
+			this.m01 = t1 * c + t2 * s ;
+			this.m02 = t1 * ( -s ) + t2 * c ;
+			t1 = this.m11 ;
+			t2 = this.m12 ;
+			this.m11 = t1 * c + t2 * s ;
+			this.m12 = t1 * ( -s ) + t2 * c ;
+			t1 = this.m21 ;
+			t2 = this.m22 ;
+			this.m21 = t1 * c + t2 * s ;
+			this.m22 = t1 * ( -s ) + t2 * c ;
+			t1 = this.m31 ;
+			t2 = this.m32 ;
+			this.m31 = t1 * c + t2 * s ;
+			this.m32 = t1 * ( -s ) + t2 * c ;
+		}
+		
+		public function rotateY( i_radian:Number ):void
+		{ 
+			var s:Number = Math.sin(i_radian) ;
+			var c:Number = Math.cos(i_radian) ;
+			var t1:Number , t2:Number ;
+			t1 = this.m00 ;
+			t2 = this.m02 ;
+			this.m00 = t1 * c + t2 * ( -s ) ;
+			this.m02 = t1 * s + t2 * c ;
+			t1 = this.m10 ;
+			t2 = this.m12 ;
+			this.m10 = t1 * c + t2 * ( -s ) ;
+			this.m12 = t1 * s + t2 * c ;
+			t1 = this.m20 ;
+			t2 = this.m22 ;
+			this.m20 = t1 * c + t2 * ( -s ) ;
+			this.m22 = t1 * s + t2 * c ;
+			t1 = this.m30 ;
+			t2 = this.m32 ;
+			this.m30 = t1 * c + t2 * ( -s ) ;
+			this.m32 = t1 * s + t2 * c ;
+		}
+		
+		public function rotateZ( i_radian:Number ):void
+		{ 
+			var s:Number = Math.sin(i_radian) ;
+			var c:Number = Math.cos(i_radian) ;
+			var t1:Number , t2:Number ;
+			t1 = this.m00 ;
+			t2 = this.m01 ;
+			this.m00 = t1 * c + t2 * s ;
+			this.m01 = t1 * ( -s ) + t2 * c ;
+			t1 = this.m10 ;
+			t2 = this.m11 ;
+			this.m10 = t1 * c + t2 * s ;
+			this.m11 = t1 * ( -s ) + t2 * c ;
+			t1 = this.m20 ;
+			t2 = this.m21 ;
+			this.m20 = t1 * c + t2 * s ;
+			this.m21 = t1 * ( -s ) + t2 * c ;
+			t1 = this.m30 ;
+			t2 = this.m31 ;
+			this.m30 = t1 * c + t2 * s ;
+			this.m31 = t1 * ( -s ) + t2 * c ;
+			return  ;
+		}
+		
+		public function translate( i_x:Number , i_y:Number , i_z:Number ):void
+		{ 
+			this.m03 = this.m00 * i_x + this.m01 * i_y + this.m02 * i_z + this.m03 ;
+			this.m13 = this.m10 * i_x + this.m11 * i_y + this.m12 * i_z + this.m13 ;
+			this.m23 = this.m20 * i_x + this.m21 * i_y + this.m22 * i_z + this.m23 ;
+			this.m33 = this.m30 * i_x + this.m31 * i_y + this.m32 * i_z + this.m33 ;
+			return  ;
+		}
+	
+
+
 	}
-
-
 }

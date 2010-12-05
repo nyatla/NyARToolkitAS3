@@ -35,17 +35,13 @@ package jp.nyatla.nyartoolkit.as3.core.types.stack
 	{
 		public function NyARIntRectStack(i_length:int)
 		{
-			super(i_length);
+			super();
+			this.initInstance_1(i_length);
 		}
-		protected override function createArray(i_length:int):Vector.<*>
+		protected function createElement_1():Object
 		{
-			var ret:Vector.<NyARIntRect>= new Vector.< NyARIntRect>(i_length);
-			for (var i:int =0; i < i_length; i++){
-				ret[i] = new  NyARIntRect();
-			}
-			return Vector.<int>(ret);
-		}
-		
+			return new  NyARIntRect();
+		}		
 	}
 
 }

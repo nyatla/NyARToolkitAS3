@@ -1,9 +1,8 @@
 package jp.nyatla.nyartoolkit.as3.core.param
 {
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
-	
-	import flash.utils.ByteArray;
-	import flash.utils.Endian;	
+	import jp.nyatla.nyartoolkit.as3.core.types.matrix.*;
+	import flash.utils.*;
 	
 	/**
 	 * typedef struct { int xsize, ysize; double mat[3][4]; double dist_factor[4]; } ARParam;
@@ -40,7 +39,7 @@ package jp.nyatla.nyartoolkit.as3.core.param
 		public function setValue(i_factor:Vector.<Number>,i_projection:Vector.<Number>):void
 		{
 			this._dist.setValue(i_factor);
-			this._projection_matrix.setValue(i_projection);
+			this._projection_matrix.setValue_1(i_projection);
 			return;
 		}
 		/**
@@ -62,10 +61,21 @@ package jp.nyatla.nyartoolkit.as3.core.param
 			this._screen_size.h = i_ysize;// newparam->ysize = ysize;
 			return;
 		}
-
+		/**
+		 * 右手系の視錐台を作ります。
+		 * 計算結果を多用するときは、キャッシュするようにして下さい。
+		 * @param i_dist_min
+		 * @param i_dist_max
+		 * @param o_frustum
+		 */
+		public function makeCameraFrustumRH(i_dist_min:Number,i_dist_max:Number,o_frustum:NyARDoubleMatrix44):void
+		{
+			this._projection_matrix.makeCameraFrustumRH(this._screen_size.w, this._screen_size.h, i_dist_min, i_dist_max, o_frustum);
+			return;
+		}
 		public function loadARParam(i_stream:ByteArray):void
 		{
-			var tmp:Vector.<Number> = new Vector.<Number>(12);//new double[12];
+			var tmp:Vector.<Number> = new Vector.<Number>(16);//new double[12];
 
 			i_stream.endian = Endian.BIG_ENDIAN;
 			this._screen_size.w = i_stream.readInt();//bb.getInt();
@@ -75,8 +85,11 @@ package jp.nyatla.nyartoolkit.as3.core.param
 			for(i = 0; i < 12; i++){
 				tmp[i] = i_stream.readDouble();//bb.getDouble();
 			}
+			//パディング
+			tmp[12]=tmp[13]=tmp[14]=0;
+			tmp[15]=1;			
 			//Projectionオブジェクトにセット
-			this._projection_matrix.setValue(tmp);
+			this._projection_matrix.setValue_1(tmp);
 			//double値を4個読み込む
 			for (i = 0; i < 4; i++) {
 				tmp[i] = i_stream.readDouble();//bb.getDouble();

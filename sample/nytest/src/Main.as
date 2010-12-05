@@ -21,7 +21,7 @@ package
 	 */
 	public class Main extends Sprite 
 	{
-
+		private static var inst:Main;
         private var textbox:TextField = new TextField();
 		private var param:NyARParam;
 		private var code:NyARCode;
@@ -31,9 +31,14 @@ package
 		{
 			this.textbox.text = this.textbox.text + "\n" + i_str;
 		}
+		public static function megs(i_str:String):void
+		{
+			inst.msg(i_str);
+		}
 
 		public function Main():void 
 		{
+			Main.inst = this;
 			//デバック用のテキストボックス
 			this.textbox.x = 0; this.textbox.y = 0;
 			this.textbox.width=640,this.textbox.height=480; 

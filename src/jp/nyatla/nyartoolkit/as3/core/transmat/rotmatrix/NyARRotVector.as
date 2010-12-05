@@ -32,6 +32,7 @@ package jp.nyatla.nyartoolkit.as3.core.transmat.rotmatrix
 {
 	import jp.nyatla.nyartoolkit.as3.core.param.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
+	import jp.nyatla.nyartoolkit.as3.core.types.matrix.*;
 	import jp.nyatla.nyartoolkit.as3.*;
 	import jp.nyatla.nyartoolkit.as3.core.*;
 	public class NyARRotVector
@@ -45,27 +46,12 @@ package jp.nyatla.nyartoolkit.as3.core.transmat.rotmatrix
 		
 		private var _projection_mat_ref:NyARPerspectiveProjectionMatrix;
 
-		private var _inv_cpara_array_ref:Vector.<Vector.<Number>>;
+		private var _inv_cpara:NyARDoubleMatrix44=new NyARDoubleMatrix44();
 
 		public function NyARRotVector(i_cmat:NyARPerspectiveProjectionMatrix)
 		{
-			var mat_a:NyARMat = new NyARMat(3, 3);
-			var a_array:Vector.<Vector.<Number>> = mat_a.getArray();
-			
-			a_array[0][0] =i_cmat.m00;
-			a_array[0][1] =i_cmat.m01;
-			a_array[0][2] =i_cmat.m02;
-			a_array[1][0] =i_cmat.m10;
-			a_array[1][1] =i_cmat.m11;
-			a_array[1][2] =i_cmat.m12;
-			a_array[2][0] =i_cmat.m20;
-			a_array[2][1] =i_cmat.m21;
-			a_array[2][2] =i_cmat.m22;
-			
-			mat_a.matrixSelfInv();
+			this._inv_cpara.inverse(i_cmat);
 			this._projection_mat_ref = i_cmat;
-			this._inv_cpara_array_ref = mat_a.getArray();
-			//GCない言語のときは、ここで配列の所有権委譲してね！
 		}
 
 		/**
@@ -77,9 +63,9 @@ package jp.nyatla.nyartoolkit.as3.core.transmat.rotmatrix
 		{
 			//1行目
 			var cmat:NyARPerspectiveProjectionMatrix= this._projection_mat_ref;
-			var w1:Number = i_linear1.dy * i_linear2.dx - i_linear2.dy * i_linear1.dx;
-			var w2:Number = i_linear1.dx * i_linear2.c - i_linear2.dx * i_linear1.c;
-			var w3:Number = i_linear1.c * i_linear2.dy - i_linear2.c * i_linear1.dy;
+			var w1:Number = i_linear1.a * i_linear2.b - i_linear2.a * i_linear1.b;
+			var w2:Number = i_linear1.b * i_linear2.c - i_linear2.b * i_linear1.c;
+			var w3:Number = i_linear1.c * i_linear2.b - i_linear2.c * i_linear1.a;
 
 			var m0:Number = w1 * (cmat.m01 * cmat.m12 - cmat.m02 * cmat.m11) + w2 * cmat.m11 - w3 * cmat.m01;//w1 * (cpara[0 * 4 + 1] * cpara[1 * 4 + 2] - cpara[0 * 4 + 2] * cpara[1 * 4 + 1]) + w2 * cpara[1 * 4 + 1] - w3 * cpara[0 * 4 + 1];
 			var m1:Number = -w1 * cmat.m00 * cmat.m12 + w3 * cmat.m00;//-w1 * cpara[0 * 4 + 0] * cpara[1 * 4 + 2] + w3 * cpara[0 * 4 + 0];
@@ -101,11 +87,11 @@ package jp.nyatla.nyartoolkit.as3.core.transmat.rotmatrix
 		public function checkVectorByVertex(i_start_vertex:NyARDoublePoint2d, i_end_vertex:NyARDoublePoint2d):void
 		{
 			var h:Number;
-			var inv_cpara:Vector.<Vector.<Number>> = this._inv_cpara_array_ref;
+			var inv_cpara:NyARDoubleMatrix44 = this._inv_cpara;
 			//final double[] world = __checkVectorByVertex_world;// [2][3];
-			var world0:Number = inv_cpara[0][0] * i_start_vertex.x * 10.0 + inv_cpara[0][1] * i_start_vertex.y * 10.0 + inv_cpara[0][2] * 10.0;// mat_a->m[0]*st[0]*10.0+
-			var world1:Number = inv_cpara[1][0] * i_start_vertex.x * 10.0 + inv_cpara[1][1] * i_start_vertex.y * 10.0 + inv_cpara[1][2] * 10.0;// mat_a->m[3]*st[0]*10.0+
-			var world2:Number = inv_cpara[2][0] * i_start_vertex.x * 10.0 + inv_cpara[2][1] * i_start_vertex.y * 10.0 + inv_cpara[2][2] * 10.0;// mat_a->m[6]*st[0]*10.0+
+			var world0:Number = inv_cpara.m00 * i_start_vertex.x * 10.0 + inv_cpara.m01 * i_start_vertex.y * 10.0 + inv_cpara.m02 * 10.0;// mat_a->m[0]*st[0]*10.0+
+			var world1:Number = inv_cpara.m10 * i_start_vertex.x * 10.0 + inv_cpara.m11 * i_start_vertex.y * 10.0 + inv_cpara.m12 * 10.0;// mat_a->m[3]*st[0]*10.0+
+			var world2:Number = inv_cpara.m20 * i_start_vertex.x * 10.0 + inv_cpara.m21 * i_start_vertex.y * 10.0 + inv_cpara.m22 * 10.0;// mat_a->m[6]*st[0]*10.0+
 			var world3:Number = world0 + this.v1;
 			var world4:Number = world1 + this.v2;
 			var world5:Number = world2 + this.v3;

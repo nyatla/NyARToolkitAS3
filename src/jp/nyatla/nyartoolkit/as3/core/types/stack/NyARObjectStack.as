@@ -35,48 +35,81 @@ package jp.nyatla.nyartoolkit.as3.core.types.stack
 	/**
 	 * スタック型の可変長配列。
 	 * 配列には実体を格納します。
+	 * AS3にはテンプレートが無いので、全てobject型の要素で実装します。
 	 */
-	public class NyARObjectStack
+	public class NyARObjectStack extends NyARPointerStack
 	{
-		protected var _items:Vector.<*>;
-		protected var _length:int;
-
-		/**
-		 * 最大ARRAY_MAX個の動的割り当てバッファを準備する。
-		 * 
-		 * @param i_array
-		 * @param i_element_type
-		 * JavaのGenedicsの制限突破
-		 */
-		public function NyARObjectStack(i_length:int)
+		public function NyARObjectStack()
 		{
-			//領域確保
-			this._items = createArray(i_length);
-			//使用中個数をリセット
-			this._length = 0;
 			return;
 		}
-		//この関数を上書きしてください。
-		protected function createArray(i_length:int):Vector.<*>
+		/**
+		 * パラメータが不要なインスタンスを作るためのinitInstance
+		 * コンストラクタから呼び出します。この関数を使うときには、 createElement()をオーバライドしてください。
+		 * @param i_length
+		 * @param i_element_type
+		 * @param i_param
+		 * @throws NyARException
+		 */
+		protected function initInstance_1(i_length:int):void
+		{
+			//領域確保
+			super.initInstance(i_length);
+			for (var i:int=0; i < i_length; i++){
+				this._items[i] =createElement_1();
+			}
+			return;
+		}
+		/**
+		 * パラメータが必要なインスタンスを作るためのinitInstance
+		 * コンストラクタから呼び出します。この関数を使うときには、 createElement(Object i_param)をオーバライドしてください。
+		 * @param i_length
+		 * @param i_element_type
+		 * @param i_param
+		 * @throws NyARException
+		 */
+		protected function initInstance_2(i_length:int,i_param:Object):void
+		{
+			//領域確保
+			super.initInstance(i_length);
+			for (var i:int =0; i < i_length; i++){
+				this._items[i] =createElement_2(i_param);
+			}
+			return;
+		}
+		protected function createElement_1():Object
 		{
 			throw new NyARException();
-		}		
+		}
+		protected function createElement_2(i_param:Object):Object
+		{
+			throw new NyARException();
+		}
+		
 		/**
 		 * 新しい領域を予約します。
 		 * @return
 		 * 失敗するとnull
 		 * @throws NyARException
 		 */
-		public function prePush():*
+		public function prePush():Object
 		{
 			// 必要に応じてアロケート
 			if (this._length >= this._items.length){
 				return null;
 			}
 			// 使用領域を+1して、予約した領域を返す。
-			var ret:* = this._items[this._length];
+			var ret:Object = this._items[this._length];
 			this._length++;
 			return ret;
+		}
+		/**
+		 * このクラスは、オブジェクトをpushすることはできません。
+		 * prePush()を使用してください。
+		 */
+		public override function push(i_object:Object):Object
+		{
+			return null;
 		}
 		/**
 		 * スタックを初期化します。
@@ -92,57 +125,38 @@ package jp.nyatla.nyartoolkit.as3.core.types.stack
 			}
 			this._length=i_reserv_length;
 		}	
-		
-		/** 
-		 * 見かけ上の要素数を1減らして、そのオブジェクトを返します。
-		 * 返却したオブジェクトの内容は、次回のpushまで有効です。
-		 * @return
+		/**
+		 * 指定した要素を削除します。
+		 * 削除した要素は前方詰めで詰められます。
 		 */
-		public function pop():*
+		public override function remove(i_index:int):void
 		{
-			NyAS3Utils.assert(this._length>=1);
+			if(i_index!=this._length-1){
+				var item:Object=this._items[i_index];
+				//要素をシフト
+				super.remove(i_index);
+				//外したオブジェクトを末端に取り付ける
+				this._items[i_index]=item;
+			}
 			this._length--;
-			return this._items[this._length];
 		}
 		/**
-		 * 見かけ上の要素数をi_count個減らします。
-		 * @param i_count
-		 * @return
+		 * 指定した要素を順序を無視して削除します。
+		 * 削除後のスタックの順序は保証されません。
+		 * このAPIは、最後尾の有効要素と、削除対象の要素を交換することで、削除を実現します。
+		 * @param i_index
 		 */
-		public function pops(i_count:int):void
+		public override function removeIgnoreOrder(i_index:int):void
 		{
-			NyAS3Utils.assert(this._length>=i_count);
-			this._length-=i_count;
-			return;
-		}	
-		/**
-		 * 配列を返します。
-		 * 
-		 * @return
-		 */
-		public function getArray():Vector.<*>
-		{
-			return this._items;
-		}
-		public function getItem(i_index:int):*
-		{
-			return this._items[i_index];
-		}
-		/**
-		 * 配列の見かけ上の要素数を返却します。
-		 * @return
-		 */
-		public function getLength():int
-		{
-			return this._length;
-		}
-		/**
-		 * 見かけ上の要素数をリセットします。
-		 */
-		public function clear():void
-		{
-			this._length = 0;
+			//assert(this._length>i_index && i_index>=0);
+			if(i_index!=this._length-1){
+				//削除対象のオブジェクトを取り外す
+				var item:Object=this._items[i_index];
+				//値の交換
+				this._items[i_index]=this._items[this._length-1];
+				this._items[this._length-1]=item;
+			}
+			this._length--;
 		}
 	}
-
 }

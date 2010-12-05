@@ -39,17 +39,13 @@ package jp.nyatla.nyartoolkit.as3.core.types.stack
 	{
 		public function NyARIntPointStack(i_length:int)
 		{
-			super(i_length);
+			super();
+			super.initInstance_1(i_length);
 		}
-		protected override function createArray(i_length:int):Vector.<*>
+		protected function createElement_1():Object
 		{
-			var ret:Vector.<NyARIntPoint2d>= new Vector.<NyARIntPoint2d>(i_length);
-			for (var i:int =0; i < i_length; i++){
-				ret[i] = new NyARIntPoint2d();
-			}
-			return Vector.<*>(ret);
+			return new  NyARIntPoint2d();
 		}
-		
 	}
 
 }

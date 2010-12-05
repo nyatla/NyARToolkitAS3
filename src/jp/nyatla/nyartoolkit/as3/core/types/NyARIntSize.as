@@ -71,7 +71,12 @@ package jp.nyatla.nyartoolkit.as3.core.types
 			}
 			throw new NyARException();
 		}
-
+		public function setValue(i_w:int,i_h:int):void
+		{
+			this.w=i_w;
+			this.h=i_h;
+			return;
+		}
 		/**
 		 * サイズが同一であるかを確認する。
 		 * 
@@ -80,7 +85,7 @@ package jp.nyatla.nyartoolkit.as3.core.types
 		 * @return
 		 * @throws NyARException
 		 */
-		public function isEqualSize_int(i_width:int,i_height:int):Boolean
+		public function isEqualSize_1(i_width:int,i_height:int):Boolean
 		{
 			if (i_width == this.w && i_height == this.h) {
 				return true;
@@ -96,13 +101,92 @@ package jp.nyatla.nyartoolkit.as3.core.types
 		 * @return
 		 * @throws NyARException
 		 */
-		public function isEqualSize_NyARIntSize(i_size:NyARIntSize):Boolean
+		public function isEqualSize_2(i_size:NyARIntSize):Boolean
 		{
 			if (i_size.w == this.w && i_size.h == this.h) {
 				return true;
 			}
 			return false;
-
+		}
+		public function isInnerSize_1( i_x:int , i_y:int ):Boolean
+		{ 
+			return ( i_x <= this.w && i_y <= this.h ) ;
+		}
+		
+		public function isInnerSize_2( i_size:NyARIntSize ):Boolean
+		{ 
+			return ( i_size.w <= this.w && i_size.h <= this.h ) ;
+		}
+		
+		public function isInnerSize_3( i_point:NyARDoublePoint2d ):Boolean
+		{ 
+			return ( i_point.x < this.w && i_point.y < this.h && 0 <= i_point.x && 0 <= i_point.y ) ;
+		}
+		
+		public function isInnerPoint_1( i_x:int , i_y:int ):Boolean
+		{ 
+			return ( i_x < this.w && i_y < this.h && 0 <= i_x && 0 <= i_y ) ;
+		}
+		
+		public function isInnerPoint_2( i_pos:NyARDoublePoint2d ):Boolean
+		{ 
+			return ( i_pos.x < this.w && i_pos.y < this.h && 0 <= i_pos.x && 0 <= i_pos.y ) ;
+		}
+		
+		public function isInnerPoint_3( i_pos:NyARIntPoint2d ):Boolean
+		{ 
+			return ( i_pos.x < this.w && i_pos.y < this.h && 0 <= i_pos.x && 0 <= i_pos.y ) ;
+		}
+		
+		public function setAreaRect_1( i_vertex:Vector.<NyARDoublePoint2d>, i_num_of_vertex:int ):void
+		{ 
+			var xmax:int , xmin:int , ymax:int , ymin:int ;
+			xmin = xmax = int(i_vertex[i_num_of_vertex - 1].x) ;
+			ymin = ymax = int(i_vertex[i_num_of_vertex - 1].y) ;
+			for ( var i:int = i_num_of_vertex - 2 ; i >= 0 ; i-- )
+			{
+				if( i_vertex[i].x < xmin ) {
+					xmin = int(i_vertex[i].x) ;
+				}
+				else if( i_vertex[i].x > xmax ) {
+					xmax = int(i_vertex[i].x) ;
+				}
+				
+				if( i_vertex[i].y < ymin ) {
+					ymin = int(i_vertex[i].y) ;
+				}
+				else if( i_vertex[i].y > ymax ) {
+					ymax = int(i_vertex[i].y) ;
+				}
+				
+			}
+			this.h = ymax - ymin + 1 ;
+			this.w = xmax - xmin + 1 ;
+		}
+		
+		public function setAreaRect_2( i_vertex:Vector.<NyARIntPoint2d>, i_num_of_vertex:int ):void
+		{ 
+			var xmax:int , xmin:int , ymax:int , ymin:int ;
+			xmin = xmax = int(i_vertex[i_num_of_vertex - 1].x) ;
+			ymin = ymax = int(i_vertex[i_num_of_vertex - 1].y) ;
+			for( var i:int = i_num_of_vertex - 2 ; i >= 0 ; i-- ) {
+				if( i_vertex[i].x < xmin ) {
+					xmin = int(i_vertex[i].x) ;
+				}
+				else if( i_vertex[i].x > xmax ) {
+					xmax = int(i_vertex[i].x) ;
+				}
+				
+				if( i_vertex[i].y < ymin ) {
+					ymin = int(i_vertex[i].y) ;
+				}
+				else if( i_vertex[i].y > ymax ) {
+					ymax = int(i_vertex[i].y) ;
+				}
+				
+			}
+			this.h = ymax - ymin + 1 ;
+			this.w = xmax - xmin + 1 ;
 		}
 	}
 }

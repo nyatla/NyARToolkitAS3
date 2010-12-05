@@ -49,53 +49,7 @@ package jp.nyatla.nyartoolkit.as3.core.transmat.optimize
 			return;
 		}
 
-		public function sincos2Rotation_ZXY(i_sincos:Vector.<TSinCosValue>,i_rot_matrix:NyARDoubleMatrix33):void
-		{
-			var sina:Number = i_sincos[0].sin_val;
-			var cosa:Number = i_sincos[0].cos_val;
-			var sinb:Number = i_sincos[1].sin_val;
-			var cosb:Number = i_sincos[1].cos_val;
-			var sinc:Number = i_sincos[2].sin_val;
-			var cosc:Number = i_sincos[2].cos_val;
-			i_rot_matrix.m00 = cosc * cosb - sinc * sina * sinb;
-			i_rot_matrix.m01 = -sinc * cosa;
-			i_rot_matrix.m02 = cosc * sinb + sinc * sina * cosb;
-			i_rot_matrix.m10 = sinc * cosb + cosc * sina * sinb;
-			i_rot_matrix.m11 = cosc * cosa;
-			i_rot_matrix.m12 = sinc * sinb - cosc * sina * cosb;
-			i_rot_matrix.m20 = -cosa * sinb;
-			i_rot_matrix.m21 = sina;
-			i_rot_matrix.m22 = cosb * cosa;
-		}
 
-		private function rotation2Sincos_ZXY(i_rot_matrix:NyARDoubleMatrix33,o_out:Vector.<TSinCosValue>,o_ang:NyARDoublePoint3d):void
-		{
-			var x:Number, y:Number, z:Number;
-			var sina:Number = i_rot_matrix.m21;
-			if (sina >= 1.0) {
-				x = Math.PI / 2;
-				y = 0;
-				z = Math.atan2(-i_rot_matrix.m10, i_rot_matrix.m00);
-			} else if (sina <= -1.0) {
-				x = -Math.PI / 2;
-				y = 0;
-				z = Math.atan2(-i_rot_matrix.m10, i_rot_matrix.m00);
-			} else {
-				x = Math.asin(sina);
-				y = Math.atan2(-i_rot_matrix.m20, i_rot_matrix.m22);
-				z = Math.atan2(-i_rot_matrix.m01, i_rot_matrix.m11);
-			}
-			o_ang.x=x;
-			o_ang.y=y;
-			o_ang.z=z;
-			o_out[0].sin_val = Math.sin(x);
-			o_out[0].cos_val = Math.cos(x);
-			o_out[1].sin_val = Math.sin(y);
-			o_out[1].cos_val = Math.cos(y);
-			o_out[2].sin_val = Math.sin(z);
-			o_out[2].cos_val = Math.cos(z);
-			return;
-		}
 
 		/*
 		 * 射影変換式 基本式 ox=(cosc * cosb - sinc * sina * sinb)*ix+(-sinc * cosa)*iy+(cosc * sinb + sinc * sina * cosb)*iz+i_trans.x; oy=(sinc * cosb + cosc * sina *
@@ -117,26 +71,22 @@ package jp.nyatla.nyartoolkit.as3.core.transmat.optimize
 		 * J=2*Σ(d[n]*f[n]+a[n]*c[n])/L K=2*Σ(-e[n]*f[n]+b[n]*c[n])/L M=Σ(-e[n]^2+d[n]^2-b[n]^2+a[n]^2)/L 偏微分式 +J*cos(x) +K*sin(x) -sin(x)^2 +cos(x)^2
 		 * +2*M*cos(x)*sin(x)
 		 */
-		private function optimizeParamX(i_angle_y:TSinCosValue,i_angle_z:TSinCosValue,i_trans:NyARDoublePoint3d,i_vertex3d:Vector.<NyARDoublePoint3d>, i_vertex2d:Vector.<NyARDoublePoint2d>,i_number_of_vertex:int,i_hint_angle:Number):Number
+		private function optimizeParamX(sinb:Number,cosb:Number,sinc:Number,cosc:Number,i_trans:NyARDoublePoint3d,i_vertex3d:Vector.<NyARDoublePoint3d>,i_vertex2d:Vector.<NyARDoublePoint2d>,i_number_of_vertex:int,i_hint_angle:Number):Number
 		{
 			var cp:NyARPerspectiveProjectionMatrix = this._projection_mat_ref;
-			var sinb:Number = i_angle_y.sin_val;
-			var cosb:Number = i_angle_y.cos_val;
-			var sinc:Number = i_angle_z.sin_val;
-			var cosc:Number = i_angle_z.cos_val;
 			var L:Number, J:Number, K:Number, M:Number, N:Number, O:Number;
 			L = J = K = M = N = O = 0;
+			var cp00:Number = cp.m00 ; 
+			var cp01:Number = cp.m01 ; 
+			var cp02:Number = cp.m02 ; 
+			var cp11:Number = cp.m11 ; 
+			var cp12:Number = cp.m12 ; 
+			
 			for (var i:int = 0; i < i_number_of_vertex; i++) {
 				var ix:Number, iy:Number, iz:Number;
 				ix = i_vertex3d[i].x;
 				iy = i_vertex3d[i].y;
 				iz = i_vertex3d[i].z;
-
-				var cp00:Number = cp.m00;
-				var cp01:Number = cp.m01;
-				var cp02:Number = cp.m02;
-				var cp11:Number = cp.m11;
-				var cp12:Number = cp.m12;
 
 				var X0:Number = (cp00 * (-sinc * sinb * ix + sinc * cosb * iz) + cp01 * (cosc * sinb * ix - cosc * cosb * iz) + cp02 * (iy));
 				var X1:Number = (cp00 * (-sinc * iy) + cp01 * ((cosc * iy)) + cp02 * (-sinb * ix + cosb * iz));
@@ -175,27 +125,21 @@ package jp.nyatla.nyartoolkit.as3.core.transmat.optimize
 
 
 		}
-
-		private function optimizeParamY(i_angle_x:TSinCosValue,i_angle_z:TSinCosValue,i_trans:NyARDoublePoint3d,i_vertex3d:Vector.<NyARDoublePoint3d>,i_vertex2d:Vector.<NyARDoublePoint2d>,i_number_of_vertex:int,i_hint_angle:Number):Number
+		private function optimizeParamY(sina:Number,cosa:Number,sinc:Number,cosc:Number,i_trans:NyARDoublePoint3d,i_vertex3d:Vector.<NyARDoublePoint3d>,i_vertex2d:Vector.<NyARDoublePoint2d>,i_number_of_vertex:int,i_hint_angle:Number):Number
 		{
 			var cp:NyARPerspectiveProjectionMatrix = this._projection_mat_ref;
-			var sina:Number = i_angle_x.sin_val;
-			var cosa:Number = i_angle_x.cos_val;
-			var sinc:Number = i_angle_z.sin_val;
-			var cosc:Number = i_angle_z.cos_val;
 			var L:Number, J:Number, K:Number, M:Number, N:Number, O:Number;
 			L = J = K = M = N = O = 0;
+			var cp00:Number = cp.m00 ; 
+			var cp01:Number = cp.m01 ; 
+			var cp02:Number = cp.m02 ; 
+			var cp11:Number = cp.m11 ; 
+			var cp12:Number = cp.m12 ; 
 			for (var i:int = 0; i < i_number_of_vertex; i++) {
 				var ix:Number, iy:Number, iz:Number;
 				ix = i_vertex3d[i].x;
 				iy = i_vertex3d[i].y;
 				iz = i_vertex3d[i].z;
-
-				var cp00:Number = cp.m00;
-				var cp01:Number = cp.m01;
-				var cp02:Number = cp.m02;
-				var cp11:Number = cp.m11;
-				var cp12:Number = cp.m12;
 
 				var X0:Number = (cp00 * (-sinc * sina * ix + cosc * iz) + cp01 * (cosc * sina * ix + sinc * iz) + cp02 * (-cosa * ix));
 				var X1:Number = (cp01 * (sinc * ix - cosc * sina * iz) + cp00 * (cosc * ix + sinc * sina * iz) + cp02 * (cosa * iz));
@@ -232,27 +176,22 @@ package jp.nyatla.nyartoolkit.as3.core.transmat.optimize
 			return getMinimumErrorAngleFromParam(L,J, K, M, N, O, i_hint_angle);
 
 		}
-
-		private function optimizeParamZ(i_angle_x:TSinCosValue,i_angle_y:TSinCosValue,i_trans:NyARDoublePoint3d,i_vertex3d:Vector.<NyARDoublePoint3d>,i_vertex2d:Vector.<NyARDoublePoint2d>,i_number_of_vertex:int,i_hint_angle:Number):Number
+		private function optimizeParamZ(sina:Number,cosa:Number,sinb:Number,cosb:Number,i_trans:NyARDoublePoint3d,i_vertex3d:Vector.<NyARDoublePoint3d>,i_vertex2d:Vector.<NyARDoublePoint2d>,i_number_of_vertex:int,i_hint_angle:Number):Number
 		{
 			var cp:NyARPerspectiveProjectionMatrix = this._projection_mat_ref;
-			var sina:Number = i_angle_x.sin_val;
-			var cosa:Number = i_angle_x.cos_val;
-			var sinb:Number = i_angle_y.sin_val;
-			var cosb:Number = i_angle_y.cos_val;
 			var L:Number, J:Number, K:Number, M:Number, N:Number, O:Number;
 			L = J = K = M = N = O = 0;
+			var cp00:Number = cp.m00 ; 
+			var cp01:Number = cp.m01 ; 
+			var cp02:Number = cp.m02 ; 
+			var cp11:Number = cp.m11 ; 
+			var cp12:Number = cp.m12 ; 
+			
 			for (var i:int = 0; i < i_number_of_vertex; i++) {
 				var ix:Number, iy:Number, iz:Number;
 				ix = i_vertex3d[i].x;
 				iy = i_vertex3d[i].y;
 				iz = i_vertex3d[i].z;
-
-				var cp00:Number = cp.m00;
-				var cp01:Number = cp.m01;
-				var cp02:Number = cp.m02;
-				var cp11:Number = cp.m11;
-				var cp12:Number = cp.m12;
 
 				var X0:Number = (cp00 * (-sina * sinb * ix - cosa * iy + sina * cosb * iz) + cp01 * (ix * cosb + sinb * iz));
 				var X1:Number = (cp01 * (sina * ix * sinb + cosa * iy - sina * iz * cosb) + cp00 * (cosb * ix + sinb * iz));
@@ -291,19 +230,29 @@ package jp.nyatla.nyartoolkit.as3.core.transmat.optimize
 		}
 		private var __angles_in:Vector.<TSinCosValue>=TSinCosValue.createArray(3);
 		private var __ang:NyARDoublePoint3d=new NyARDoublePoint3d();
-		public function modifyMatrix(io_rot:NyARDoubleMatrix33,i_trans:NyARDoublePoint3d,i_vertex3d:Vector.<NyARDoublePoint3d>,i_vertex2d:Vector.<NyARDoublePoint2d>,i_number_of_vertex:int):void
+		public function modifyMatrix_1(io_rot:NyARDoubleMatrix33,i_trans:NyARDoublePoint3d,i_vertex3d:Vector.<NyARDoublePoint3d>,i_vertex2d:Vector.<NyARDoublePoint2d>,i_number_of_vertex:int):void
 		{
-			var angles_in:Vector.<TSinCosValue> = this.__angles_in;// x,y,z
-			var ang:NyARDoublePoint3d = this.__ang;
-
+			var ang:NyARDoublePoint3d = this.__ang;		
 			// ZXY系のsin/cos値を抽出
-			rotation2Sincos_ZXY(io_rot, angles_in,ang);
-			ang.x += optimizeParamX(angles_in[1], angles_in[2], i_trans, i_vertex3d, i_vertex2d, i_number_of_vertex, ang.x);
-			ang.y += optimizeParamY(angles_in[0], angles_in[2], i_trans, i_vertex3d, i_vertex2d, i_number_of_vertex, ang.y);
-			ang.z += optimizeParamZ(angles_in[0], angles_in[1], i_trans, i_vertex3d, i_vertex2d, i_number_of_vertex, ang.z);
-			io_rot.setZXYAngle_Number(ang.x, ang.y, ang.z);
+			io_rot.getZXYAngle(ang);
+			modifyMatrix_2(ang,i_trans,i_vertex3d,i_vertex2d,i_number_of_vertex,ang);
+			io_rot.setZXYAngle_2(ang.x, ang.y, ang.z);
 			return;
 		}
+		public function modifyMatrix_2( i_angle:NyARDoublePoint3d , i_trans:NyARDoublePoint3d , i_vertex3d:Vector.<NyARDoublePoint3d> , i_vertex2d:Vector.<NyARDoublePoint2d> , i_number_of_vertex:int , o_angle:NyARDoublePoint3d ):void
+		{
+			var sinx:Number = Math.sin(i_angle.x) ;
+			var cosx:Number = Math.cos(i_angle.x) ;
+			var siny:Number = Math.sin(i_angle.y) ;
+			var cosy:Number = Math.cos(i_angle.y) ;
+			var sinz:Number = Math.sin(i_angle.z) ;
+			var cosz:Number = Math.cos(i_angle.z) ;
+			o_angle.x = i_angle.x + optimizeParamX(siny , cosy , sinz , cosz , i_trans , i_vertex3d , i_vertex2d , i_number_of_vertex , i_angle.x) ;
+			o_angle.y = i_angle.y + optimizeParamY(sinx , cosx , sinz , cosz , i_trans , i_vertex3d , i_vertex2d , i_number_of_vertex , i_angle.y) ;
+			o_angle.z = i_angle.z + optimizeParamZ(sinx , cosx , siny , cosy , i_trans , i_vertex3d , i_vertex2d , i_number_of_vertex , i_angle.z) ;
+			return  ;
+		}
+		
 		private var __sin_table:Vector.<Number> = new Vector.<Number>(4);
 		/**
 		 * エラーレートが最小になる点を得る。

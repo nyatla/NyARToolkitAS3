@@ -67,9 +67,13 @@ package jp.nyatla.nyartoolkit.as3.core.rasterreader
 			}
 			return;
 		}
-		public function setPixel(i_x:int,i_y:int,i_rgb:Vector.<int>):void
+		public function setPixel_1(i_x:int,i_y:int,i_rgb:Vector.<int>):void 
 		{
-			this._ref_buf[i_x + i_y * this._size.w]=((i_rgb[0]<<16)&0xff)|((i_rgb[1]<<8)&0xff)|((i_rgb[2])&0xff);
+			this._ref_buf[i_x + i_y * this._size.w]=(i_rgb[0]<<16)|(i_rgb[1]<<8)|(i_rgb[2]);
+		}
+		public function setPixel_2(i_x:int,i_y:int,i_r:int,i_g:int,i_b:int):void
+		{
+			this._ref_buf[i_x + i_y * this._size.w]=(i_r<<16)|(i_g<<8)|(i_b);
 		}
 		public function setPixels(i_x:Vector.<int>,i_y:Vector.<int>, i_num:int,i_intrgb:Vector.<int>):void
 		{

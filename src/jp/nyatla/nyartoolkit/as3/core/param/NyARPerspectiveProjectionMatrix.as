@@ -32,10 +32,16 @@ package jp.nyatla.nyartoolkit.as3.core.param
 {
 	import jp.nyatla.nyartoolkit.as3.core.types.matrix.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
+	import jp.nyatla.nyartoolkit.as3.utils.as3.*;
 	import jp.nyatla.nyartoolkit.as3.core.*;	
 
-	final public class NyARPerspectiveProjectionMatrix extends NyARDoubleMatrix34
+	final public class NyARPerspectiveProjectionMatrix extends NyARDoubleMatrix44
 	{
+		public function NyARPerspectiveProjectionMatrix()
+		{
+			this.m30=this.m31=this.m32=0;
+			this.m33=1;
+		}
 		/*
 		 * static double dot( double a1, double a2, double a3,double b1, double b2,double b3 )
 		 */
@@ -65,12 +71,6 @@ package jp.nyatla.nyartoolkit.as3.core.param
 			var rem1:Number, rem2:Number, rem3:Number;
 			var c00:Number,c01:Number,c02:Number,c03:Number,c10:Number,c11:Number,c12:Number,c13:Number,c20:Number,c21:Number,c22:Number,c23:Number;
 			if (this.m23>= 0) {// if( source[2][3] >= 0 ) {
-				// <Optimize>
-				// for(int r = 0; r < 3; r++ ){
-				// for(int c = 0; c < 4; c++ ){
-				// Cpara[r][c]=source[r][c];//Cpara[r][c] = source[r][c];
-				// }
-				// }
 				c00=this.m00;
 				c01=this.m01;
 				c02=this.m02;
@@ -170,25 +170,127 @@ package jp.nyatla.nyartoolkit.as3.core.param
 			return;
 		}
 		/**
-		 * 現在の行列で３次元座標を射影変換します。
+		 * 3次元座標を2次元座標に変換します。
 		 * @param i_3dvertex
 		 * @param o_2d
 		 */
-		public function projectionConvert_NyARDoublePoint3d(i_3dvertex:NyARDoublePoint3d,o_2d:NyARDoublePoint2d):void
+		public function project_1(i_3dvertex:NyARDoublePoint3d,o_2d:NyARDoublePoint2d):void
 		{
-			var w:Number=i_3dvertex.z*this.m22;
-			o_2d.x=(i_3dvertex.x*this.m00+i_3dvertex.y*this.m01+i_3dvertex.z*this.m02)/w;
-			o_2d.y=(i_3dvertex.y*this.m11+i_3dvertex.z*this.m12)/w;
+			var w:Number=1/(i_3dvertex.z*this.m22);
+			o_2d.x=(i_3dvertex.x*this.m00+i_3dvertex.y*this.m01+i_3dvertex.z*this.m02)*w;
+			o_2d.y=(i_3dvertex.y*this.m11+i_3dvertex.z*this.m12)*w;
 			return;
 		}
-		public function projectionConvert_Number(i_x:Number,i_y:Number,i_z:Number,o_2d:NyARDoublePoint2d):void
+		/**
+		 * 3次元座標を2次元座標に変換します。
+		 * @param i_3dvertex
+		 * @param o_2d
+		 */
+		public function project_2(i_x:Number,i_y:Number,i_z:Number,o_2d:NyARDoublePoint2d):void
 		{
-			var w:Number=i_z*this.m22;
-			o_2d.x=(i_x*this.m00+i_y*this.m01+i_z*this.m02)/w;
-			o_2d.y=(i_y*this.m11+i_z*this.m12)/w;
+			var w:Number=1/(i_z*this.m22);
+			o_2d.x=(i_x*this.m00+i_y*this.m01+i_z*this.m02)*w;
+			o_2d.y=(i_y*this.m11+i_z*this.m12)*w;
 			return;
 		}	
+		/**
+		 * 3次元座標を2次元座標に変換します。
+		 * @param i_3dvertex
+		 * @param o_2d
+		 */
+		public function project_3(i_3dvertex:NyARDoublePoint3d,o_2d:NyARIntPoint2d):void
+		{
+			var w:Number=1/(i_3dvertex.z*this.m22);
+			o_2d.x=(int)((i_3dvertex.x*this.m00+i_3dvertex.y*this.m01+i_3dvertex.z*this.m02)*w);
+			o_2d.y=(int)((i_3dvertex.y*this.m11+i_3dvertex.z*this.m12)*w);
+			return;
+		}	
+		/**
+		 * 3次元座標を2次元座標に変換します。
+		 * @param i_3dvertex
+		 * @param o_2d
+		 */
+		public function project_4(i_x:Number,i_y:Number,i_z:Number,o_2d:NyARIntPoint2d):void
+		{
+			var w:Number=1/(i_z*this.m22);
+			o_2d.x=(int)((i_x*this.m00+i_y*this.m01+i_z*this.m02)*w);
+			o_2d.y=(int)((i_y*this.m11+i_z*this.m12)*w);
+			return;
+		}
 		
-		
+		/**
+		 * 右手系の視錐台を作ります。
+		 * @param i_screen_width
+		 * @param i_screen_height
+		 * @param i_dist_min
+		 * @param i_dist_max
+		 * @param o_frustum
+		 */
+		public function makeCameraFrustumRH(i_screen_width:Number ,i_screen_height:Number,i_dist_min:Number,i_dist_max:Number,o_frustum:NyARDoubleMatrix44):void
+		{
+			var trans_mat:NyARMat = new NyARMat(3, 4);
+			var icpara_mat:NyARMat = new NyARMat(3, 4);
+			var p:Vector.<Vector.<Number>> = ArrayUtils.create2dNumber(3,3);
+			var i:int;
+			
+			this.decompMat(icpara_mat, trans_mat);
+
+			var icpara:Vector.<Vector.<Number>> = icpara_mat.getArray();
+			var trans:Vector.<Vector.<Number>> = trans_mat.getArray();
+			for (i = 0; i < 4; i++) {
+				icpara[1][i] = (i_screen_height - 1) * (icpara[2][i]) - icpara[1][i];
+			}
+			p[0][0] = icpara[0][0] / icpara[2][2];
+			p[0][1] = icpara[0][1] / icpara[2][2];
+			p[0][2] = icpara[0][2] / icpara[2][2];
+
+			p[1][0] = icpara[1][0] / icpara[2][2];
+			p[1][1] = icpara[1][1] / icpara[2][2];
+			p[1][2] = icpara[1][2] / icpara[2][2];
+			
+			p[2][0] = icpara[2][0] / icpara[2][2];
+			p[2][1] = icpara[2][1] / icpara[2][2];
+			p[2][2] = icpara[2][2] / icpara[2][2];
+
+			var q00:Number,q01:Number,q02:Number,q03:Number,q10:Number,q11:Number,q12:Number,q13:Number,q20:Number,q21:Number,q22:Number,q23:Number,q30:Number,q31:Number,q32:Number,q33:Number;
+			
+			//視錐台への変換
+			q00 = (2.0 * p[0][0] / (i_screen_width - 1));
+			q01 = (2.0 * p[0][1] / (i_screen_width - 1));
+			q02 = -((2.0 * p[0][2] / (i_screen_width - 1)) - 1.0);
+			q03 = 0.0;
+			o_frustum.m00 = q00 * trans[0][0] + q01 * trans[1][0] + q02 * trans[2][0];
+			o_frustum.m01 = q00 * trans[0][1] + q01 * trans[1][1] + q02 * trans[2][1];
+			o_frustum.m02 = q00 * trans[0][2] + q01 * trans[1][2] + q02 * trans[2][2];
+			o_frustum.m03 = q00 * trans[0][3] + q01 * trans[1][3] + q02 * trans[2][3] + q03;
+
+			q10 = 0.0;
+			q11 = -(2.0 * p[1][1] / (i_screen_height - 1));
+			q12 = -((2.0 * p[1][2] / (i_screen_height - 1)) - 1.0);
+			q13 = 0.0;
+			o_frustum.m10 = q10 * trans[0][0] + q11 * trans[1][0] + q12 * trans[2][0];
+			o_frustum.m11 = q10 * trans[0][1] + q11 * trans[1][1] + q12 * trans[2][1];
+			o_frustum.m12 = q10 * trans[0][2] + q11 * trans[1][2] + q12 * trans[2][2];
+			o_frustum.m13 = q10 * trans[0][3] + q11 * trans[1][3] + q12 * trans[2][3] + q13;
+
+			q20 = 0.0;
+			q21 = 0.0;
+			q22 = (i_dist_max + i_dist_min) / (i_dist_min - i_dist_max);
+			q23 = 2.0 * i_dist_max * i_dist_min / (i_dist_min - i_dist_max);
+			o_frustum.m20 = q20 * trans[0][0] + q21 * trans[1][0] + q22 * trans[2][0];
+			o_frustum.m21 = q20 * trans[0][1] + q21 * trans[1][1] + q22 * trans[2][1];
+			o_frustum.m22 = q20 * trans[0][2] + q21 * trans[1][2] + q22 * trans[2][2];
+			o_frustum.m23 = q20 * trans[0][3] + q21 * trans[1][3] + q22 * trans[2][3] + q23;
+
+			q30 = 0.0;
+			q31 = 0.0;
+			q32 = -1.0;
+			q33 = 0.0;
+			o_frustum.m30 = q30 * trans[0][0] + q31 * trans[1][0] + q32 * trans[2][0];
+			o_frustum.m31 = q30 * trans[0][1] + q31 * trans[1][1] + q32 * trans[2][1];
+			o_frustum.m32 = q30 * trans[0][2] + q31 * trans[1][2] + q32 * trans[2][2];
+			o_frustum.m33 = q30 * trans[0][3] + q31 * trans[1][3] + q32 * trans[2][3] + q33;
+			return;
+		}
 	}
 }

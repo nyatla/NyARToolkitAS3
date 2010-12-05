@@ -114,6 +114,10 @@ package jp.nyatla.nyartoolkit.as3.core.transmat.rotmatrix
 			this.m22 = w22/w;
 			return;
 		}
+		public function initRotByAngle(i_angle:NyARDoublePoint3d):void
+		{
+			this.setZXYAngle_1(i_angle);
+		}
 		/**
 		 * i_in_pointを変換行列で座標変換する。
 		 * @param i_in_point

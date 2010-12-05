@@ -48,7 +48,7 @@ package jp.nyatla.nyartoolkit.as3.core.param
 			{
 				for(var i2:int=i_screen_size.w-1;i2>=0;i2--)
 				{
-					i_distfactor.observ2Ideal(i2,i, opoint);
+					i_distfactor.observ2Ideal_1(i2,i, opoint);
 					this._mapx[ptr]=opoint.x;
 					this._mapy[ptr]=opoint.y;
 					ptr--;
@@ -56,14 +56,21 @@ package jp.nyatla.nyartoolkit.as3.core.param
 			}
 			return;
 		}
-		public function observ2Ideal(ix:int,iy:int,o_point:NyARDoublePoint2d):void
+		public function observ2Ideal_NyARIntPoint2d(ix:int,iy:int,o_point:NyARIntPoint2d):void
+		{
+			var idx:int=ix+iy*this._stride;
+			o_point.x=(int)(this._mapx[idx]);
+			o_point.y=(int)(this._mapy[idx]);
+			return;
+		}
+		public function observ2Ideal_NyARDoublePoint2d(ix:int,iy:int,o_point:NyARDoublePoint2d):void
 		{
 			var idx:int=ix+iy*this._stride;
 			o_point.x=this._mapx[idx];
 			o_point.y=this._mapy[idx];
 			return;
 		}
-		public function observ2IdealBatch(i_x_coord:Vector.<int>,i_y_coord:Vector.<int>,i_start:int,i_num:int,o_x_coord:Vector.<Number>,o_y_coord:Vector.<Number>,i_out_start_index:int):void
+		public function observ2IdealBatch(i_coord:Vector.<NyARIntPoint2d>,i_start:int,i_num:int,o_x_coord:Vector.<Number>,o_y_coord:Vector.<Number>,i_out_start_index:int):void
 		{
 			var idx:int;
 			var ptr:int=i_out_start_index;
@@ -71,7 +78,7 @@ package jp.nyatla.nyartoolkit.as3.core.param
 			var mapy:Vector.<Number>=this._mapy;
 			var stride:int=this._stride;
 			for (var j:int = 0; j < i_num; j++){
-				idx=i_x_coord[i_start + j]+i_y_coord[i_start + j]*stride;
+				idx=i_coord[i_start + j].x+i_coord[i_start + j].y*stride;
 				o_x_coord[ptr]=mapx[idx];
 				o_y_coord[ptr]=mapy[idx];
 				ptr++;

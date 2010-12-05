@@ -40,7 +40,8 @@ package jp.nyatla.nyartoolkit.as3.core.pickup
 	public class NyARColorPatt_Perspective implements INyARColorPatt
 	{
 		protected var _patdata:Vector.<int>;
-		protected var _pickup_lt:NyARIntPoint2d=new NyARIntPoint2d();	
+		protected var _pickup_lt:NyARIntPoint2d = new NyARIntPoint2d();	
+		protected var _pickup_wh:NyARIntSize=new NyARIntSize();
 		protected var _resolution:int;
 		protected var _size:NyARIntSize;
 		protected var _perspective_gen:NyARPerspectiveParamGenerator_O1;
@@ -100,17 +101,16 @@ package jp.nyatla.nyartoolkit.as3.core.pickup
 		 */
 		public function setEdgeSize(i_x_edge:int,i_y_edge:int,i_resolution:int):void
 		{
-			NyAS3Utils.assert(i_x_edge>=0);
-			NyAS3Utils.assert(i_y_edge>=0);
+			//NyAS3Utils.assert(i_x_edge>=0);
+			//NyAS3Utils.assert(i_y_edge>=0);
 			//Perspectiveパラメタ計算器を作成
-			this._perspective_gen=new NyARPerspectiveParamGenerator_O1(
-				LOCAL_LT,LOCAL_LT,
-				(i_x_edge*2+this._size.w)*i_resolution,
-				(i_y_edge*2+this._size.h)*i_resolution);
+			this._perspective_gen=new NyARPerspectiveParamGenerator_O1(LOCAL_LT,LOCAL_LT);
 			//ピックアップ開始位置を計算
-			this._pickup_lt.x=i_x_edge*i_resolution+LOCAL_LT;
-			this._pickup_lt.y=i_y_edge*i_resolution+LOCAL_LT;
+			this._pickup_lt.setValue(i_x_edge*i_resolution+LOCAL_LT,i_y_edge*i_resolution+LOCAL_LT);
+			this._pickup_wh.setValue((i_x_edge*2+this._size.w)*i_resolution,(i_y_edge*2+this._size.h)*i_resolution);
+			this._resolution=i_resolution;	
 			return;
+
 		}
 		public function setEdgeSizeByPercent(i_x_percent:int,i_y_percent:int,i_resolution:int):void
 		{
@@ -168,7 +168,7 @@ package jp.nyatla.nyartoolkit.as3.core.pickup
 		{
 			//遠近法のパラメータを計算
 			var cpara:Vector.<Number> = this.__pickFromRaster_cpara;
-			if (!this._perspective_gen.getParam(i_vertexs, cpara)) {
+			if (!this._perspective_gen.getParam(this._pickup_wh,i_vertexs, cpara)) {
 				return false;
 			}
 			

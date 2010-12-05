@@ -30,6 +30,10 @@
  */
 package jp.nyatla.nyartoolkit.as3.core.types 
 {
+	/**
+	 * int型の二次元の点を格納します。
+	 *
+	 */
 	public class NyARIntPoint2d
 	{
 		public var x:int;
@@ -49,6 +53,11 @@ package jp.nyatla.nyartoolkit.as3.core.types
 			}
 			return ret;
 		}
+		/**
+		 * i_fromからi_toへ配列をコピーします。
+		 * @param i_from
+		 * @param i_to
+		 */
 		public static function copyArray(i_from:Vector.<NyARIntPoint2d>,i_to:Vector.<NyARIntPoint2d>):void
 		{
 			for(var i:int=i_from.length-1;i>=0;i--)
@@ -58,6 +67,43 @@ package jp.nyatla.nyartoolkit.as3.core.types
 			}
 			return;
 		}
+		public function sqDist( i_p1:NyARIntPoint2d ):int
+		{ 
+			var x:int = this.x - i_p1.x ;
+			var y:int = this.y - i_p1.y ;
+			return x * x + y * y ;
+		}
+		
+		public function setCenterPos( i_point:Vector.<NyARIntPoint2d> , i_number_of_vertex:int ):void
+		{ 
+			var cx:int , cy:int ;
+			cx = cy = 0 ;
+			for( var i:int = i_number_of_vertex - 1 ; i >= 0 ; i-- ) {
+				cx += i_point[i].x ;
+				cy += i_point[i].y ;
+			}
+			this.x = cx / i_number_of_vertex ;
+			this.y = cy / i_number_of_vertex ;
+		}
+		
+		public function setValue_1( i_source:NyARIntPoint2d ):void
+		{ 
+			this.x = i_source.x ;
+			this.y = i_source.y ;
+		}
+		
+		public function setValue_2( i_source:NyARDoublePoint2d ):void
+		{ 
+			this.x = int(i_source.x) ;
+			this.y = int(i_source.y) ;
+		}
+		
+		public function setValue_3( i_x:int , i_y:int ):void
+		{ 
+			this.x = i_x ;
+			this.y = i_y ;
+		}
+		
 	}
 
 

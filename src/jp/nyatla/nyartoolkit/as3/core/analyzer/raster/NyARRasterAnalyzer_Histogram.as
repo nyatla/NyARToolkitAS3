@@ -77,25 +77,40 @@ package jp.nyatla.nyartoolkit.as3.core.analyzer.raster
 		/**
 		 * o_histgramにヒストグラムを出力します。
 		 * @param i_input
-		 * @param o_histgram
+		 * @param o_histogram
 		 * @return
 		 * @throws NyARException
 		 */
-		public function analyzeRaster(i_input:INyARRaster,o_histgram:NyARHistogram):int
+		public function analyzeRaster_1(i_input:INyARRaster,o_histogram:NyARHistogram):void
 		{
 			var size:NyARIntSize=i_input.getSize();
 			//最大画像サイズの制限
 			NyAS3Utils.assert(size.w*size.h<0x40000000);
-			NyAS3Utils.assert(o_histgram.length == 256);//現在は固定
+			NyAS3Utils.assert(o_histogram.length == 256);//現在は固定
 
-			var  h:Vector.<int>=o_histgram.data;
+			var  h:Vector.<int>=o_histogram.data;
 			//ヒストグラム初期化
-			for (var i:int = o_histgram.length-1; i >=0; i--){
+			for (var i:int = o_histogram.length-1; i >=0; i--){
 				h[i] = 0;
 			}
-			o_histgram.total_of_data=size.w*size.h/this._vertical_skip;
-			return this._histImpl.createHistogram(i_input, size,h,this._vertical_skip);		
-		}		
+			o_histogram.total_of_data=size.w*size.h/this._vertical_skip;
+			this._histImpl.createHistogram(i_input,0,0, size.w,size.h,o_histogram.data, this._vertical_skip);		
+			return;
+		}
+		public function analyzeRaster_2(i_input:INyARRaster,i_area:NyARIntRect,o_histogram:NyARHistogram):void
+		{
+			var size:NyARIntSize=i_input.getSize();
+			//最大画像サイズの制限
+
+			var h:Vector.<int>=o_histogram.data;
+			//ヒストグラム初期化
+			for (var i:int = o_histogram.length-1; i >=0; i--){
+				h[i] = 0;
+			}
+			o_histogram.total_of_data=i_area.w*i_area.h/this._vertical_skip;
+			this._histImpl.createHistogram(i_input,i_area.x,i_area.y,i_area.w,i_area.h,o_histogram.data,this._vertical_skip);
+			return;
+		}	
 	}
 }
 import jp.nyatla.nyartoolkit.as3.core.rasterfilter.*;
@@ -107,41 +122,71 @@ import jp.nyatla.nyartoolkit.as3.core.types.*;
 
 interface ICreateHistogramImpl
 {
-	function createHistogram(i_reader:INyARRaster,i_size:NyARIntSize,o_histgram:Vector.<int>,i_skip:int):int;
+	function createHistogram(i_raster:INyARRaster, i_l:int, i_t:int, i_w:int, i_h:int, o_histogram:Vector.<int>, i_skip:int):void;
 }
-
 class NyARRasterThresholdAnalyzer_Histogram_INT1D_GRAY_8 implements ICreateHistogramImpl
 {
-	public function createHistogram(i_reader:INyARRaster,i_size:NyARIntSize,o_histgram:Vector.<int>,i_skip:int):int
+	public function createHistogram(i_raster:INyARRaster,i_l:int,i_t:int,i_w:int,i_h:int,o_histogram:Vector.<int>,i_skip:int):void
 	{
-		NyAS3Utils.assert (i_reader.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
-		var input:Vector.<int>=(Vector.<int>)(i_reader.getBuffer());
-		for (var y:int = i_size.h-1; y >=0 ; y-=i_skip){
-			var pt:int=y*i_size.w;
-			for (var x:int = i_size.w-1; x >=0; x--) {
-				o_histgram[input[pt]]++;
-				pt++;
+		//assert (i_raster.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
+		var input:Vector.<int>=(Vector.<int>)(i_raster.getBuffer());
+		var	s:NyARIntSize=i_raster.getSize();
+		var	skip:int=(i_skip*s.w-i_w);
+		var pix_count:int=i_w;
+		var pix_mod_part:int=pix_count-(pix_count%8);			
+		//左上から1行づつ走査していく
+		var pt:int=(i_t*s.w+i_l);
+		for (var y:int = i_h-1; y >=0 ; y-=i_skip){
+			var x:int;
+			for (x = pix_count-1; x >=pix_mod_part; x--){
+				o_histogram[input[pt++]]++;
 			}
+			for (;x>=0;x-=8){
+				o_histogram[input[pt++]]++;
+				o_histogram[input[pt++]]++;
+				o_histogram[input[pt++]]++;
+				o_histogram[input[pt++]]++;
+				o_histogram[input[pt++]]++;
+				o_histogram[input[pt++]]++;
+				o_histogram[input[pt++]]++;
+				o_histogram[input[pt++]]++;
+			}
+			//スキップ
+			pt+=skip;
 		}
-		return i_size.w*i_size.h;
-	}	
-}
-
+		return;
+		}	
+	}
 class NyARRasterThresholdAnalyzer_Histogram_INT1D_X8R8G8B8_32 implements ICreateHistogramImpl
 {
-	public function createHistogram(i_reader:INyARRaster,i_size:NyARIntSize,o_histgram:Vector.<int>,i_skip:int):int
+	public function createHistogram(i_raster:INyARRaster,i_l:int,i_t:int,i_w:int,i_h:int,o_histogram:Vector.<int>,i_skip:int):void
 	{
-		NyAS3Utils.assert (i_reader.isEqualBufferType(NyARBufferType.INT1D_X8R8G8B8_32));
-		var input:Vector.<int> =Vector.<int>(i_reader.getBuffer());
-		for (var y:int = i_size.h-1; y >=0 ; y-=i_skip){
-			var pt:int=y*i_size.w;
-			for (var x:int = i_size.w-1; x >=0; x--) {
-				var p:int=input[pt];
-				o_histgram[((p& 0xff)+(p& 0xff)+(p& 0xff))/3]++;
-				pt++;
+		//assert (i_raster.isEqualBufferType(NyARBufferType.INT1D_X8R8G8B8_32));
+		var input:Vector.<int>=(Vector.<int>)(i_raster.getBuffer());
+		var s:NyARIntSize=i_raster.getSize();
+		var skip:int=(i_skip*s.w-i_w);
+		var pix_count:int=i_w;
+		var pix_mod_part:int=pix_count-(pix_count%8);			
+		//左上から1行づつ走査していく
+		var pt:int=(i_t*s.w+i_l);
+		for (var y:int = i_h-1; y >=0 ; y-=i_skip){
+			var x:int,v:int;
+			for (x = pix_count-1; x >=pix_mod_part; x--){
+				v=input[pt++];o_histogram[((v& 0xff)+(v& 0xff)+(v& 0xff))/3]++;
 			}
+			for (;x>=0;x-=8){
+				v=input[pt++];o_histogram[((v& 0xff)+(v& 0xff)+(v& 0xff))/3]++;
+				v=input[pt++];o_histogram[((v& 0xff)+(v& 0xff)+(v& 0xff))/3]++;
+				v=input[pt++];o_histogram[((v& 0xff)+(v& 0xff)+(v& 0xff))/3]++;
+				v=input[pt++];o_histogram[((v& 0xff)+(v& 0xff)+(v& 0xff))/3]++;
+				v=input[pt++];o_histogram[((v& 0xff)+(v& 0xff)+(v& 0xff))/3]++;
+				v=input[pt++];o_histogram[((v& 0xff)+(v& 0xff)+(v& 0xff))/3]++;
+				v=input[pt++];o_histogram[((v& 0xff)+(v& 0xff)+(v& 0xff))/3]++;
+				v=input[pt++];o_histogram[((v& 0xff)+(v& 0xff)+(v& 0xff))/3]++;
+			}
+			//スキップ
+			pt+=skip;
 		}
-		return i_size.w*i_size.h;
+		return;			
 	}	
 }
-

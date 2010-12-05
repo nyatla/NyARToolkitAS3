@@ -31,6 +31,7 @@
 package jp.nyatla.nyartoolkit.as3.core.squaredetect 
 {
 	import jp.nyatla.nyartoolkit.as3.core.raster.*;
+	import jp.nyatla.nyartoolkit.as3.core.types.*;
 	import jp.nyatla.nyartoolkit.as3.*;
 	public class NyARSquareContourDetector
 	{
@@ -40,10 +41,24 @@ package jp.nyatla.nyartoolkit.as3.core.squaredetect
 		 * @param i_callback
 		 * @throws NyARException
 		 */
-		public function detectMarkerCB(i_raster:NyARBinRaster, i_callback:NyARSquareContourDetector_IDetectMarkerCallback):void
+		public function detectMarker_1(i_raster:NyARBinRaster):void
 		{
-			NyARException.trap("getRgbPixelReader not implemented.");
+			NyARException.trap("detectMarker not implemented.");
 		}
+		/**
+		 * 通知ハンドラです。
+		 * この関数は、detectMarker関数のコールバック関数として機能します。
+		 * 継承先のクラスで、矩形の発見時の処理をここに記述してください。
+		 * @param i_coord
+		 * @param i_coor_num
+		 * @param i_vertex_index
+		 * @throws NyARException
+		 */
+		protected function onSquareDetect(i_coord:NyARIntCoordinates, i_vertex_index:Vector.<int>):void
+		{
+			NyARException.trap("onSquareDetect not implemented.");
+		}
+		
 	}
 
 }

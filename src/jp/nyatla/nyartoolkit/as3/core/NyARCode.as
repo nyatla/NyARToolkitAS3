@@ -32,6 +32,7 @@ package jp.nyatla.nyartoolkit.as3.core
 {
 	import jp.nyatla.nyartoolkit.as3.core.match.*;
 	import jp.nyatla.nyartoolkit.as3.core.raster.*;
+	import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
 	import jp.nyatla.as3utils.*;
 	/**
 	 * ARToolKitのマーカーコードを1個保持します。
@@ -77,12 +78,34 @@ package jp.nyatla.nyartoolkit.as3.core
 			NyARCodeFileReader.loadFromARToolKitFormFile(i_stream,this);
 			return;
 		}
-		public function setRaster(i_raster:Vector.<INyARRaster>):void
+		/**
+		 * 4枚のラスタから、マーカーパターンを生成して格納します。
+		 * @param i_raster
+		 * direction毎のパターンを格納したラスタ配列を指定します。
+		 * ラスタは同一なサイズ、かつマーカーパターンと同じサイズである必要があります。
+		 * 格納順は、パターンの右上が、1,2,3,4象限になる順番です。
+		 * @throws NyARException
+		 */
+		public function setRaster_1(i_raster:Vector.<INyARRgbRaster>):void
 		{
 			NyAS3Utils.assert(i_raster.length!=4);
 			//ラスタにパターンをロードする。
 			for(var i:int=0;i<4;i++){
-				this._color_pat[i].setRaster(i_raster[i]);				
+				this._color_pat[i].setRaster_1(i_raster[i]);				
+			}
+			return;
+		}
+		/**
+		 * inputStreamから、パターンデータをロードします。
+		 * ロードするパターンのサイズは、現在の値と同じである必要があります。
+		 * @param i_stream
+		 * @throws NyARException
+		 */
+		public function setRaster_2(i_raster:INyARRgbRaster):void
+		{
+			//ラスタにパターンをロードする。
+			for(var i:int=0;i<4;i++){
+				this._color_pat[i].setRaster_2(i_raster,i);
 			}
 			return;
 		}
@@ -93,6 +116,7 @@ import jp.nyatla.nyartoolkit.as3.core.raster.*;
 import jp.nyatla.nyartoolkit.as3.core.*;
 import jp.nyatla.nyartoolkit.as3.*;
 import jp.nyatla.nyartoolkit.as3.core.raster.*;
+import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.as3.core.rasterreader.*;
 import jp.nyatla.nyartoolkit.as3.core.types.*;
 	
@@ -108,7 +132,7 @@ class NyARCodeFileReader
 	{
 		var width:int=o_code.getWidth();
 		var height:int=o_code.getHeight();
-		var tmp_raster:NyARRaster=new NyARRaster(width,height,NyARBufferType.INT1D_X8R8G8B8_32);
+		var tmp_raster:NyARRgbRaster=new NyARRgbRaster(width,height,NyARBufferType.INT1D_X8R8G8B8_32);
 		//4個の要素をラスタにセットする。
 		var token:Array = i_stream.match(/\d+/g);
 		var buf:Vector.<int>=Vector.<int>(tmp_raster.getBuffer());
@@ -116,7 +140,7 @@ class NyARCodeFileReader
 		for (var h:int = 0; h < 4; h++){
 			readBlock(token,width,height,buf);
 			//ARCodeにセット(カラー)
-			o_code.getColorData(h).setRaster(tmp_raster);
+			o_code.getColorData(h).setRaster_1(tmp_raster);
 			o_code.getBlackWhiteData(h).setRaster(tmp_raster);
 		}
 		tmp_raster=null;//ポイ

@@ -58,6 +58,28 @@ package jp.nyatla.nyartoolkit.as3.core.raster.rgb {
 		{
 			return this._buffer_type==i_type_value;
 		}
+		/**
+		 * ラスタのコピーを実行します。
+		 * この関数は暫定です。低速なので注意してください。
+		 * @param i_input
+		 * @param o_output
+		 * @throws NyARException 
+		 */
+		public static function copy(i_input:INyARRgbRaster,o_output:INyARRgbRaster):void
+		{
+			//assert(i_input.getSize().isEqualSize(o_output.getSize()));
+			var width:int=i_input.getWidth();
+			var height:int=i_input.getHeight();
+			var rgb:Vector.<int>=new int[3];
+			var inr:INyARRgbPixelReader=i_input.getRgbPixelReader();
+			var outr:INyARRgbPixelReader=o_output.getRgbPixelReader();
+			for(var i:int=height-1;i>=0;i--){
+				for(var i2:int=width-1;i2>=0;i2--){
+					inr.getPixel(i2,i,rgb);
+					outr.setPixel_1(i2,i,rgb);
+				}
+			}
+		}		
 		public function getRgbPixelReader():INyARRgbPixelReader
 		{
 			throw new NyARException();

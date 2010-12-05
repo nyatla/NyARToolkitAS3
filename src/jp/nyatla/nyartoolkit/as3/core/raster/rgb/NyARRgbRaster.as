@@ -66,6 +66,14 @@ package jp.nyatla.nyartoolkit.as3.core.raster.rgb
 				throw new NyARException();
 			}
 		}
+		/**
+		 * Readerとbufferを初期化する関数です。コンストラクタから呼び出します。
+		 * 継承クラスでこの関数を拡張することで、対応するバッファタイプの種類を増やせます。
+		 * @param i_size
+		 * @param i_raster_type
+		 * @param i_is_alloc
+		 * @return
+		 */
 		protected function initInstance(i_size:NyARIntSize,i_raster_type:int,i_is_alloc:Boolean):Boolean
 		{
 			switch(i_raster_type)

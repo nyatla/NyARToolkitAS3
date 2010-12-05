@@ -32,7 +32,7 @@ package jp.nyatla.nyartoolkit.as3.core.labeling
 {
 	public class NyARLabelOverlapChecker
 	{
-		private var _labels:Vector.<*>;
+		private var _labels:Vector.<Object>;
 		private var _length:int;
 		/*
 		*/
@@ -40,9 +40,9 @@ package jp.nyatla.nyartoolkit.as3.core.labeling
 		{
 			this._labels = createArray(i_max_label);
 		}
-		protected function createArray(i_length:int):Vector.<*>
+		protected function createArray(i_length:int):Vector.<Object>
 		{
-			return new Vector.<NyARLabelInfo>(i_length);
+			return new Vector.<Object>(i_length);
 		}
 
 		/**
@@ -65,14 +65,15 @@ package jp.nyatla.nyartoolkit.as3.core.labeling
 		public function check(i_label:NyARLabelInfo):Boolean
 		{
 			// 重なり処理かな？
-			var label_pt:Vector.<*>  = this._labels;
+			var label_pt:Vector.<Object>  = this._labels;
 			var px1:int = (int)(i_label.pos_x);
 			var py1:int = (int)(i_label.pos_y);
 			for (var i:int = this._length - 1; i >= 0; i--) {
-				var px2:int = (int)(label_pt[i].pos_x);
-				var py2:int = (int)(label_pt[i].pos_y);
+				var label_ptr:NyARLabelInfo = (NyARLabelInfo)(label_pt[i]);
+				var px2:int = (int)(label_ptr.pos_x);
+				var py2:int = (int)(label_ptr.pos_y);
 				var d:int = (px1 - px2) * (px1 - px2) + (py1 - py2) * (py1 - py2);
-				if (d < label_pt[i].area / 4) {
+				if (d < label_ptr.area / 4) {
 					// 対象外
 					return false;
 				}

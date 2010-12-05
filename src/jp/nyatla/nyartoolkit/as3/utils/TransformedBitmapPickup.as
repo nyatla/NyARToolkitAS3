@@ -57,7 +57,8 @@ package jp.nyatla.nyartoolkit.as3.utils
 		 */
 		public function TransformedBitmapPickup(i_ref_cparam:NyARPerspectiveProjectionMatrix,i_width:int,i_height:int,i_resolution:int)
 		{
-			super(i_width, i_height, i_resolution, 0);
+			//ANYドライバで構築
+			super(i_width, i_height, i_resolution, NyARBufferType.NULL_ALLZERO);
 			this._ref_perspective = i_ref_cparam;
 		}
 

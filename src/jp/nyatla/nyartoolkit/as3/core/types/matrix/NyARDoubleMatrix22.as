@@ -39,7 +39,7 @@ package jp.nyatla.nyartoolkit.as3.core.types.matrix
 		/**
 		 * 遅いからあんまり使わないでね。
 		 */
-		public function setValue(i_value:Vector.<Number>):void
+		public function setValue_1(i_value:Vector.<Number>):void
 		{
 			this.m00=i_value[0];
 			this.m01=i_value[1];

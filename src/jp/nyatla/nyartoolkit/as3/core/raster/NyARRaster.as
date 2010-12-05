@@ -40,7 +40,6 @@ package jp.nyatla.nyartoolkit.as3.core.raster
 	public class NyARRaster extends NyARRaster_BasicClass
 	{
 		protected var _buf:Object;
-		protected var _buf_type:int;
 		/**
 		 * バッファオブジェクトがアタッチされていればtrue
 		 */
@@ -95,6 +94,7 @@ package jp.nyatla.nyartoolkit.as3.core.raster
 		{
 			switch(i_buf_type)
 			{
+				case NyARBufferType.INT1D:
 				case NyARBufferType.INT1D_X8R8G8B8_32:
 					this._buf=i_is_alloc?new Vector.<int>(i_size.w*i_size.h):null;
 					break;

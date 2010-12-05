@@ -58,16 +58,17 @@ package jp.nyatla.nyartoolkit.as3.core.types
 			return;
 		}
 		/**
-		 * i_pointとのベクトルから距離を計算します。
+		 * p2-p1間の距離の二乗値を計算します。
+		 * @param i_p1
 		 * @return
-		 */
-		public function dist(i_point:NyARDoublePoint3d):Number
+		 */	
+		public function sqDist(i_p1:NyARDoublePoint3d):Number
 		{
 			var x:Number,y:Number,z:Number;
-			x=this.x-i_point.x;
-			y=this.y-i_point.y;
-			z=this.z-i_point.z;
-			return Math.sqrt(x*x+y*y+z*z);
+			x=this.x-i_p1.x;
+			y=this.y-i_p1.y;
+			z=this.z-i_p1.z;
+			return x*x+y*y+z*z;
 		}
 	}
 }

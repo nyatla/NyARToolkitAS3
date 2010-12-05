@@ -34,6 +34,7 @@ package jp.nyatla.nyartoolkit.as3.core.labeling.rlelabeling
 	import jp.nyatla.nyartoolkit.as3.core.rasterreader.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
 	import jp.nyatla.as3utils.*;
+	import jp.nyatla.nyartoolkit.as3.NyARException;
 
 
 	// RleImageをラベリングする。
@@ -47,13 +48,15 @@ package jp.nyatla.nyartoolkit.as3.core.labeling.rlelabeling
 		private var _rle2:Vector.<RleElement>;
 		private var _max_area:int;
 		private var _min_area:int;
-
+		protected var _raster_size:NyARIntSize=new NyARIntSize();
 		public function NyARLabeling_Rle(i_width:int,i_height:int)
 		{
+			this._raster_size.setValue(i_width,i_height);
 			this._rlestack=new RleInfoStack(i_width*i_height*2048/(320*240)+32);
 			this._rle1 = RleElement.createArray(i_width/2+1);
 			this._rle2 = RleElement.createArray(i_width/2+1);
-			setAreaRange(AR_AREA_MAX,AR_AREA_MIN);
+			this._max_area=AR_AREA_MAX;
+			this._min_area=AR_AREA_MIN;
 			return;
 		}
 		/**
@@ -63,6 +66,7 @@ package jp.nyatla.nyartoolkit.as3.core.labeling.rlelabeling
 		 */
 		public function setAreaRange(i_max:int,i_min:int):void
 		{
+			//assert(i_min > 0 && i_max > i_min);
 			this._max_area=i_max;
 			this._min_area=i_min;
 			return;
@@ -135,12 +139,15 @@ package jp.nyatla.nyartoolkit.as3.core.labeling.rlelabeling
 			return current;
 		}
 
-		private function addFragment(i_rel_img:RleElement,i_nof:int,i_row_index:int,o_stack:RleInfoStack):void
+		private function addFragment(i_rel_img:RleElement,i_nof:int,i_row_index:int,o_stack:RleInfoStack):Boolean
 		{
 			var l:int =i_rel_img.l;
 			var len:int=i_rel_img.r - l;
 			i_rel_img.fid = i_nof;// REL毎の固有ID
-			var v:RleInfo = o_stack.prePush();
+			var v:NyARRleLabelFragmentInfo = NyARRleLabelFragmentInfo(o_stack.prePush());
+			if(o_stack==null){
+				return false;
+			}
 			v.entry_x = l;
 			v.area =len;
 			v.clip_l=l;
@@ -150,10 +157,28 @@ package jp.nyatla.nyartoolkit.as3.core.labeling.rlelabeling
 			v.pos_x=(len*(2*l+(len-1)))/2;
 			v.pos_y=i_row_index*len;
 
-			return;
+			return true;
 		}
-		//所望のラスタからBIN-RLEに変換しながらの低速系も準備しようかな
-		
+		/**
+		 * BINラスタをラベリングします。
+		 * @param i_bin_raster
+		 * @param o_stack
+		 * 結果を蓄積するスタックオブジェクトを指定します。
+		 * 関数は、このオブジェクトに結果を追記します。
+		 * @return
+		 * @throws NyARException
+		 */
+		public function labeling_1(i_bin_raster:NyARBinRaster):void
+		{
+			//assert(i_bin_raster.isEqualBufferType(NyARBufferType.INT1D_BIN_8));
+			var size:NyARIntSize=i_bin_raster.getSize();
+			this.imple_labeling(i_bin_raster,0,0,0,size.w,size.h);
+		}
+		public function labeling_2(i_bin_raster:NyARBinRaster,i_area:NyARIntRect):void
+		{
+			//assert(i_bin_raster.isEqualBufferType(NyARBufferType.INT1D_BIN_8));
+			this.imple_labeling(i_bin_raster,0,i_area.x,i_area.y,i_area.w,i_area.h);
+		}		
 		/**
 		 * 単一閾値を使ってGSラスタをBINラスタに変換しながらラベリングします。
 		 * @param i_gs_raster
@@ -163,10 +188,11 @@ package jp.nyatla.nyartoolkit.as3.core.labeling.rlelabeling
 		 * @return
 		 * @throws NyARException
 		 */
-		public function labeling_NyARBinRaster(i_bin_raster:NyARBinRaster,i_top:int,i_bottom:int,o_stack:NyARRleLabelFragmentInfoStack):int
+		public function labeling_3(i_gs_raster:NyARGrayscaleRaster,i_th:int):void
 		{
-			NyAS3Utils.assert(i_bin_raster.isEqualBufferType(NyARBufferType.INT1D_BIN_8));
-			return this.imple_labeling(i_bin_raster,0,i_top,i_bottom,o_stack);
+			//NyAS3Utils.assert(i_bin_raster.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
+			var size:NyARIntSize=i_gs_raster.getSize();
+			this.imple_labeling(i_gs_raster,i_th,0,0,size.w,size.h);
 		}
 		/**
 		 * BINラスタをラベリングします。
@@ -179,43 +205,49 @@ package jp.nyatla.nyartoolkit.as3.core.labeling.rlelabeling
 		 * @return
 		 * @throws NyARException
 		 */
-		public function labeling_NyARGrayscaleRaster(i_gs_raster:NyARGrayscaleRaster,i_th:int,i_top:int,i_bottom:int,o_stack:NyARRleLabelFragmentInfoStack):int
+		public function labeling_4(i_gs_raster:NyARGrayscaleRaster,i_area:NyARIntRect,i_th:int):void
 		{
-			NyAS3Utils.assert(i_gs_raster.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
-			return this.imple_labeling(i_gs_raster,i_th,i_top,i_bottom,o_stack);
+			//NyAS3Utils.assert(i_gs_raster.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
+			this.imple_labeling(i_gs_raster,i_th,i_area.x,i_area.y,i_area.w,i_area.h);
 		}
-		private function imple_labeling(i_raster:INyARRaster,i_th:int,i_top:int,i_bottom:int,o_stack:NyARRleLabelFragmentInfoStack):int
-		{
+		private function imple_labeling(i_raster:INyARRaster,i_th:int,i_left:int,i_top:int,i_width:int,i_height:int):void
+		{			
+			//assert(i_raster.getSize().isEqualSize(this._raster_size));
+			var rle_prev:Vector.<RleElement> = this._rle1;
+			var rle_current:Vector.<RleElement> = this._rle2;
 			// リセット処理
 			var rlestack:RleInfoStack=this._rlestack;
 			rlestack.clear();
 
 			//
-			var rle_prev:Vector.<RleElement> = this._rle1;
-			var rle_current:Vector.<RleElement> = this._rle2;
 			var len_prev:int = 0;
 			var len_current:int = 0;
-			var width:int = i_raster.getWidth();
+			var bottom:int=i_top+i_height;
+			var row_stride:int=this._raster_size.w;
 			var in_buf:Vector.<int> = (Vector.<int>)(i_raster.getBuffer());
 
 			var id_max:int = 0;
-			var label_count:int=0;
+			var label_count:int = 0;
+			var rle_top_index:int=i_left+row_stride*i_top;
+			
 			// 初段登録
 
-			len_prev = toRel(in_buf, i_top, width, rle_prev, i_th);
+			len_prev = toRel(in_buf, rle_top_index, i_width, rle_prev, i_th);
 			var i:int;
 			for (i = 0; i < len_prev; i++) {
 				// フラグメントID=フラグメント初期値、POS=Y値、RELインデクス=行
-				addFragment(rle_prev[i], id_max, i_top,rlestack);
-				id_max++;
-				// nofの最大値チェック
-				label_count++;
+				if(addFragment(rle_prev[i], id_max, i_top,rlestack)){
+					id_max++;
+					// nofの最大値チェック
+					label_count++;
+				}
 			}
-			var f_array:Vector.<RleInfo> = Vector.<RleInfo>(rlestack.getArray());
+			var f_array:Vector.<Object> = Vector.<Object>(rlestack.getArray());
 			// 次段結合
-			for (var y:int = i_top + 1; y < i_bottom; y++) {
+			for (var y:int = i_top + 1; y < bottom; y++) {
 				// カレント行の読込
-				len_current = toRel(in_buf, y * width, width, rle_current,i_th);
+				rle_top_index+=row_stride;
+				len_current = toRel(in_buf,rle_top_index, i_width, rle_current,i_th);
 				var index_prev:int = 0;
 
 				SCAN_CUR: for (i = 0; i < len_current; i++) {
@@ -229,14 +261,15 @@ package jp.nyatla.nyartoolkit.as3.core.labeling.rlelabeling
 							continue;
 						} else if (rle_prev[index_prev].l - rle_current[i].r > 0) {// 0なら8方位ラベリングになる
 							// prevがcur右方にある→独立フラグメント
-							addFragment(rle_current[i], id_max, y,rlestack);
-							id_max++;
-							label_count++;
+							if(addFragment(rle_current[i], id_max, y,rlestack)){
+								id_max++;
+								label_count++;
+							}
 							// 次のindexをしらべる
 							continue SCAN_CUR;
 						}
 						id=rle_prev[index_prev].fid;//ルートフラグメントid
-						var id_ptr:RleInfo = f_array[id];
+						var id_ptr:NyARRleLabelFragmentInfo = NyARRleLabelFragmentInfo(f_array[id]);
 						//結合対象(初回)->prevのIDをコピーして、ルートフラグメントの情報を更新
 						rle_current[i].fid = id;//フラグメントIDを保存
 						//
@@ -266,7 +299,7 @@ package jp.nyatla.nyartoolkit.as3.core.labeling.rlelabeling
 							
 							//結合するルートフラグメントを取得
 							var prev_id:int =rle_prev[index_prev].fid;
-							var prev_ptr:RleInfo = f_array[prev_id];
+							var prev_ptr:NyARRleLabelFragmentInfo = NyARRleLabelFragmentInfo(f_array[prev_id]);
 							if (id != prev_id){
 								label_count--;
 								//prevとcurrentのフラグメントidを書き換える。
@@ -327,9 +360,10 @@ package jp.nyatla.nyartoolkit.as3.core.labeling.rlelabeling
 					// curにidが割り当てられたかを確認
 					// 右端独立フラグメントを追加
 					if (id < 0){
-						addFragment(rle_current[i], id_max, y,rlestack);
-						id_max++;
-						label_count++;
+						if(addFragment(rle_current[i], id_max, y,rlestack)){
+							id_max++;
+							label_count++;
+						}
 					}
 				}
 				// prevとrelの交換
@@ -337,67 +371,62 @@ package jp.nyatla.nyartoolkit.as3.core.labeling.rlelabeling
 				rle_prev = rle_current;
 				len_prev = len_current;
 				rle_current = tmp;
-			}
-			//対象のラベルだけ転写
-			o_stack.init(label_count);
-			var o_dest_array:Vector.<NyARRleLabelFragmentInfo>=Vector.<NyARRleLabelFragmentInfo>(o_stack.getArray());
+			}		
+			//対象のラベルだけを追記
 			var max:int=this._max_area;
 			var min:int=this._min_area;
-			var active_labels:int=0;
 			for(i=id_max-1;i>=0;i--){
-				var area:int=f_array[i].area;
+				var src_info:NyARRleLabelFragmentInfo=NyARRleLabelFragmentInfo(f_array[i]);
+				var area:int=src_info.area;
 				if(area<min || area>max){//対象外のエリア0のもminではじく
 					continue;
 				}
-				//
-				var src_info:RleInfo=f_array[i];
-				var dest_info:NyARRleLabelFragmentInfo=o_dest_array[active_labels];
-				dest_info.area=area;
-				dest_info.clip_b=src_info.clip_b;
-				dest_info.clip_r=src_info.clip_r;
-				dest_info.clip_t=src_info.clip_t;
-				dest_info.clip_l=src_info.clip_l;
-				dest_info.entry_x=src_info.entry_x;
-				dest_info.pos_x=src_info.pos_x/src_info.area;
-				dest_info.pos_y=src_info.pos_y/src_info.area;
-				active_labels++;
+				//値を相対位置に補正
+				src_info.clip_l+=i_left;
+				src_info.clip_r+=i_left;
+				src_info.entry_x+=i_left;
+				src_info.pos_x/=area;
+				src_info.pos_y/=area;
+				//コールバック関数コール
+				this.onLabelFound(src_info);		
 			}
-			//ラベル数を再設定
-			o_stack.pops(label_count-active_labels);
-			//ラベル数を返却
-			return active_labels;
-		}	
+		}
+		/**
+		 * ハンドラ関数です。継承先クラスでオーバライドしてください。
+		 * i_labelのインスタンスは、次のラべリング実行まで保証されていますが、将来にわたり保証されないかもしれません。(恐らく保証されますが)
+		 * コールバック関数から参照を使用する場合は、互換性を確認するために、念のため、assertで_af_label_array_safe_referenceフラグをチェックしてください。
+		 * @param i_label
+		 */
+		protected function onLabelFound(i_ref_label:NyARRleLabelFragmentInfo):void
+		{
+			throw new NyARException();
+		}
+		
+		/**
+		 * クラスの仕様確認フラグです。ラベル配列の参照アクセスが可能かを返します。
+		 * 
+		 */
+		public const _sf_label_array_safe_reference:Boolean=true;
 	}
+
+
 }
 
 import jp.nyatla.nyartoolkit.as3.core.types.stack.*;
-final class RleInfo
-{
-	//継承メンバ
-	public var entry_x:int; // フラグメントラベルの位置
-	public var area:int;
-	public var clip_r:int;
-	public var clip_l:int;
-	public var clip_b:int;
-	public var clip_t:int;
-	public var pos_x:Number;
-	public var pos_y:Number;		
-}
+import jp.nyatla.nyartoolkit.as3.core.types.*;
+import jp.nyatla.nyartoolkit.as3.core.labeling.rlelabeling.*;
 
 final class RleInfoStack extends NyARObjectStack
 {
 	public function RleInfoStack(i_length:int)
 	{
-		super(i_length);
+		super();
+		super.initInstance_1(i_length);
 		return;
 	}
-	protected override function createArray(i_length:int):Vector.<*>
+	protected override function createElement_1():Object
 	{
-		var ret:Vector.<RleInfo>= new Vector.<RleInfo>(i_length);
-		for (var i:int =0; i < i_length; i++){
-			ret[i] = new RleInfo();
-		}
-		return Vector.<*>(ret);
+		return new NyARRleLabelFragmentInfo();
 	}
 }
 

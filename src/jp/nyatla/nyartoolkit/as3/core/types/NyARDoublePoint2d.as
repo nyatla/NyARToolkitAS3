@@ -31,6 +31,10 @@
 package jp.nyatla.nyartoolkit.as3.core.types
 {
 	import jp.nyatla.nyartoolkit.as3.*;
+	/**
+	 * データ型です。
+	 * 2次元の浮動小数点方の点を格納します。
+	 */
 	public class NyARDoublePoint2d
 	{
 		public var x:Number;
@@ -83,27 +87,74 @@ package jp.nyatla.nyartoolkit.as3.core.types
 				break;
 			}
 			throw new NyARException();
-		}	
-		public function setValue_NyARDoublePoint2d(i_src:NyARDoublePoint2d):void
+		}
+		/**
+		 * p2-p1間の距離の二乗値を計算します。
+		 * @param i_p1
+		 * @param i_p2
+		 * @return
+		 */	
+		public function sqDist( i_p1:NyARDoublePoint2d):Number
+		{
+			var x:Number,y:Number;
+			x=this.x-i_p1.x;
+			y=this.y-i_p1.y;
+			return x*x+y*y;
+		}
+		public static function crossProduct3Point_1( p1:NyARDoublePoint2d , p2:NyARDoublePoint2d , p3:NyARDoublePoint2d ):Number
+		{
+			return ( p2.x - p1.x ) * ( p3.y - p2.y ) - ( p2.y - p1.y ) * ( p3.x - p2.x ) ;
+		}
+	
+		public static function crossProduct3Point_2( p1:NyARDoublePoint2d , p2:NyARDoublePoint2d , p3_x:Number , p3_y:Number ):Number
+		{
+			return ( p2.x - p1.x ) * ( p3_y - p2.y ) - ( p2.y - p1.y ) * ( p3_x - p2.x ) ;
+		}
+	
+		public static function makeCenter_1( i_points:Vector.<NyARDoublePoint2d> , i_number_of_data:int , o_out:NyARDoublePoint2d ):void
+		{
+			var x:Number , y:Number ;
+			x = y = 0 ;
+			for( var i:int = i_number_of_data - 1 ; i >= 0 ; i-- ) {
+				x += i_points[i].x ;
+				y += i_points[i].y ;
+			}
+			o_out.x = x / i_number_of_data ;
+			o_out.x = y / i_number_of_data ;
+		}
+		
+		public static function makeCenter_2( i_points:Vector.<NyARDoublePoint2d> , i_number_of_data:int , o_out:NyARIntPoint2d ):void
+		{
+			var lx:Number , ly:Number ;
+			lx = ly = 0 ;
+			for( var i:int = i_number_of_data - 1 ; i >= 0 ; i-- ) {
+				lx += i_points[i].x ;
+				ly += i_points[i].y ;
+			}
+			o_out.x = int(( lx / i_number_of_data )) ;
+			o_out.y = int(( ly / i_number_of_data )) ;
+		}
+	
+	
+		public function setValue_1(i_src:NyARDoublePoint2d):void
 		{
 			this.x=i_src.x;
 			this.y=i_src.y;
 			return;
 		}
-		public function setValue_NyARIntPoint2d(i_src:NyARIntPoint2d):void
+		public function setValue_2(i_src:NyARIntPoint2d):void
 		{
 			this.x=Number(i_src.x);
 			this.y=Number(i_src.y);
 			return;
 		}
-		/**
-		 * 格納値をベクトルとして、距離を返します。
-		 * @return
-		 */
-		public function dist():Number
+		public function setValue_3(x:Number,y:Number):void
 		{
-			return Math.sqrt(this.x*this.x+this.y+this.y);
+			this.x=x;
+			this.y=y;
+			return;
 		}
+
 		public function sqNorm():Number
 		{
 			return this.x*this.x+this.y+this.y;

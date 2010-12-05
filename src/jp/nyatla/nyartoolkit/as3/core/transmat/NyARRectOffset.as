@@ -31,50 +31,82 @@
 package jp.nyatla.nyartoolkit.as3.core.transmat 
 {
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
-/**
- * 矩形の頂点情報を格納します。
- */
-final public class NyARRectOffset
-{
-	public var vertex:Vector.<NyARDoublePoint3d>=NyARDoublePoint3d.createArray(4);
-	public static function createArray(i_number:int):Vector.<NyARRectOffset>
-	{
-		var ret:Vector.<NyARRectOffset>=new Vector.<NyARRectOffset>(i_number);
-		for(var i:int=0;i<i_number;i++)
-		{
-			ret[i]=new NyARRectOffset();
-		}
-		return ret;
-	}	
 	/**
-	 * 中心位置と辺長から、オフセット情報を作成して設定する。
-	 * @param i_width
+	 * 矩形の頂点情報を格納します。
 	 */
-	public function setSquare(i_width:Number):void
+	final public class NyARRectOffset
 	{
-		var w_2:Number = i_width / 2.0;
+		public var vertex:Vector.<NyARDoublePoint3d>=NyARDoublePoint3d.createArray(4);
+		public static function createArray(i_number:int):Vector.<NyARRectOffset>
+		{
+			var ret:Vector.<NyARRectOffset>=new Vector.<NyARRectOffset>(i_number);
+			for(var i:int=0;i<i_number;i++)
+			{
+				ret[i]=new NyARRectOffset();
+			}
+			return ret;
+		}	
+		/**
+		 * 中心位置と辺長から、オフセット情報を作成して設定する。
+		 * @param i_width
+		 */
+		public function setSquare_1(i_width:Number):void
+		{
+			var w_2:Number = i_width / 2.0;
+			
+			var vertex3d_ptr:NyARDoublePoint3d;
+			vertex3d_ptr= this.vertex[0];
+			vertex3d_ptr.x = -w_2;
+			vertex3d_ptr.y =  w_2;
+			vertex3d_ptr.z = 0.0;
+			vertex3d_ptr= this.vertex[1];
+			vertex3d_ptr.x = w_2;
+			vertex3d_ptr.y = w_2;
+			vertex3d_ptr.z = 0.0;
+			vertex3d_ptr= this.vertex[2];
+			vertex3d_ptr.x =  w_2;
+			vertex3d_ptr.y = -w_2;
+			vertex3d_ptr.z = 0.0;
+			vertex3d_ptr= this.vertex[3];
+			vertex3d_ptr.x = -w_2;
+			vertex3d_ptr.y = -w_2;
+			vertex3d_ptr.z = 0.0;
+			
+			return;
+		}
+		/**
+		 * 辺長から、オフセット情報を作成して設定します。
+		 * 作成するオフセット情報は、マーカ中心を0,0としたi_width*i_heightのマーカです。
+		 * @param i_width
+		 * マーカの横サイズ(mm単位)
+		 * @param i_height
+		 * マーカの縦サイズ(mm単位)
+		 */
+		public function setSquare_2( i_width:Number , i_height:Number ):void
+		{ 
+			var w_2:Number = i_width / 2.0 ;
+			var h_2:Number = i_height / 2.0 ;
+			var vertex3d_ptr:NyARDoublePoint3d ;
+			vertex3d_ptr = this.vertex[0] ;
+			vertex3d_ptr.x = -w_2 ;
+			vertex3d_ptr.y = h_2 ;
+			vertex3d_ptr.z = 0.0 ;
+			vertex3d_ptr = this.vertex[1] ;
+			vertex3d_ptr.x = w_2 ;
+			vertex3d_ptr.y = h_2 ;
+			vertex3d_ptr.z = 0.0 ;
+			vertex3d_ptr = this.vertex[2] ;
+			vertex3d_ptr.x = w_2 ;
+			vertex3d_ptr.y = -h_2 ;
+			vertex3d_ptr.z = 0.0 ;
+			vertex3d_ptr = this.vertex[3] ;
+			vertex3d_ptr.x = -w_2 ;
+			vertex3d_ptr.y = -h_2 ;
+			vertex3d_ptr.z = 0.0 ;
+			return  ;
+		}
 		
-		var vertex3d_ptr:NyARDoublePoint3d;
-		vertex3d_ptr= this.vertex[0];
-		vertex3d_ptr.x = -w_2;
-		vertex3d_ptr.y =  w_2;
-		vertex3d_ptr.z = 0.0;
-		vertex3d_ptr= this.vertex[1];
-		vertex3d_ptr.x = w_2;
-		vertex3d_ptr.y = w_2;
-		vertex3d_ptr.z = 0.0;
-		vertex3d_ptr= this.vertex[2];
-		vertex3d_ptr.x =  w_2;
-		vertex3d_ptr.y = -w_2;
-		vertex3d_ptr.z = 0.0;
-		vertex3d_ptr= this.vertex[3];
-		vertex3d_ptr.x = -w_2;
-		vertex3d_ptr.y = -w_2;
-		vertex3d_ptr.z = 0.0;
-		
-		return;
 	}
-}
 
 
 }

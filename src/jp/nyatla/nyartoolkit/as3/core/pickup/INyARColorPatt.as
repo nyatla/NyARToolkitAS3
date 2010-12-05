@@ -52,7 +52,6 @@ package jp.nyatla.nyartoolkit.as3.core.pickup {
 		 * ラスターの取得に成功するとTRUE/失敗するとFALSE
 		 * @throws NyARException
 		 */
-	//	public boolean pickFromRaster(INyARRgbRaster image, NyARSquare i_square) throws NyARException;
 		function pickFromRaster(image:INyARRgbRaster,i_vertexs:Vector.<NyARIntPoint2d>):Boolean;
 	}
 }

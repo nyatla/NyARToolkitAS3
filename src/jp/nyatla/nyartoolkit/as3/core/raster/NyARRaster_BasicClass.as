@@ -39,7 +39,7 @@ package jp.nyatla.nyartoolkit.as3.core.raster
 	public class NyARRaster_BasicClass implements INyARRaster
 	{
 		protected var _size:NyARIntSize;
-		private var _buffer_type:int;
+		protected var _buffer_type:int;
 		/*
 		 * public function NyARRaster_BasicClass(int i_width,int i_height,int i_buffer_type)
 		 */

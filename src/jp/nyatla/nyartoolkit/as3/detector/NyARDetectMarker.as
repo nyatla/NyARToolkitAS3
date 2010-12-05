@@ -48,11 +48,9 @@ package jp.nyatla.nyartoolkit.as3.detector
 	 */
 	public class NyARDetectMarker
 	{
-
-		private var _detect_cb:DetectSquareCB;
 		public static const AR_SQUARE_MAX:int = 300;
 		private var _is_continue:Boolean = false;
-		private var _square_detect:NyARSquareContourDetector;
+		private var _square_detect:RleDetector;
 		protected var _transmat:INyARTransMat;
 		private var _offset:Vector.<NyARRectOffset>;
 
@@ -93,18 +91,17 @@ package jp.nyatla.nyartoolkit.as3.detector
 			var ch:int = i_ref_code[0].getHeight();
 
 			//detectMarkerのコールバック関数
-			this._detect_cb=new DetectSquareCB(
-				new NyARColorPatt_Perspective_O2(cw, ch,4,25),
+			this._square_detect=new RleDetector(
+				new NyARColorPatt_Perspective_O2(cw, ch,4,25,i_input_raster_type),
 				i_ref_code,i_number_of_code,i_ref_param);
 			this._transmat = new NyARTransMat(i_ref_param);
 			//NyARToolkitプロファイル
-			this._square_detect =new NyARSquareContourDetector_Rle(i_ref_param.getScreenSize());
 			this._tobin_filter=new NyARRasterFilter_ARToolkitThreshold(100,i_input_raster_type);
 
 			//実サイズ保存
 			this._offset = NyARRectOffset.createArray(i_number_of_code);
 			for(var i:int=0;i<i_number_of_code;i++){
-				this._offset[i].setSquare(i_marker_width[i]);
+				this._offset[i].setSquare_1(i_marker_width[i]);
 			}
 			//２値画像バッファを作る
 			this._bin_raster=new NyARBinRaster(scr_size.w,scr_size.h);
@@ -128,20 +125,20 @@ package jp.nyatla.nyartoolkit.as3.detector
 		public function detectMarkerLite(i_raster:INyARRgbRaster,i_threshold:int):int
 		{
 			// サイズチェック
-			if (!this._bin_raster.getSize().isEqualSize_NyARIntSize(i_raster.getSize())) {
+			if (!this._bin_raster.getSize().isEqualSize_2(i_raster.getSize())) {
 				throw new NyARException();
 			}
 
 			// ラスタを２値イメージに変換する.
 			(NyARRasterFilter_ARToolkitThreshold(this._tobin_filter)).setThreshold(i_threshold);
-			this._tobin_filter.doFilter(i_raster, this._bin_raster);
+			this._tobin_filter.doFilter_1(i_raster, this._bin_raster);
 
 			//detect
-			this._detect_cb.init(i_raster);
-			this._square_detect.detectMarkerCB(this._bin_raster,this._detect_cb);
+			this._square_detect.init(i_raster);
+			this._square_detect.detectMarker_1(this._bin_raster);
 
 			//見付かった数を返す。
-			return this._detect_cb.result_stack.getLength();
+			return this._square_detect.result_stack.getLength();
 		}
 
 		/**
@@ -155,10 +152,10 @@ package jp.nyatla.nyartoolkit.as3.detector
 		 */
 		public function getTransmationMatrix(i_index:int, o_result:NyARTransMatResult):void
 		{
-			var result:NyARDetectMarkerResult = this._detect_cb.result_stack.getItem(i_index);
+			var result:NyARDetectMarkerResult = NyARDetectMarkerResult(this._square_detect.result_stack.getItem(i_index));
 			// 一番一致したマーカーの位置とかその辺を計算
 			if (_is_continue) {
-				_transmat.transMatContinue(result.square, this._offset[result.arcode_id], o_result);
+				_transmat.transMatContinue(result.square, this._offset[result.arcode_id], o_result,o_result);
 			} else {
 				_transmat.transMat(result.square, this._offset[result.arcode_id], o_result);
 			}
@@ -175,7 +172,7 @@ package jp.nyatla.nyartoolkit.as3.detector
 		 */
 		public function getConfidence(i_index:int):Number
 		{
-			return this._detect_cb.result_stack.getItem(i_index).confidence;
+			return this._square_detect.result_stack.getItem(i_index).confidence;
 		}
 		/**
 		 * i_indexのマーカーのARCodeインデックスを返します。
@@ -186,7 +183,7 @@ package jp.nyatla.nyartoolkit.as3.detector
 		 */
 		public function getARCodeIndex(i_index:int):int
 		{
-			return this._detect_cb.result_stack.getItem(i_index).arcode_id;
+			return this._square_detect.result_stack.getItem(i_index).arcode_id;
 		}
 
 		/**
@@ -217,7 +214,7 @@ import jp.nyatla.nyartoolkit.as3.core.types.*;
 /**
  * detectMarkerのコールバック関数
  */
-class DetectSquareCB implements NyARSquareContourDetector_IDetectMarkerCallback
+class RleDetector extends NyARSquareContourDetector_Rle
 {
 	//公開プロパティ
 	public var result_stack:NyARDetectMarkerResultStack=new NyARDetectMarkerResultStack(NyARDetectMarker.AR_SQUARE_MAX);
@@ -230,8 +227,9 @@ class DetectSquareCB implements NyARSquareContourDetector_IDetectMarkerCallback
 	private var __detectMarkerLite_mr:NyARMatchPattResult=new NyARMatchPattResult();
 	private var _coordline:NyARCoord2Linear;
 	
-	public function DetectSquareCB(i_inst_patt:INyARColorPatt, i_ref_code:Vector.<NyARCode>, i_num_of_code:int, i_param:NyARParam)
+	public function RleDetector(i_inst_patt:INyARColorPatt, i_ref_code:Vector.<NyARCode>, i_num_of_code:int, i_param:NyARParam)
 	{
+		super(i_param.getScreenSize());
 		var cw:int = i_ref_code[0].getWidth();
 		var ch:int = i_ref_code[0].getHeight();
 
@@ -249,33 +247,31 @@ class DetectSquareCB implements NyARSquareContourDetector_IDetectMarkerCallback
 			}
 			this._match_patt[i]=new NyARMatchPatt_Color_WITHOUT_PCA(i_ref_code[i]);
 		}
+		this._inst_patt=i_inst_patt;
+		this._coordline=new NyARCoord2Linear(i_param.getScreenSize(),i_param.getDistortionFactor());
+		this._deviation_data=new NyARMatchPattDeviationColorData(cw,ch);
 		return;
 	}
-	private var __tmp_vertex:Vector.<NyARIntPoint2d>=NyARIntPoint2d.createArray(4);
+	private var __ref_vertex:Vector.<NyARIntPoint2d>=new Vector.<NyARIntPoint2d>(4);
 	/**
 	 * 矩形が見付かるたびに呼び出されます。
 	 * 発見した矩形のパターンを検査して、方位を考慮した頂点データを確保します。
 	 */
-	public function onSquareDetect(i_sender:NyARSquareContourDetector,i_coordx:Vector.<int>,i_coordy:Vector.<int>,i_coor_num:int ,i_vertex_index:Vector.<int>):void
+	protected override function onSquareDetect(i_coord:NyARIntCoordinates, i_vertex_index:Vector.<int>):void
 	{
 		var mr:NyARMatchPattResult=this.__detectMarkerLite_mr;
 		//輪郭座標から頂点リストに変換
-		var vertex:Vector.<NyARIntPoint2d>=this.__tmp_vertex;
-		vertex[0].x=i_coordx[i_vertex_index[0]];
-		vertex[0].y=i_coordy[i_vertex_index[0]];
-		vertex[1].x=i_coordx[i_vertex_index[1]];
-		vertex[1].y=i_coordy[i_vertex_index[1]];
-		vertex[2].x=i_coordx[i_vertex_index[2]];
-		vertex[2].y=i_coordy[i_vertex_index[2]];
-		vertex[3].x=i_coordx[i_vertex_index[3]];
-		vertex[3].y=i_coordy[i_vertex_index[3]];
-	
+		var vertex:Vector.<NyARIntPoint2d>=this.__ref_vertex;
+		vertex[0]=i_coord.items[i_vertex_index[0]];
+		vertex[1]=i_coord.items[i_vertex_index[1]];
+		vertex[2]=i_coord.items[i_vertex_index[2]];
+		vertex[3]=i_coord.items[i_vertex_index[3]];	
 		//画像を取得
 		if (!this._inst_patt.pickFromRaster(this._ref_raster,vertex)){
 			return;
 		}
 		//取得パターンをカラー差分データに変換して評価する。
-		this._deviation_data.setRaster(this._inst_patt);
+		this._deviation_data.setRaster_1(this._inst_patt);
 
 		//最も一致するパターンを割り当てる。
 		var square_index:int,direction:int;
@@ -297,7 +293,7 @@ class DetectSquareCB implements NyARSquareContourDetector_IDetectMarkerCallback
 			confidence = mr.confidence;
 		}
 		//最も一致したマーカ情報を、この矩形の情報として記録する。
-		var result:NyARDetectMarkerResult = this.result_stack.prePush();
+		var result:NyARDetectMarkerResult = NyARDetectMarkerResult(this.result_stack.prePush());
 		result.arcode_id = square_index;
 		result.confidence = confidence;
 
@@ -305,11 +301,11 @@ class DetectSquareCB implements NyARSquareContourDetector_IDetectMarkerCallback
 		//directionを考慮して、squareを更新する。
 		for(i=0;i<4;i++){
 			var idx:int=(i+4 - direction) % 4;
-			this._coordline.coord2Line(i_vertex_index[idx],i_vertex_index[(idx+1)%4],i_coordx,i_coordy,i_coor_num,sq.line[i]);
+			this._coordline.coord2Line(i_vertex_index[idx],i_vertex_index[(idx+1)%4],i_coord,sq.line[i]);
 		}
 		for (i = 0; i < 4; i++) {
 			//直線同士の交点計算
-			if(!NyARLinear.crossPos(sq.line[i],sq.line[(i + 3) % 4],sq.sqvertex[i])){
+			if(!sq.line[i].crossPos_1(sq.line[(i + 3) % 4],sq.sqvertex[i])){
 				throw new NyARException();//ここのエラー復帰するならダブルバッファにすればOK
 			}
 		}
@@ -336,14 +332,11 @@ class NyARDetectMarkerResultStack extends NyARObjectStack
 {
 	public function NyARDetectMarkerResultStack(i_length:int)
 	{
-		super(i_length);
+		super();
+		this.initInstance_1(i_length);
 	}
-	protected override function createArray(i_length:int):Vector.<*>
+	protected override function createElement_1():Object
 	{
-		var ret:Vector.<NyARDetectMarkerResult>= new Vector.<NyARDetectMarkerResult>(i_length);
-		for (var i:int =0; i < i_length; i++){
-			ret[i] = new NyARDetectMarkerResult();
-		}
-		return Vector.<*>(ret);
-	}	
+		return new NyARDetectMarkerResult();
+	}
 }
