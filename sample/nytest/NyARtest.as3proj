@@ -15,10 +15,11 @@
   <classpaths>
     <class path="src" />
     <class path="..\..\src" />
+    <class path="..\..\src.rpf" />
   </classpaths>
   <!-- Build options -->
   <build>
-    <option accessible="False" />
+    <option accessible="True" />
     <option allowSourcePathOverlap="False" />
     <option benchmark="False" />
     <option es="False" />

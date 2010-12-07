@@ -94,7 +94,14 @@ package jp.nyatla.nyartoolkit.as3.core.types
 		 * @param i_p2
 		 * @return
 		 */	
-		public function sqDist( i_p1:NyARDoublePoint2d):Number
+		public function sqDist_1( i_p1:NyARDoublePoint2d):Number
+		{
+			var x:Number,y:Number;
+			x=this.x-i_p1.x;
+			y=this.y-i_p1.y;
+			return x*x+y*y;
+		}
+		public function sqDist_2(i_p1:NyARIntPoint2d):Number
 		{
 			var x:Number,y:Number;
 			x=this.x-i_p1.x;

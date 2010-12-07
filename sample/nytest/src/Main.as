@@ -10,6 +10,8 @@ package
 	import jp.nyatla.nyartoolkit.as3.core.rasterreader.*;
 	import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
 	import jp.nyatla.nyartoolkit.as3.core.transmat.*;
+	import jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk.*;
+	import jp.nyatla.nyartoolkit.as3.rpf.realitysource.nyartk.*;
 	import flash.net.*;
 	import flash.text.*;
     import flash.display.*; 
@@ -21,6 +23,7 @@ package
 	 */
 	public class Main extends Sprite 
 	{
+		
 		private static var inst:Main;
         private var textbox:TextField = new TextField();
 		private var param:NyARParam;
@@ -162,14 +165,44 @@ package
 		{
 			var t:IdMarkerProcessor=new IdMarkerProcessor(param,NyARBufferType.INT1D_X8R8G8B8_32,this);
 			t.detectMarker(id_bgra);
-		}		
+		}
+		public function testNyARReality():void 
+		{
+			var reality:NyARReality=new NyARReality(param.getScreenSize(),10,1000,param.getPerspectiveProjectionMatrix(),null,10,10);
+			var reality_in:NyARRealitySource = new NyARRealitySource_Reference(320, 240, null, 2, 100, NyARBufferType.INT1D_X8R8G8B8_32);
+			var dt:Vector.<int> = Vector.<int>(reality_in.refRgbSource().getBuffer());
+			var sr:Vector.<int> = Vector.<int>(raster_bgra.getBuffer());
+			for (var i:int = 0; i < sr.length; i++) { dt[i] = sr[i]; }
+			
+
+//			FileInputStream fs = new FileInputStream(DATA_FILE);
+//			fs.read((byte[])reality_in.refRgbSource().getBuffer());
+//			Date d2 = new Date();
+//			for(int i=0;i<1000;i++){
+				reality.progress(reality_in);
+				reality.progress(reality_in);
+//			}
+//			Date d = new Date();
+//			System.out.println(d.getTime() - d2.getTime());
+			
+			msg(reality.getNumberOfKnown().toString());
+			msg(reality.getNumberOfUnknown().toString());
+			msg(reality.getNumberOfDead().toString());
+			var rt:Vector.<NyARRealityTarget>=new Vector.<NyARRealityTarget>(10);
+			reality.selectUnKnownTargets(rt);
+			reality.changeTargetToKnown_1(rt[0],2,80);
+			msg(rt[0]._transform_matrix.m00+","+rt[0]._transform_matrix.m01+","+rt[0]._transform_matrix.m02+","+rt[0]._transform_matrix.m03);
+			msg(rt[0]._transform_matrix.m10+","+rt[0]._transform_matrix.m11+","+rt[0]._transform_matrix.m12+","+rt[0]._transform_matrix.m13);
+			msg(rt[0]._transform_matrix.m20+","+rt[0]._transform_matrix.m21+","+rt[0]._transform_matrix.m22+","+rt[0]._transform_matrix.m23);
+			msg(rt[0]._transform_matrix.m30+","+rt[0]._transform_matrix.m31+","+rt[0]._transform_matrix.m32+","+rt[0]._transform_matrix.m33);
+		}
 		private function main(e:Event):void
 		{
 			var mat:NyARTransMatResult=new NyARTransMatResult();
 			var ang:NyARDoublePoint3d = new NyARDoublePoint3d();
 			msg("NyARToolkitAS3 check program.");
 			msg("(c)2010 nyatla.");
-			msg("#ready!");
+			msg("#ready!");/*
 			{
 				msg("<NyARSingleDetectMarker>");
 				testNyARSingleDetectMarker();
@@ -185,6 +218,10 @@ package
 			{
 				msg("<SingleProcessor>");
 				testSingleProcessor();
+			}*/
+			{
+				msg("<Reality>");
+				testNyARReality();
 			}
 			msg("#finish!");
 			return;

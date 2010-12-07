@@ -1,5 +1,10 @@
 package jp.nyatla.nyartoolkit.as3.core.rasterfilter.rgb2gs 
 {
+	import jp.nyatla.nyartoolkit.as3.*;
+	import jp.nyatla.as3utils.*;
+	import jp.nyatla.nyartoolkit.as3.core.raster.*;
+	import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
+	import jp.nyatla.nyartoolkit.as3.core.types.*;	
 	/**
 	 * RGBラスタをGrayScaleに変換するフィルタを作成します。
 	 * このフィルタは、RGB値の平均値を、(R+G+B)/3で算出します。
@@ -8,7 +13,7 @@ package jp.nyatla.nyartoolkit.as3.core.rasterfilter.rgb2gs
 	public class NyARRasterFilter_Rgb2Gs_RgbAve implements INyARRasterFilter_Rgb2Gs
 	{
 		private var _do_filter_impl:IdoThFilterImpl;
-		public function NyARRaster(...args:Array)
+		public function NyARRasterFilter_Rgb2Gs_RgbAve(...args:Array)
 		{
 			switch(args.length) {
 			case 1:
@@ -19,8 +24,8 @@ package jp.nyatla.nyartoolkit.as3.core.rasterfilter.rgb2gs
 				}
 				break;
 			case 2:
-				if(args[0] is int && args[1] is int){
-					NyARRasterFilter_Rgb2Gs_RgbAve_a(i_in_raster_type:int, i_out_raster_type:int)
+				if((args[0] is int) && (args[1] is int)){
+					NyARRasterFilter_Rgb2Gs_RgbAve_a(int(args[0]),int(args[1]))
 				}
 				break;
 			default:
@@ -46,8 +51,8 @@ package jp.nyatla.nyartoolkit.as3.core.rasterfilter.rgb2gs
 			switch(i_out_raster_type){
 			case NyARBufferType.INT1D_GRAY_8:
 				switch (i_in_raster_type){
-				case NyARBufferType.BYTE1D_B8G8R8X8_32:
-					this._do_filter_impl=new doThFilterImpl_BYTE1D_B8G8R8X8_32();
+				case NyARBufferType.INT1D_X8R8G8B8_32:
+					this._do_filter_impl=new doThFilterImpl_BUFFERFORMAT_INT1D_X8R8G8B8_32();
 					break;
 				default:
 					return false;
@@ -72,7 +77,7 @@ package jp.nyatla.nyartoolkit.as3.core.rasterfilter.rgb2gs
 		 * @param i_output
 		 * @throws NyARException
 		 */
-		public function doFilter(INyARRgbRaster i_input,NyARIntRect i_rect, NyARGrayscaleRaster i_output):void
+		public function doFilter_2(i_input:INyARRgbRaster,i_rect:NyARIntRect,i_output: NyARGrayscaleRaster ):void
 		{
 			//assert (i_input.getSize().isEqualSize(i_output.getSize()) == true);
 			this._do_filter_impl.doFilter(i_input,(Vector.<int>)(i_output.getBuffer()),i_rect.x,i_rect.y,i_rect.w,i_rect.h);
@@ -94,7 +99,9 @@ package jp.nyatla.nyartoolkit.as3.core.rasterfilter.rgb2gs
 	}
 }
 import flash.utils.ByteArray;
-
+import jp.nyatla.nyartoolkit.as3.core.raster.*;
+import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
+import jp.nyatla.nyartoolkit.as3.core.types.*;
 
 /*
  * ここから各種ラスタ向けのフィルタ実装
@@ -111,7 +118,7 @@ interface IdoThFilterImpl
 	 * @param w
 	 * @param h
 	 */
-	public function doFilter(i_input:INyARRaster, o_output:Vector.<int>, l:int, t:int, w:int, h:int):void;
+	function doFilter(i_input:INyARRaster, o_output:Vector.<int>, l:int, t:int, w:int, h:int):void;
 	/**
 	 * 異サイズラスタ間での転送
 	 * @param i_input
@@ -120,7 +127,7 @@ interface IdoThFilterImpl
 	 * @param i_st
 	 * @param o_output
 	 */
-	public function doCutFilter(i_input:INyARRaster,l:int,t:int,i_st:int, NyARGrayscaleRaster o_output):void;
+	function doCutFilter(i_input:INyARRaster,l:int,t:int,i_st:int,o_output:NyARGrayscaleRaster):void;
 }
 
 class doThFilterImpl_BUFFERFORMAT_INT1D_X8R8G8B8_32 implements IdoThFilterImpl
@@ -175,7 +182,7 @@ class doThFilterImpl_BUFFERFORMAT_INT1D_X8R8G8B8_32 implements IdoThFilterImpl
 	{
 		//assert(i_input.isEqualBufferType(NyARBufferType.INT1D_X8R8G8B8_32));
 		var size:NyARIntSize=i_input.getSize();
-		var in_buf:Vector.<int> = (Vector.<int>) i_input.getBuffer();
+		var in_buf:Vector.<int> = (Vector.<int>)( i_input.getBuffer());
 		var bp:int = (l+t*size.w);
 		var v:int;
 		var b:int=t+h;

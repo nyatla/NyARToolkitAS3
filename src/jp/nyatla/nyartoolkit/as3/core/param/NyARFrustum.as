@@ -1,5 +1,7 @@
 package jp.nyatla.nyartoolkit.as3.core.param 
 {
+	import jp.nyatla.nyartoolkit.as3.core.types.*;
+	import jp.nyatla.nyartoolkit.as3.core.types.matrix.*;
 	/**
 	 * 視錐台と、これを使った演算関数を定義します。
 	 * @author nyatla
@@ -87,13 +89,13 @@ package jp.nyatla.nyartoolkit.as3.core.param
 			//画面→撮像点
 			this.unProject(ix,iy,o_pos);
 			//撮像点→カメラ座標系
-			double nx=i_mat.m02;
-			double ny=i_mat.m12;
-			double nz=i_mat.m22;
-			double mx=i_mat.m03;
-			double my=i_mat.m13;
-			double mz=i_mat.m23;
-			double t=(nx*mx+ny*my+nz*mz)/(nx*o_pos.x+ny*o_pos.y+nz*o_pos.z);
+			var nx:Number=i_mat.m02;
+			var ny:Number=i_mat.m12;
+			var nz:Number=i_mat.m22;
+			var mx:Number=i_mat.m03;
+			var my:Number=i_mat.m13;
+			var mz:Number=i_mat.m23;
+			var t:Number=(nx*mx+ny*my+nz*mz)/(nx*o_pos.x+ny*o_pos.y+nz*o_pos.z);
 			o_pos.x=t*o_pos.x;
 			o_pos.y=t*o_pos.y;
 			o_pos.z=t*o_pos.z;
@@ -120,7 +122,7 @@ package jp.nyatla.nyartoolkit.as3.core.param
 			if(!m.inverse(i_mat)){
 				return false;
 			}
-			m.transform3d(o_pos, o_pos);
+			m.transform3d_2(o_pos, o_pos);
 			return true;
 		}
 		/**
@@ -130,12 +132,12 @@ package jp.nyatla.nyartoolkit.as3.core.param
 		 * @param i_z
 		 * @param o_pos2d
 		 */
-		public final void project(i_x:Number,i_y:Number,i_z:Number,o_pos2d:NyARDoublePoint2d):void
+		public function project(i_x:Number,i_y:Number,i_z:Number,o_pos2d:NyARDoublePoint2d):void
 		{
 			var m:NyARDoubleMatrix44=this._frustum_rh;
 			var v3_1:Number=1/i_z*m.m32;
-			void w:Number=this._screen_size.w;
-			void h:Number=this._screen_size.h;
+			var w:Number=this._screen_size.w;
+			var h:Number=this._screen_size.h;
 			o_pos2d.x=w-(1+(i_x*m.m00+i_z*m.m02)*v3_1)*w/2;
 			o_pos2d.y=h-(1+(i_y*m.m11+i_z*m.m12)*v3_1)*h/2;
 			return;

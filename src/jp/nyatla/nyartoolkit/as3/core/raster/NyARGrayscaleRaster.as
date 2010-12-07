@@ -115,7 +115,7 @@ package jp.nyatla.nyartoolkit.as3.core.raster
 			switch (i_buf_type) {
 			case NyARBufferType.INT1D_GRAY_8:
 				this._impl=new IdoFilterImpl_INT1D_GRAY_8();
-				this._buf = i_is_alloc ? new int[i_size.w * i_size.h] : null;
+				this._buf = i_is_alloc ? new Vector.<int>(i_size.w * i_size.h) : null;
 				break;
 			default:
 				return false;

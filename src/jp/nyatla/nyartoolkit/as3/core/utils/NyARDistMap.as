@@ -1,5 +1,6 @@
 package jp.nyatla.nyartoolkit.as3.core.utils 
 {
+	import jp.nyatla.nyartoolkit.as3.core.types.*;
 	/**
 	 * 2つの点集合同士を比較して、集合の各点同士の距離が最も近くになる組み合わせを計算
 	 * するためのクラスです。
@@ -7,7 +8,7 @@ package jp.nyatla.nyartoolkit.as3.core.utils
 	 */
 	public class NyARDistMap
 	{
-		protected var _map:Vector.<DistItem>;
+		protected var _map:Vector.<NyARDistMap_DistItem>;
 
 		protected var _min_dist:int;
 		protected var _min_dist_index:int;
@@ -20,9 +21,9 @@ package jp.nyatla.nyartoolkit.as3.core.utils
 			this._min_dist_index=0;
 			this._size_col=i_max_col;
 			this._size_row=i_max_row;
-			this._map=new Vector.<DistItem>(i_max_col*i_max_row);
+			this._map=new Vector.<NyARDistMap_DistItem>(i_max_col*i_max_row);
 			for(var i:int=0;i<i_max_col*i_max_row;i++){
-				this._map[i]=new DistItem();
+				this._map[i]=new NyARDistMap_DistItem();
 			}
 		}
 		/**
@@ -31,7 +32,7 @@ package jp.nyatla.nyartoolkit.as3.core.utils
 		 * 列数
 		 * @param i_row
 		 */
-		public function setMapSize(i_col:int ,i_row:int ):int
+		public function setMapSize(i_col:int ,i_row:int ):void
 		{
 			this._size_row=i_row;
 			this._size_col=i_col;
@@ -46,7 +47,7 @@ package jp.nyatla.nyartoolkit.as3.core.utils
 		public function setDist(i_col:int,i_row:int,i_dist:int):void
 		{
 			this._min_dist_index=this._size_col*i_row+i_col;
-			var item:DistItem=this._map[this._min_dist_index];
+			var item:NyARDistMap_DistItem=this._map[this._min_dist_index];
 			item.col=i_col;
 			item.row=i_row;
 			item.dist=i_dist;
@@ -67,10 +68,10 @@ package jp.nyatla.nyartoolkit.as3.core.utils
 		 */
 		public function setPointDists(i_vertex_r:Vector.<NyARIntPoint2d>,i_row_len:int,i_vertex_c:Vector.<NyARIntPoint2d>,i_col_len:int):void
 		{
-			var map:Vector.<DistItem>=this._map;
+			var map:Vector.<NyARDistMap_DistItem>=this._map;
 			//distortionMapを作成。ついでに最小値のインデクスも取得
 			var min_index:int=0;
-			var min_dist:int =Integer.MAX_VALUE;
+			var min_dist:int =int.MAX_VALUE;
 			var idx:int=0;
 			for(var r:int=0;r<i_row_len;r++){
 				for(var c:int=0;c<i_col_len;c++){
@@ -99,11 +100,11 @@ package jp.nyatla.nyartoolkit.as3.core.utils
 		 */
 		public function getMinimumPair(o_rowindex:Vector.<int>):void
 		{
-			var map:Vector.<DistItem>=this._map;
+			var map:Vector.<NyARDistMap_DistItem>=this._map;
 			var map_length:int=this._size_col*this._size_row;
 			var col_len:int=this._size_col;
 			//[0]と差し替え
-			var temp_map:DistItem;
+			var temp_map:NyARDistMap_DistItem;
 			var i:int;
 			temp_map=map[0];
 			map[0]=map[this._min_dist_index];
@@ -123,7 +124,7 @@ package jp.nyatla.nyartoolkit.as3.core.utils
 				//r,cのものを除外しながら最小値を得る。
 				var reject_c:int=map[i-1].col;
 				var reject_r:int=map[i-1].row;
-				var min_dist:int=Integer.MAX_VALUE;
+				var min_dist:int=int.MAX_VALUE;
 				if(1>=map_length-col_len){
 					break;
 				}
@@ -156,9 +157,4 @@ package jp.nyatla.nyartoolkit.as3.core.utils
 	}
 }
 
-class DistItem
-{
-	public var row:int;
-	public var col:int;
-	public var dist:int;
-}
+

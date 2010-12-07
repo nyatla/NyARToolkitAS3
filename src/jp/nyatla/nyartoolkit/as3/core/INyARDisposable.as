@@ -5,7 +5,7 @@ package jp.nyatla.nyartoolkit.as3.core
 		/**
 		 * オブジェクトの終期化のタイミングを与えます。オブジェクトの終期化に必要な処理を実装します。
 		 */
-		public function dispose():void;		
+		function dispose():void;		
 	}
 	
 }

@@ -19,7 +19,7 @@ package jp.nyatla.nyartoolkit.as3.core.utils
 		 * @param i_ref_pool_operator
 		 * Pool操作の為のインタフェイス
 		 */
-		protected function NyARManagedObject(i_ref_pool_operator:INyARManagedObjectPoolOperater)
+		public function NyARManagedObject(i_ref_pool_operator:INyARManagedObjectPoolOperater)
 		{
 			this._count=0;
 			this._pool_operater=i_ref_pool_operator;

@@ -1,5 +1,6 @@
 package jp.nyatla.nyartoolkit.as3.core.utils 
 {
+	import jp.nyatla.nyartoolkit.as3.*;
 	/**
 	 * 参照カウンタ付きのobjectPoolです。NyARManagedObjectから派生したオブジェクトを管理します。
 	 * このクラスは、参照カウンタ付きのオブジェクト型Tのオブジェクトプールを実現します。
@@ -36,7 +37,7 @@ package jp.nyatla.nyartoolkit.as3.core.utils
 		 * 実体化の拒否の為に、コンストラクタを隠蔽します。
 		 * 継承クラスを作成して、初期化処理を実装してください。
 		 */
-		protected function NyARManagedObjectPool()
+		public function NyARManagedObjectPool()
 		{
 		}
 		/**
@@ -56,7 +57,7 @@ package jp.nyatla.nyartoolkit.as3.core.utils
 			//オブジェクトを作成
 			for(var i:int=pool._pool.length-1;i>=0;i--)
 			{
-				pool._buffer[i]=pool._pool[i]=createElement();
+				pool._buffer[i]=pool._pool[i]=createElement_1();
 			}
 			return;		
 		}
@@ -73,7 +74,7 @@ package jp.nyatla.nyartoolkit.as3.core.utils
 			//オブジェクトを作成
 			for(var i:int=pool._pool.length-1;i>=0;i--)
 			{
-				pool._buffer[i]=pool._pool[i]=createElement(i_param);
+				pool._buffer[i]=pool._pool[i]=createElement_2(i_param);
 			}
 			return;		
 		}
@@ -92,7 +93,7 @@ package jp.nyatla.nyartoolkit.as3.core.utils
 		}
 	}
 }
-
+import jp.nyatla.nyartoolkit.as3.core.utils.*;
 /**
  * Javaの都合でバッファを所有させていますが、別にこの形で実装しなくてもかまいません。
  */
