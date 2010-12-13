@@ -34,6 +34,7 @@ package jp.nyatla.nyartoolkit.as3.core.squaredetect
 	import jp.nyatla.nyartoolkit.as3.core.labeling.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
 	import jp.nyatla.nyartoolkit.as3.*;
+	import jp.nyatla.as3utils.*;
 	public class NyARContourPickup
 	{
 		//巡回参照できるように、テーブルを二重化
@@ -42,13 +43,13 @@ package jp.nyatla.nyartoolkit.as3.core.squaredetect
 		protected static const _getContour_ydir:Vector.<int> = Vector.<int>([-1,-1, 0, 1, 1, 1, 0,-1 ,-1,-1, 0, 1, 1, 1, 0]);
 		public function getContour_1(i_raster:NyARBinRaster,i_entry_x:int,i_entry_y:int,o_coord:NyARIntCoordinates):Boolean
 		{
-			//assert(i_raster.isEqualBufferType(NyARBufferType.INT1D_BIN_8));
+			NyAS3Utils.assert(i_raster.isEqualBufferType(NyARBufferType.INT1D_BIN_8));
 			var s:NyARIntSize=i_raster.getSize();
 			return impl_getContour(i_raster,0,0,s.w-1,s.h-1,0,i_entry_x,i_entry_y,o_coord);
 		}
 		public function getContour_2(i_raster:NyARBinRaster,i_area:NyARIntRect,i_entry_x:int,i_entry_y:int,o_coord:NyARIntCoordinates):Boolean
 		{
-			//assert(i_raster.isEqualBufferType(NyARBufferType.INT1D_BIN_8));
+			NyAS3Utils.assert(i_raster.isEqualBufferType(NyARBufferType.INT1D_BIN_8));
 			return impl_getContour(i_raster,i_area.x,i_area.y,i_area.x+i_area.w-1,i_area.h+i_area.y-1,0,i_entry_x,i_entry_y,o_coord);
 		}
 		/**
@@ -69,13 +70,13 @@ package jp.nyatla.nyartoolkit.as3.core.squaredetect
 		 */
 		public function getContour_3(i_raster:NyARGrayscaleRaster,i_th:int,i_entry_x:int,i_entry_y:int,o_coord:NyARIntCoordinates):Boolean
 		{
-			//assert(i_raster.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
+			NyAS3Utils.assert(i_raster.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
 			var s:NyARIntSize=i_raster.getSize();
 			return impl_getContour(i_raster,0,0,s.w-1,s.h-1,i_th,i_entry_x,i_entry_y,o_coord);
 		}
 		public function getContour_4(i_raster:NyARGrayscaleRaster,i_area:NyARIntRect,i_th:int,i_entry_x:int,i_entry_y:int,o_coord:NyARIntCoordinates):Boolean
 		{
-			//assert(i_raster.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
+			NyAS3Utils.assert(i_raster.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
 			return impl_getContour(i_raster,i_area.x,i_area.y,i_area.x+i_area.w-1,i_area.h+i_area.y-1,i_th,i_entry_x,i_entry_y,o_coord);
 		}
 		

@@ -143,9 +143,9 @@ package jp.nyatla.nyartoolkit.as3.core.transmat
 			//平行移動量計算機に、2D座標系をセット
 			this._transsolver.set2dVertex(vertex_2d,4);
 
+
 			//回転行列を計算
 			this._rotmatrix.initRotBySquare(i_square.line,i_square.sqvertex);
-			
 			//回転後の3D座標系から、平行移動量を計算
 			var vertex_3d:Vector.<NyARDoublePoint3d>=this.__transMat_vertex_3d;
 			this._rotmatrix.getPoint3dBatch(i_offset.vertex,vertex_3d,4);

@@ -34,112 +34,327 @@ package org.libspark.flartoolkit.core.squaredetect
 	import org.libspark.flartoolkit.core.raster.*;
 	import jp.nyatla.as3utils.*;
 	import jp.nyatla.nyartoolkit.as3.*;
+	import jp.nyatla.nyartoolkit.as3.core.types.*;
 	
 	public class FLContourPickup extends NyARContourPickup
 	{
 		
 		public function FLContourPickup() 
 		{
-			
 		}
-		public function getContour_FLARBinRaster(i_raster:FLARBinRaster,i_entry_x:int,i_entry_y:int,i_array_size:int,o_coord_x:Vector.<int>,o_coord_y:Vector.<int>):int
+		public override function getContour_1(i_raster:NyARBinRaster,i_entry_x:int,i_entry_y:int,o_coord:NyARIntCoordinates):Boolean
 		{
-			var xdir:Vector.<int> = _getContour_xdir;// static int xdir[8] = { 0, 1, 1, 1, 0,-1,-1,-1};
-			var ydir:Vector.<int> = _getContour_ydir;// static int ydir[8] = {-1,-1, 0, 1, 1, 1, 0,-1};
-
-			var i_buf:BitmapData=BitmapData(i_raster.getBuffer());
-			var width:int=i_raster.getWidth();
-			var height:int=i_raster.getHeight();
-			//クリップ領域の上端に接しているポイントを得る。
-
-
-			var coord_num:int = 1;
-			o_coord_x[0] = i_entry_x;
-			o_coord_y[0] = i_entry_y;
-			var dir:int = 5;
-
-			var c:int = i_entry_x;
-			var r:int = i_entry_y;
-			for (;;) {
-				dir = (dir + 5) % 8;//dirの正規化
-				//ここは頑張ればもっと最適化できると思うよ。
-				//4隅以外の境界接地の場合に、境界チェックを省略するとかね。
-				if(c>=1 && c<width-1 && r>=1 && r<height-1){
-					for(;;){//gotoのエミュレート用のfor文
-						//境界に接していないとき(暗点判定)
-						if (i_buf.getPixel(c + xdir[dir], r + ydir[dir]) >0) {
-							break;
+			
+			switch(i_raster.getBufferType()){
+			case NyARBufferType.OBJECT_AS3_BitmapData:
+				var s:NyARIntSize = i_raster.getSize();
+				return impl_getContour_BitmapData_BIN(i_raster,0,0,s.w-1,s.h-1,0,i_entry_x,i_entry_y,o_coord);
+			default:
+				return super.getContour_1(i_raster,i_entry_x,i_entry_y,o_coord);
+			}
+		}
+		public override function getContour_2(i_raster:NyARBinRaster,i_area:NyARIntRect,i_entry_x:int,i_entry_y:int,o_coord:NyARIntCoordinates):Boolean
+		{
+			switch(i_raster.getBufferType()){
+			case NyARBufferType.OBJECT_AS3_BitmapData:
+				return impl_getContour_BitmapData_BIN(i_raster,i_area.x,i_area.y,i_area.x+i_area.w-1,i_area.h+i_area.y-1,0,i_entry_x,i_entry_y,o_coord);
+			default:
+				return super.getContour_2(i_raster,i_area,i_entry_x,i_entry_y,o_coord);
+			}
+		}
+		/**
+		 * ラスタの指定点を基点に、輪郭線を抽出します。開始点は、輪郭の一部、かつ左上のエッジで有る必要があります。
+		 * @param i_raster
+		 * 輪郭線を抽出するラスタを指定します。
+		 * @param i_th
+		 * 輪郭とみなす暗点の敷居値を指定します。
+		 * @param i_entry_x
+		 * 輪郭抽出の開始点です。
+		 * @param i_entry_y
+		 * 輪郭抽出の開始点です。
+		 * @param o_coord
+		 * 輪郭点を格納する配列を指定します。i_array_sizeよりも大きなサイズの配列が必要です。
+		 * @return
+		 * 輪郭の抽出に成功するとtrueを返します。輪郭抽出に十分なバッファが無いと、falseになります。
+		 * @throws NyARException
+		 */
+		public override function getContour_3(i_raster:NyARGrayscaleRaster,i_th:int,i_entry_x:int,i_entry_y:int,o_coord:NyARIntCoordinates):Boolean
+		{
+			var s:NyARIntSize=i_raster.getSize();
+			switch(i_raster.getBufferType()){
+			case NyARBufferType.OBJECT_AS3_BitmapData:
+				return impl_getContour_BitmapData(i_raster,0,0,s.w-1,s.h-1,i_th,i_entry_x,i_entry_y,o_coord);
+			default:
+				return super.getContour_3(i_raster,i_th,i_entry_x,i_entry_y,o_coord);
+			}
+		}
+		public override function getContour_4(i_raster:NyARGrayscaleRaster,i_area:NyARIntRect,i_th:int,i_entry_x:int,i_entry_y:int,o_coord:NyARIntCoordinates):Boolean
+		{
+			var s:NyARIntSize=i_raster.getSize();
+			switch(i_raster.getBufferType()){
+			case NyARBufferType.OBJECT_AS3_BitmapData:
+				return impl_getContour_BitmapData(i_raster,i_area.x,i_area.y,i_area.x+i_area.w-1,i_area.h+i_area.y-1,i_th,i_entry_x,i_entry_y,o_coord);
+			default:
+				return super.getContour_4(i_raster,i_area,i_th,i_entry_x,i_entry_y,o_coord);
+			}			
+		}		
+		private function impl_getContour_BitmapData(i_raster:INyARRaster , i_l:int , i_t:int , i_r:int , i_b:int , i_th:int , i_entry_x:int , i_entry_y:int , o_coord:NyARIntCoordinates ):Boolean
+		{
+			var coord:Vector.<NyARIntPoint2d> = o_coord.items ;
+			var xdir:Vector.<int> = _getContour_xdir ;
+			var ydir:Vector.<int> = _getContour_ydir ;
+			var buf:BitmapData = BitmapData(i_raster.getBuffer());
+			var width:int = i_raster.getWidth() ;
+			var max_coord:int = o_coord.items.length ;
+			var coord_num:int = 1 ;
+			coord[0].x = i_entry_x ;
+			coord[0].y = i_entry_y ;
+			var dir:int = 5 ;
+			var c:int = i_entry_x ;
+			var r:int = i_entry_y ;
+			for (  ;  ;  ) {
+				dir = ( dir + 5 ) % 8 ;
+				if( c > i_l && c < i_r && r > i_t && r < i_b ) {
+					for(  ;  ;  ) {
+						if((buf.getPixel( c + xdir[dir],( r + ydir[dir] ) )&0xff) <= i_th ) {
+							break ;
 						}
-						dir++;
-						if (i_buf.getPixel(c + xdir[dir], r + ydir[dir]) >0) {
-							break;
+						
+						dir++ ;
+						if((buf.getPixel( c + xdir[dir],( r + ydir[dir] ) )&0xff) <= i_th ) {
+							break ;
 						}
-						dir++;
-						if (i_buf.getPixel(c + xdir[dir], r + ydir[dir]) >0) {
-							break;
+						
+						dir++ ;
+						if((buf.getPixel( c + xdir[dir],( r + ydir[dir] ) )&0xff) <= i_th ) {
+							break ;
 						}
-						dir++;
-						if (i_buf.getPixel(c + xdir[dir], r + ydir[dir]) >0) {
-							break;
+						
+						dir++ ;
+						if((buf.getPixel( c + xdir[dir],( r + ydir[dir] ) )&0xff) <= i_th ) {
+							break ;
 						}
-						dir++;
-						if (i_buf.getPixel(c + xdir[dir], r + ydir[dir]) >0) {
-							break;
+						
+						dir++ ;
+						if((buf.getPixel( c + xdir[dir],( r + ydir[dir] ) )&0xff) <= i_th ) {
+							break ;
 						}
-						dir++;
-						if (i_buf.getPixel(c + xdir[dir], r + ydir[dir]) >0) {
-							break;
+						
+						dir++ ;
+						if((buf.getPixel( c + xdir[dir],( r + ydir[dir] ) )&0xff) <= i_th ) {
+							break ;
 						}
-						dir++;
-						if (i_buf.getPixel(c + xdir[dir], r + ydir[dir]) >0) {
-							break;
+						
+						dir++ ;
+						if((buf.getPixel( c + xdir[dir],( r + ydir[dir] ) )&0xff) <= i_th ) {
+							break ;
 						}
-						dir++;
-						if (i_buf.getPixel(c + xdir[dir], r + ydir[dir]) >0) {
-							break;
+						
+						dir++ ;
+						if((buf.getPixel( c + xdir[dir],( r + ydir[dir] ) )&0xff) <= i_th ) {
+							break ;
 						}
-						//8方向全て調べたけどラベルが無いよ？
-						throw new NyARException();			
+						
+						throw new NyARException(  ) ;
 					}
-				}else{
-					//境界に接しているとき				
-					var i:int;
-					for (i = 0; i < 8; i++){				
-						var x:int=c + xdir[dir];
-						var y:int=r + ydir[dir];
-						//境界チェック
-						if(x>=0 && x<width && y>=0 && y<height){
-							if (i_buf[(y)*width+(x)] >0) {
-								break;
+				}
+				else {
+					for( i = 0 ; i < 8 ; i++ ) {
+						x = c + xdir[dir] ;
+						y = r + ydir[dir] ;
+						if( x >= i_l && x <= i_r && y >= i_t && y <= i_b ) {
+							if((buf.getPixel(x,y )&0xff)<= i_th ) {
+								break ;
 							}
+							
 						}
-						dir++;//倍長テーブルを参照するので問題なし
+						
+						dir++ ;
 					}
-					if (i == 8) {
-						//8方向全て調べたけどラベルが無いよ？
-						throw new NyARException();// return(-1);
-					}				
+					if( i == 8 ) {
+						throw new NyARException(  ) ;
+					}
+					
 				}
 				
-				dir=dir% 8;//dirの正規化
-
-				// xcoordとycoordをc,rにも保存
-				c = c + xdir[dir];
-				r = r + ydir[dir];
-				o_coord_x[coord_num] = c;
-				o_coord_y[coord_num] = r;
-				// 終了条件判定
-				if (c == i_entry_x && r == i_entry_y){
-					coord_num++;
-					break;
+				c = c + xdir[dir] ;
+				r = r + ydir[dir] ;
+				coord[coord_num].x = c ;
+				coord[coord_num].y = r ;
+				var x:int, y:int,i:int;
+				if ( (c == i_entry_x) && (r == i_entry_y) ) {
+					
+					coord_num++ ;
+					if( coord_num == max_coord ) {
+						return false ;
+					}
+					
+					dir = ( dir + 5 ) % 8 ;
+					for( i = 0 ; i < 8 ; i++ ) {
+						x= c + xdir[dir] ;
+						y= r + ydir[dir] ;
+						if( x >= i_l && x <= i_r && y >= i_t && y <= i_b ) {
+							if((buf.getPixel(x,y)&0xff) <= i_th ) {
+								break ;
+							}
+							
+						}
+						
+						dir++ ;
+					}
+					if( i == 8 ) {
+						throw new NyARException(  ) ;
+					}
+					
+					c = c + xdir[dir] ;
+					r = r + ydir[dir] ;
+					if( coord[1].x == c && coord[1].y == r ) {
+						o_coord.length = coord_num ;
+						break ;
+					}
+					else {
+						coord[coord_num].x = c ;
+						coord[coord_num].y = r ;
+					}
 				}
-				coord_num++;
-				if (coord_num == i_array_size) {
-					//輪郭が末端に達した
-					return coord_num;
+				
+				coord_num++ ;
+				if( coord_num == max_coord ) {
+					return false ;
 				}
+				
 			}
-			return coord_num;
-		}		
+			
+			return true;
+		}
+		private function impl_getContour_BitmapData_BIN(i_raster:NyARBinRaster , i_l:int , i_t:int , i_r:int , i_b:int , i_th:int , i_entry_x:int , i_entry_y:int , o_coord:NyARIntCoordinates ):Boolean
+		{
+			var coord:Vector.<NyARIntPoint2d> = o_coord.items ;
+			var xdir:Vector.<int> = _getContour_xdir ;
+			var ydir:Vector.<int> = _getContour_ydir ;
+			var buf:BitmapData = BitmapData(i_raster.getBuffer());
+			var width:int = i_raster.getWidth() ;
+			var max_coord:int = o_coord.items.length ;
+			var coord_num:int = 1 ;
+			coord[0].x = i_entry_x ;
+			coord[0].y = i_entry_y ;
+			var dir:int = 5 ;
+			var c:int = i_entry_x ;
+			var r:int = i_entry_y ;
+			for (  ;  ;  ) {
+				dir = ( dir + 5 ) % 8 ;
+				if( c > i_l && c < i_r && r > i_t && r < i_b ) {
+					for(  ;  ;  ) {
+						if((buf.getPixel( c + xdir[dir],( r + ydir[dir] ) )) >0 ) {
+							break ;
+						}
+						
+						dir++ ;
+						if((buf.getPixel( c + xdir[dir],( r + ydir[dir] ) )) >0 ) {
+							break ;
+						}
+						
+						dir++ ;
+						if((buf.getPixel( c + xdir[dir],( r + ydir[dir] ) )) >0 ) {
+							break ;
+						}
+						
+						dir++ ;
+						if((buf.getPixel( c + xdir[dir],( r + ydir[dir] ) )) >0 ) {
+							break ;
+						}
+						
+						dir++ ;
+						if((buf.getPixel( c + xdir[dir],( r + ydir[dir] ) )) >0 ) {
+							break ;
+						}
+						
+						dir++ ;
+						if((buf.getPixel( c + xdir[dir],( r + ydir[dir] ) )) >0 ) {
+							break ;
+						}
+						
+						dir++ ;
+						if((buf.getPixel( c + xdir[dir],( r + ydir[dir] ) )) >0 ) {
+							break ;
+						}
+						
+						dir++ ;
+						if((buf.getPixel( c + xdir[dir],( r + ydir[dir] ) )) >0 ) {
+							break ;
+						}
+						
+						throw new NyARException(  ) ;
+					}
+				}
+				else {
+					for( i = 0 ; i < 8 ; i++ ) {
+						x = c + xdir[dir] ;
+						y = r + ydir[dir] ;
+						if( x >= i_l && x <= i_r && y >= i_t && y <= i_b ) {
+							if((buf.getPixel(x,y ))>0 ) {
+								break ;
+							}
+							
+						}
+						
+						dir++ ;
+					}
+					if( i == 8 ) {
+						throw new NyARException(  ) ;
+					}
+					
+				}
+				
+				c = c + xdir[dir] ;
+				r = r + ydir[dir] ;
+				coord[coord_num].x = c ;
+				coord[coord_num].y = r ;
+				var x:int, y:int,i:int;
+				if ( (c == i_entry_x) && (r == i_entry_y) ) {
+					
+					coord_num++ ;
+					if( coord_num == max_coord ) {
+						return false ;
+					}
+					
+					dir = ( dir + 5 ) % 8 ;
+					for( i = 0 ; i < 8 ; i++ ) {
+						x= c + xdir[dir] ;
+						y= r + ydir[dir] ;
+						if( x >= i_l && x <= i_r && y >= i_t && y <= i_b ) {
+							if((buf.getPixel(x,y)&0xff)>0 ) {
+								break ;
+							}
+							
+						}
+						
+						dir++ ;
+					}
+					if( i == 8 ) {
+						throw new NyARException(  ) ;
+					}
+					
+					c = c + xdir[dir] ;
+					r = r + ydir[dir] ;
+					if( coord[1].x == c && coord[1].y == r ) {
+						o_coord.length = coord_num ;
+						break ;
+					}
+					else {
+						coord[coord_num].x = c ;
+						coord[coord_num].y = r ;
+					}
+				}
+				
+				coord_num++ ;
+				if( coord_num == max_coord ) {
+					return false ;
+				}
+				
+			}
+			
+			return true;
+		}				
 	}
 }

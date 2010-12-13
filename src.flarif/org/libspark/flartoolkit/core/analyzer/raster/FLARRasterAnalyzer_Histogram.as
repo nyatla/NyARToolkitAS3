@@ -58,7 +58,7 @@ package org.libspark.flartoolkit.core.analyzer.raster
 		 * @return
 		 * @throws NyARException
 		 */
-		public override function analyzeRaster(i_input:INyARRaster,o_histgram:NyARHistogram):int
+		public override function analyzeRaster_1(i_input:INyARRaster,o_histgram:NyARHistogram):void
 		{
 			var size:NyARIntSize=i_input.getSize();
 			//最大画像サイズの制限
@@ -70,11 +70,12 @@ package org.libspark.flartoolkit.core.analyzer.raster
 			for (var i:int = o_histgram.length-1; i >=0; i--){
 				h[i] = 0;
 			}
-			o_histgram.total_of_data=size.w*size.h/this._vertical_skip;
-			return createHistgram_AS3_BitmapData(i_input, size,h,this._vertical_skip);		
+			o_histgram.total_of_data = size.w * size.h / this._vertical_skip;
+			createHistgram_AS3_BitmapData(i_input, size, h, this._vertical_skip);
+			return;
 		}
 		
-		private function createHistgram_AS3_BitmapData(i_reader:INyARRaster,i_size:NyARIntSize,o_histgram:Vector.<int>,i_skip:int):int
+		private function createHistgram_AS3_BitmapData(i_reader:INyARRaster,i_size:NyARIntSize,o_histgram:Vector.<int>,i_skip:int):void
 		{
 			//[Todo:]この方法だとパフォーマンスでないから、Bitmapdataの
 			NyAS3Utils.assert (i_reader.isEqualBufferType(NyARBufferType.OBJECT_AS3_BitmapData));
@@ -87,7 +88,7 @@ package org.libspark.flartoolkit.core.analyzer.raster
 					pt++;
 				}
 			}
-			return i_size.w*i_size.h;
+			return;
 		}
 	}
 }

@@ -34,6 +34,7 @@ package org.libspark.flartoolkit.core.squaredetect
 	import jp.nyatla.nyartoolkit.as3.core.squaredetect.*;
 	import jp.nyatla.nyartoolkit.as3.core.labeling.*;
 	import jp.nyatla.nyartoolkit.as3.core.labeling.rlelabeling.*;
+    import flash.display.*; 
 	
 	import org.libspark.flartoolkit.core.labeling.fllabeling.*;
 	import org.libspark.flartoolkit.core.labeling.*;
@@ -41,109 +42,149 @@ package org.libspark.flartoolkit.core.squaredetect
 	
 	public class FLARSquareContourDetector extends NyARSquareContourDetector
 	{
-		private static const AR_AREA_MAX:int = 100000;// #define AR_AREA_MAX 100000
-		private static const AR_AREA_MIN:int = 70;// #define AR_AREA_MIN 70
-		private var _width:int;
-		private var _height:int;
-
-		private var _labeling:FLARLabeling;
-
-		private var _overlap_checker:NyARLabelOverlapChecker = new NyARLabelOverlapChecker(32);
-		private var _cpickup:FLContourPickup=new FLContourPickup();
-		private var _stack:NyARRleLabelFragmentInfoStack;
-		private var _coord2vertex:NyARCoord2SquareVertexIndexes=new NyARCoord2SquareVertexIndexes();
-		
-		private var _max_coord:int;
-		private var _xcoord:Vector.<int>;
-		private var _ycoord:Vector.<int>;
-		/**
-		 * 最大i_squre_max個のマーカーを検出するクラスを作成する。
-		 * 
-		 * @param i_param
-		 */
-		public function FLARSquareContourDetector(i_size:NyARIntSize)
-		{
-			this._width = i_size.w;
-			this._height = i_size.h;
-			//ラベリングのサイズを指定したいときはsetAreaRangeを使ってね。
-			this._labeling = new FLARLabeling(this._width,this._height);
-			this._stack=new NyARRleLabelFragmentInfoStack(i_size.w*i_size.h*2048/(320*240)+32);//検出可能な最大ラベル数
-			
-
-			// 輪郭の最大長は画面に映りうる最大の長方形サイズ。
-			var number_of_coord:int= (this._width + this._height) * 2;
-
-			// 輪郭バッファ
-			this._max_coord = number_of_coord;
-			this._xcoord = new Vector.<int>(number_of_coord);
-			this._ycoord = new Vector.<int>(number_of_coord);
-			return;
+		private var _cpickup:FLContourPickup = new FLContourPickup();//FL依存部分
+		private var _width:int ; 
+		private var _height:int ; 
+		private var _labeling:Labeling; 
+		private var _overlap_checker:NyARLabelOverlapChecker = new NyARLabelOverlapChecker(32) ; 
+		private var _coord2vertex:NyARCoord2SquareVertexIndexes = new NyARCoord2SquareVertexIndexes(); 
+		private var _coord:NyARIntCoordinates ; 
+		public function FLARSquareContourDetector( i_size:NyARIntSize )
+		{ 
+			//assert( ! (( NyARLabeling_Rle._sf_label_array_safe_reference ) ) );
+			this._width = i_size.w ;
+			this._height = i_size.h ;
+			this._labeling = new Labeling( this._width , this._height ) ;
+			var number_of_coord:int = ( this._width + this._height ) * 2 ;
+			this._coord = new NyARIntCoordinates( number_of_coord ) ;
+			return  ;
 		}
-
-		private var __detectMarker_mkvertex:Vector.<int> = new Vector.<int>(4);
-		
-		public override function detectMarkerCB(i_raster:NyARBinRaster ,i_callback:NyARSquareContourDetector_IDetectMarkerCallback):void
-		{
-			var flagment:NyARRleLabelFragmentInfoStack=this._stack;
-			var overlap:NyARLabelOverlapChecker = this._overlap_checker;
-
-			// ラベル数が0ならここまで
-			var label_num:int=this._labeling.labeling(i_raster, flagment);
-			if (label_num < 1) {
-				return;
-			}
-			//ラベルをソートしておく
-			flagment.sortByArea();
-			//ラベルリストを取得
-			var labels:Vector.<NyARRleLabelFragmentInfo>=Vector.<NyARRleLabelFragmentInfo>(flagment.getArray());
-
-			var xsize:int = this._width;
-			var ysize:int = this._height;
-			var xcoord:Vector.<int> = this._xcoord;
-			var ycoord:Vector.<int> = this._ycoord;
-			var coord_max:int = this._max_coord;
-			var mkvertex:Vector.<int> =this.__detectMarker_mkvertex;
-
-
-			//重なりチェッカの最大数を設定
-			overlap.setMaxLabels(label_num);
-
-			for (var i:int=0; i < label_num; i++) {
-				var label_pt:NyARRleLabelFragmentInfo=labels[i];
-				var label_area:int = label_pt.area;
-			
-				// クリップ領域が画面の枠に接していれば除外
-				if (label_pt.clip_l == 0 || label_pt.clip_r == xsize-1){
-					continue;
-				}
-				if (label_pt.clip_t == 0 || label_pt.clip_b == ysize-1){
-					continue;
-				}
-				// 既に検出された矩形との重なりを確認
-				if (!overlap.check(label_pt)) {
-					// 重なっているようだ。
-					continue;
-				}
-				
-				//輪郭を取得
-				var coord_num:int = _cpickup.getContour_FLARBinRaster(FLARBinRaster(i_raster),label_pt.entry_x,label_pt.clip_t, coord_max, xcoord, ycoord);
-				if (coord_num == coord_max) {
-					// 輪郭が大きすぎる。
-					continue;
-				}
-				//輪郭線をチェックして、矩形かどうかを判定。矩形ならばmkvertexに取得
-				if (!this._coord2vertex.getVertexIndexes(xcoord, ycoord,coord_num,label_area, mkvertex)) {
-					// 頂点の取得が出来なかった
-					continue;
-				}
-				//矩形を発見したことをコールバック関数で通知
-				i_callback.onSquareDetect(this,xcoord,ycoord,coord_num,mkvertex);
-
-				// 検出済の矩形の属したラベルを重なりチェックに追加する。
-				overlap.push(label_pt);
-			
-			}
-			return;
+	private var __detectMarker_mkvertex:Vector.<int> = new Vector.<int>(4); 
+	public function detectMarker_2( i_raster:NyARGrayscaleRaster , i_area:NyARIntRect , i_th:int ):void
+	{ 
+		//assert( ! (( i_area.w * i_area.h > 0 ) ) );
+		var flagment:NyARRleLabelFragmentInfoPtrStack = this._labeling.label_stack ;
+		var overlap:NyARLabelOverlapChecker = this._overlap_checker ;
+		this._labeling.labeling_4(i_raster , i_area , i_th) ;
+		var label_num:int = flagment.getLength() ;
+		if( label_num < 1 ) {
+			return  ;
 		}
+		
+		var labels:Vector.<Object> = flagment.getArray() ;
+		var coord:NyARIntCoordinates = this._coord ;
+		var mkvertex:Vector.<int> = this.__detectMarker_mkvertex ;
+		overlap.setMaxLabels(label_num) ;
+		for( var i:int = 0 ; i < label_num ; i++ ) {
+			var label_pt:NyARRleLabelFragmentInfo = NyARRleLabelFragmentInfo(labels[i]);
+			if ( !overlap.check(label_pt) )
+			{
+				continue ;
+			}
+			
+			if ( !this._cpickup.getContour_4(i_raster, i_area, i_th, label_pt.entry_x, label_pt.clip_t, coord) )
+			{
+				continue ;
+			}
+			
+			var label_area:int = label_pt.area ;
+			if ( !this._coord2vertex.getVertexIndexes(coord, label_area, mkvertex) )
+			{
+				continue ;
+			}
+			
+			this.onSquareDetect(coord , mkvertex) ;
+			overlap.push(label_pt) ;
+		}
+		return  ;
+	}
+	
+	public override function detectMarker_1( i_raster:NyARBinRaster ):void
+	{ 
+		var flagment:NyARRleLabelFragmentInfoPtrStack = this._labeling.label_stack ;
+		var overlap:NyARLabelOverlapChecker = this._overlap_checker ;
+		flagment.clear() ;
+		this._labeling.labeling_1(i_raster) ;
+		var label_num:int = flagment.getLength() ;
+		if( label_num < 1 ) {
+			return  ;
+		}
+		flagment.sortByArea() ;
+		var labels:Vector.<Object> = flagment.getArray() ;
+		var coord:NyARIntCoordinates = this._coord ;
+		var mkvertex:Vector.<int> = this.__detectMarker_mkvertex ;
+		overlap.setMaxLabels(label_num) ;
+		for ( var i:int = 0 ; i < label_num ; i++ ) {
+
+			var label_pt:NyARRleLabelFragmentInfo = NyARRleLabelFragmentInfo(labels[i]);
+			var label_area:int = label_pt.area ;
+			if( !overlap.check(label_pt) ) {
+				continue ;
+			}
+			
+			if( !this._cpickup.getContour_1(i_raster, label_pt.entry_x, label_pt.clip_t, coord) ) {
+				continue ;
+			}
+		
+			if( !this._coord2vertex.getVertexIndexes(coord, label_area, mkvertex) ) {
+				continue ;
+			}
+			
+			this.onSquareDetect(coord , mkvertex) ;
+			overlap.push(label_pt) ;
+		}
+		return  ;
+	}
+	
+
 	}
 }
+import jp.nyatla.nyartoolkit.as3.core.labeling.*;
+import org.libspark.flartoolkit.core.labeling.fllabeling.*;
+import jp.nyatla.nyartoolkit.as3.core.labeling.rlelabeling.*;
+import jp.nyatla.nyartoolkit.as3.core.raster.*;
+import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
+import jp.nyatla.nyartoolkit.as3.core.types.*;
+
+class Labeling extends FLARLabeling 
+{
+	public var label_stack:NyARRleLabelFragmentInfoPtrStack ; 
+	private var _right:int ; 
+	private var _bottom:int ; 
+	public function Labeling( i_width:int , i_height:int )
+	{ 
+		super( i_width , i_height ) ;
+		this.label_stack = new NyARRleLabelFragmentInfoPtrStack( i_width * i_height * 2048 / ( 320 * 240 ) + 32 ) ;
+		this._bottom = i_height - 1 ;
+		this._right = i_width - 1 ;
+		return  ;
+	}
+	public override function labeling_4( i_raster:NyARGrayscaleRaster , i_area:NyARIntRect , i_th:int ):void
+	{ 
+		this.label_stack.clear() ;
+		super.labeling_4(i_raster , i_area , i_th) ;
+		this.label_stack.sortByArea() ;
+	}
+	
+	public override function labeling_1( i_bin_raster:NyARBinRaster ):void
+	{ 
+		this.label_stack.clear() ;
+		super.labeling_1(i_bin_raster) ;
+		this.label_stack.sortByArea() ;
+	}
+	
+	protected override function onLabelFound( i_label:NyARRleLabelFragmentInfo ):void
+	{ 
+		if( i_label.clip_l == 0 || i_label.clip_r == this._right ) {
+			return  ;
+		}
+		
+		if( i_label.clip_t == 0 || i_label.clip_b == this._bottom ) {
+			return  ;
+		}
+		
+		this.label_stack.push(i_label) ;
+	}
+	
+}		
+

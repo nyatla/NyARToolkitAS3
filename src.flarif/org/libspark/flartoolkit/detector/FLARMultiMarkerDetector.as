@@ -48,18 +48,10 @@ package org.libspark.flartoolkit.detector
 	import org.libspark.flartoolkit.core.transmat.*;
 
 
-
-	/**
-	 * 複数のマーカーを検出し、それぞれに最も一致するARコードを、コンストラクタで登録したARコードから 探すクラスです。最大300個を認識しますが、ゴミラベルを認識したりするので100個程度が限界です。
-	 * 
-	 */
 	public class FLARMultiMarkerDetector
 	{
-
-		private var _detect_cb:DetectSquareCB;
-		public static const AR_SQUARE_MAX:int = 300;
 		private var _is_continue:Boolean = false;
-		private var _square_detect:NyARSquareContourDetector;
+		private var _square_detect:FLDetector;
 		protected var _transmat:INyARTransMat;
 		private var _offset:Vector.<NyARRectOffset>;
 
@@ -98,19 +90,15 @@ package org.libspark.flartoolkit.detector
 			var cw:int = i_ref_code[0].getWidth();
 			var ch:int = i_ref_code[0].getHeight();
 
-			//detectMarkerのコールバック関数
-			this._detect_cb=new DetectSquareCB(
-				new NyARColorPatt_Perspective_O2(cw, ch,4,25),
-				i_ref_code,i_number_of_code,i_ref_param);
 			this._transmat = new NyARTransMat(i_ref_param);
 			//NyARToolkitプロファイル
-			this._square_detect =new FLARSquareContourDetector(i_ref_param.getScreenSize());
+			this._square_detect =new FLDetector(new NyARColorPatt_Perspective_O2(cw, ch,4,25,NyARBufferType.OBJECT_AS3_BitmapData),i_ref_code,i_number_of_code,i_ref_param);
 			this._tobin_filter=new FLARRasterFilter_Threshold(100);
 
 			//実サイズ保存
 			this._offset = NyARRectOffset.createArray(i_number_of_code);
 			for(var i:int=0;i<i_number_of_code;i++){
-				this._offset[i].setSquare(i_marker_width[i]);
+				this._offset[i].setSquare_1(i_marker_width[i]);
 			}
 			//２値画像バッファを作る
 			this._bin_raster=new FLARBinRaster(scr_size.w,scr_size.h);
@@ -119,7 +107,7 @@ package org.libspark.flartoolkit.detector
 		
 		private var _bin_raster:FLARBinRaster;
 
-		private var _tobin_filter:INyARRasterFilter_Rgb2Bin;
+		private var _tobin_filter:FLARRasterFilter_Threshold;
 
 		/**
 		 * i_imageにマーカー検出処理を実行し、結果を記録します。
@@ -131,23 +119,23 @@ package org.libspark.flartoolkit.detector
 		 * @return 見つかったマーカーの数を返します。 マーカーが見つからない場合は0を返します。
 		 * @throws NyARException
 		 */
-		public function detectMarkerLite(i_raster:FLARRgbRaster_BitmapData,i_threshold:int):int
+		public function detectMarkerLite(i_raster:INyARRgbRaster,i_threshold:int):int
 		{
 			// サイズチェック
-			if (!this._bin_raster.getSize().isEqualSize_NyARIntSize(i_raster.getSize())) {
+			if (!this._bin_raster.getSize().isEqualSize_2(i_raster.getSize())) {
 				throw new NyARException();
 			}
 
 			// ラスタを２値イメージに変換する.
-			(FLARRasterFilter_Threshold(this._tobin_filter)).setThreshold(i_threshold);
-			this._tobin_filter.doFilter(i_raster, this._bin_raster);
+			((FLARRasterFilter_Threshold)(this._tobin_filter)).setThreshold(i_threshold);
+			this._tobin_filter.doFilter_1(i_raster, this._bin_raster);
 
 			//detect
-			this._detect_cb.init(i_raster);
-			this._square_detect.detectMarkerCB(this._bin_raster,this._detect_cb);
+			this._square_detect.init(i_raster);
+			this._square_detect.detectMarker_1(this._bin_raster);
 
 			//見付かった数を返す。
-			return this._detect_cb.result_stack.getLength();
+			return this._square_detect.result_stack.getLength();
 		}
 
 		/**
@@ -159,12 +147,12 @@ package org.libspark.flartoolkit.detector
 		 * 結果値を受け取るオブジェクトを指定してください。
 		 * @throws NyARException
 		 */
-		public function getTransformMatrix(i_index:int, o_result:FLARTransMatResult):void
+		public function getTransformMatrix(i_index:int,o_result:FLARTransMatResult):void
 		{
-			var result:NyARDetectMarkerResult = this._detect_cb.result_stack.getItem(i_index);
+			var result:NyARDetectMarkerResult = NyARDetectMarkerResult(this._square_detect.result_stack.getItem(i_index));
 			// 一番一致したマーカーの位置とかその辺を計算
 			if (_is_continue) {
-				_transmat.transMatContinue(result.square, this._offset[result.arcode_id], o_result);
+				_transmat.transMatContinue(result.square, this._offset[result.arcode_id], o_result,o_result);
 			} else {
 				_transmat.transMat(result.square, this._offset[result.arcode_id], o_result);
 			}
@@ -181,7 +169,7 @@ package org.libspark.flartoolkit.detector
 		 */
 		public function getConfidence(i_index:int):Number
 		{
-			return this._detect_cb.result_stack.getItem(i_index).confidence;
+			return this._square_detect.result_stack.getItem(i_index).confidence;
 		}
 		/**
 		 * i_indexのマーカーのARCodeインデックスを返します。
@@ -192,7 +180,7 @@ package org.libspark.flartoolkit.detector
 		 */
 		public function getARCodeIndex(i_index:int):int
 		{
-			return this._detect_cb.result_stack.getItem(i_index).arcode_id;
+			return this._square_detect.result_stack.getItem(i_index).arcode_id;
 		}
 
 		/**
@@ -205,28 +193,63 @@ package org.libspark.flartoolkit.detector
 		{
 			this._is_continue = i_is_continue;
 		}
-
 	}
+
 }
 
-import jp.nyatla.nyartoolkit.as3.core.match.*;
-import jp.nyatla.nyartoolkit.as3.core.pickup.*;
-import jp.nyatla.nyartoolkit.as3.core.squaredetect.*;
+import jp.nyatla.nyartoolkit.as3.core.*;
 import jp.nyatla.nyartoolkit.as3.*;
+import jp.nyatla.nyartoolkit.as3.core.transmat.*;
 import jp.nyatla.nyartoolkit.as3.core.types.stack.*;
+import jp.nyatla.nyartoolkit.as3.core.squaredetect.*;
+import jp.nyatla.nyartoolkit.as3.core.rasterfilter.rgb2bin.*;
+import jp.nyatla.nyartoolkit.as3.core.raster.*;
+import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
+import jp.nyatla.nyartoolkit.as3.core.types.*;
+import jp.nyatla.nyartoolkit.as3.core.pickup.*;
 import jp.nyatla.nyartoolkit.as3.core.match.*;
 import jp.nyatla.nyartoolkit.as3.core.param.*;
-import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
-import jp.nyatla.nyartoolkit.as3.detector.*;
-import jp.nyatla.nyartoolkit.as3.core.types.*;
-import org.libspark.flartoolkit.core.*
-/**
- * detectMarkerのコールバック関数
- */
-class DetectSquareCB implements NyARSquareContourDetector_IDetectMarkerCallback
+import jp.nyatla.nyartoolkit.as3.core.transmat.*;
+
+
+import org.libspark.flartoolkit.core.raster.*;
+import org.libspark.flartoolkit.core.rasterfilter.rgb2bin.*;
+import org.libspark.flartoolkit.core.squaredetect.*;
+import org.libspark.flartoolkit.core.*;
+import org.libspark.flartoolkit.*;
+import org.libspark.flartoolkit.core.param.*;
+import org.libspark.flartoolkit.core.raster.rgb.*;
+import org.libspark.flartoolkit.core.transmat.*;
+
+
+class NyARDetectMarkerResult
 {
+	public var arcode_id:int;
+	public var confidence:Number;
+	public var square:FLARSquare=new FLARSquare();
+}
+
+
+class NyARDetectMarkerResultStack extends NyARObjectStack
+{
+	public function NyARDetectMarkerResultStack(i_length:int)
+	{
+		super();
+		this.initInstance_1(i_length);
+		return;
+	}
+	protected override function createElement_1():Object
+	{
+		return new NyARDetectMarkerResult();
+	}	
+}	
+	
+class FLDetector extends FLARSquareContourDetector
+{
+		private static const AR_SQUARE_MAX:int = 300;
+	
 	//公開プロパティ
-	public var result_stack:NyARDetectMarkerResultStack=new NyARDetectMarkerResultStack(NyARDetectMarker.AR_SQUARE_MAX);
+	public var result_stack:NyARDetectMarkerResultStack=new NyARDetectMarkerResultStack(AR_SQUARE_MAX);
 	//参照インスタンス
 	public var _ref_raster:INyARRgbRaster;
 	//所有インスタンス
@@ -235,16 +258,12 @@ class DetectSquareCB implements NyARSquareContourDetector_IDetectMarkerCallback
 	private var _match_patt:Vector.<NyARMatchPatt_Color_WITHOUT_PCA>;
 	private var __detectMarkerLite_mr:NyARMatchPattResult=new NyARMatchPattResult();
 	private var _coordline:NyARCoord2Linear;
-	
-	public function DetectSquareCB(i_inst_patt:INyARColorPatt, i_ref_code:Vector.<FLARCode>, i_num_of_code:int, i_param:NyARParam)
+
+	public function FLDetector(i_inst_patt:INyARColorPatt,i_ref_code:Vector.<FLARCode>,i_num_of_code:int,i_param:NyARParam)
 	{
+		super(i_param.getScreenSize());
 		var cw:int = i_ref_code[0].getWidth();
 		var ch:int = i_ref_code[0].getHeight();
-
-		this._inst_patt=i_inst_patt;
-		this._coordline=new NyARCoord2Linear(i_param.getScreenSize(),i_param.getDistortionFactor());
-		this._deviation_data=new NyARMatchPattDeviationColorData(cw,ch);
-
 		//NyARMatchPatt_Color_WITHOUT_PCA[]の作成
 		this._match_patt=new Vector.<NyARMatchPatt_Color_WITHOUT_PCA>(i_num_of_code);
 		this._match_patt[0]=new NyARMatchPatt_Color_WITHOUT_PCA(i_ref_code[0]);
@@ -255,33 +274,32 @@ class DetectSquareCB implements NyARSquareContourDetector_IDetectMarkerCallback
 			}
 			this._match_patt[i]=new NyARMatchPatt_Color_WITHOUT_PCA(i_ref_code[i]);
 		}
+		this._inst_patt=i_inst_patt;
+		this._coordline=new NyARCoord2Linear(i_param.getScreenSize(),i_param.getDistortionFactor());
+		this._deviation_data=new NyARMatchPattDeviationColorData(cw,ch);
 		return;
 	}
-	private var __tmp_vertex:Vector.<NyARIntPoint2d>=NyARIntPoint2d.createArray(4);
+	private var __ref_vertex:Vector.<NyARIntPoint2d> = NyARIntPoint2d.createArray(4);
 	/**
 	 * 矩形が見付かるたびに呼び出されます。
 	 * 発見した矩形のパターンを検査して、方位を考慮した頂点データを確保します。
 	 */
-	public function onSquareDetect(i_sender:NyARSquareContourDetector,i_coordx:Vector.<int>,i_coordy:Vector.<int>,i_coor_num:int ,i_vertex_index:Vector.<int>):void
+	protected override function onSquareDetect(i_coord:NyARIntCoordinates, i_vertex_index:Vector.<int>):void
 	{
 		var mr:NyARMatchPattResult=this.__detectMarkerLite_mr;
 		//輪郭座標から頂点リストに変換
-		var vertex:Vector.<NyARIntPoint2d>=this.__tmp_vertex;
-		vertex[0].x=i_coordx[i_vertex_index[0]];
-		vertex[0].y=i_coordy[i_vertex_index[0]];
-		vertex[1].x=i_coordx[i_vertex_index[1]];
-		vertex[1].y=i_coordy[i_vertex_index[1]];
-		vertex[2].x=i_coordx[i_vertex_index[2]];
-		vertex[2].y=i_coordy[i_vertex_index[2]];
-		vertex[3].x=i_coordx[i_vertex_index[3]];
-		vertex[3].y=i_coordy[i_vertex_index[3]];
+		var vertex:Vector.<NyARIntPoint2d>=this.__ref_vertex;
+		vertex[0]=i_coord.items[i_vertex_index[0]];
+		vertex[1]=i_coord.items[i_vertex_index[1]];
+		vertex[2]=i_coord.items[i_vertex_index[2]];
+		vertex[3]=i_coord.items[i_vertex_index[3]];
 	
 		//画像を取得
 		if (!this._inst_patt.pickFromRaster(this._ref_raster,vertex)){
 			return;
 		}
 		//取得パターンをカラー差分データに変換して評価する。
-		this._deviation_data.setRaster(this._inst_patt);
+		this._deviation_data.setRaster_1(this._inst_patt);
 
 		//最も一致するパターンを割り当てる。
 		var square_index:int,direction:int;
@@ -289,9 +307,9 @@ class DetectSquareCB implements NyARSquareContourDetector_IDetectMarkerCallback
 		this._match_patt[0].evaluate(this._deviation_data,mr);
 		square_index=0;
 		direction=mr.direction;
-		confidence=mr.confidence;
-		//2番目以降
+		confidence = mr.confidence;
 		var i:int;
+		//2番目以降
 		for(i=1;i<this._match_patt.length;i++){
 			this._match_patt[i].evaluate(this._deviation_data,mr);
 			if (confidence > mr.confidence) {
@@ -303,7 +321,7 @@ class DetectSquareCB implements NyARSquareContourDetector_IDetectMarkerCallback
 			confidence = mr.confidence;
 		}
 		//最も一致したマーカ情報を、この矩形の情報として記録する。
-		var result:NyARDetectMarkerResult = this.result_stack.prePush();
+		var result:NyARDetectMarkerResult = NyARDetectMarkerResult(this.result_stack.prePush());
 		result.arcode_id = square_index;
 		result.confidence = confidence;
 
@@ -311,11 +329,11 @@ class DetectSquareCB implements NyARSquareContourDetector_IDetectMarkerCallback
 		//directionを考慮して、squareを更新する。
 		for(i=0;i<4;i++){
 			var idx:int=(i+4 - direction) % 4;
-			this._coordline.coord2Line(i_vertex_index[idx],i_vertex_index[(idx+1)%4],i_coordx,i_coordy,i_coor_num,sq.line[i]);
+			this._coordline.coord2Line(i_vertex_index[idx],i_vertex_index[(idx+1)%4],i_coord,sq.line[i]);
 		}
 		for (i = 0; i < 4; i++) {
 			//直線同士の交点計算
-			if(!NyARLinear.crossPos(sq.line[i],sq.line[(i + 3) % 4],sq.sqvertex[i])){
+			if(!sq.line[i].crossPos_1(sq.line[(i + 3) % 4],sq.sqvertex[i])){
 				throw new NyARException();//ここのエラー復帰するならダブルバッファにすればOK
 			}
 		}
@@ -327,29 +345,4 @@ class DetectSquareCB implements NyARSquareContourDetector_IDetectMarkerCallback
 		
 	}
 }
-
-
-class NyARDetectMarkerResult
-{
-	public var arcode_id:int;
-	public var confidence:Number;
-
-	public var square:NyARSquare=new NyARSquare();
-}
-
-
-class NyARDetectMarkerResultStack extends NyARObjectStack
-{
-	public function NyARDetectMarkerResultStack(i_length:int)
-	{
-		super(i_length);
-	}
-	protected override function createArray(i_length:int):Vector.<*>
-	{
-		var ret:Vector.<NyARDetectMarkerResult>= new Vector.<NyARDetectMarkerResult>(i_length);
-		for (var i:int =0; i < i_length; i++){
-			ret[i] = new NyARDetectMarkerResult();
-		}
-		return Vector.<*>(ret);
-	}	
-}
+		

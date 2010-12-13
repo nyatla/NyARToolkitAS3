@@ -60,9 +60,9 @@ package org.libspark.flartoolkit.core.rasterfilter.rgb2bin
 		{
 			this._threshold = i_threshold;
 		}
-		public function doFilter(i_input:INyARRgbRaster, i_output:NyARBinRaster):void
+		public function doFilter_1(i_input:INyARRgbRaster, i_output:NyARBinRaster):void
 		{
-			NyAS3Utils.assert (i_input.getSize().isEqualSize_NyARIntSize(i_output.getSize()) == true);
+			NyAS3Utils.assert (i_input.getSize().isEqualSize_2(i_output.getSize()) == true);
 			this._do_threshold_impl.doThFilter(i_input,i_output,i_output.getSize(), this._threshold);
 			return;
 		}		
@@ -89,7 +89,7 @@ import jp.nyatla.as3utils.*;
 
 class doThFilterImpl_BUFFERFORMAT_OBJECT_AS3_BitmapData implements IdoThFilterImpl
 {
-	private static const ZERO_POINT:Point = new Point();
+	private static const ZERO_POINT:Point = new Point(0,0);
 	private static const ONE_POINT:Point = new Point(1, 1);
 	private static const MONO_FILTER:ColorMatrixFilter = new ColorMatrixFilter([
 		0.2989, 0.5866, 0.1145, 0, 0,

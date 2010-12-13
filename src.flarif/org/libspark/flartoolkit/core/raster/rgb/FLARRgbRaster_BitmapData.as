@@ -33,7 +33,9 @@ package org.libspark.flartoolkit.core.raster.rgb
 	import jp.nyatla.nyartoolkit.as3.core.rasterreader.*;
 	import org.libspark.flartoolkit.core.rasterreader.*;
 	import flash.display.BitmapData;
-
+	/**
+	 * BitmapDataをデータに持つRasterクラス
+	 */
 	public class FLARRgbRaster_BitmapData extends NyARRgbRaster_BasicClass
 	{
 		private var _bitmapData:BitmapData;
@@ -56,6 +58,10 @@ package org.libspark.flartoolkit.core.raster.rgb
 		public override function hasBuffer():Boolean
 		{
 			return this._bitmapData != null;
+		}
+		public function getBitmapData():BitmapData
+		{
+			return this._bitmapData;
 		}
 	}
 }

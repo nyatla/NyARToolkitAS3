@@ -54,7 +54,6 @@ package org.libspark.flartoolkit.processor
 	import org.libspark.flartoolkit.core.transmat.*;	
 	import org.libspark.flartoolkit.core.analyzer.raster.threshold.*;
 	
-	
 	public class FLSingleNyIdMarkerProcesser
 	{
 		/**
@@ -68,7 +67,7 @@ package org.libspark.flartoolkit.processor
 		private var _lost_delay_count:int = 0;
 		private var _lost_delay:int = 5;
 
-		private var _square_detect:FLARSquareContourDetector;
+		private var _square_detect:FLDetector;
 		protected var _transmat:INyARTransMat;
 		private var _offset:NyARRectOffset; 
 		private var _is_active:Boolean;
@@ -76,7 +75,6 @@ package org.libspark.flartoolkit.processor
 		// [AR]検出結果の保存用
 		private var _bin_raster:FLARBinRaster;
 		private var _tobin_filter:FLARRasterFilter_Threshold;
-		private var _callback:DetectSquareCB;
 		private var _data_current:INyIdMarkerData;
 
 
@@ -92,9 +90,8 @@ package org.libspark.flartoolkit.processor
 			
 			var scr_size:NyARIntSize = i_param.getScreenSize();
 			// 解析オブジェクトを作る
-			this._square_detect = new FLARSquareContourDetector(scr_size);
+			this._square_detect = new FLDetector(i_param,i_encoder);
 			this._transmat = new NyARTransMat(i_param);
-			this._callback=new DetectSquareCB(i_param,i_encoder);
 
 			// ２値画像バッファを作る
 			this._bin_raster = new FLARBinRaster(scr_size.w, scr_size.h);
@@ -105,14 +102,14 @@ package org.libspark.flartoolkit.processor
 			this._initialized=true;
 			this._is_active=false;
 			this._offset = new NyARRectOffset();
-			this._offset.setSquare(i_marker_width);
+			this._offset.setSquare_1(i_marker_width);
 			return;
 			
 		}
 
 		public function setMarkerWidth(i_width:int):void
 		{
-			this._offset.setSquare(i_width);
+			this._offset.setSquare_1(i_width);
 			return;
 		}
 
@@ -130,27 +127,27 @@ package org.libspark.flartoolkit.processor
 		public function detectMarker(i_raster:INyARRgbRaster):void
 		{
 			// サイズチェック
-			if (!this._bin_raster.getSize().isEqualSize_int(i_raster.getSize().w, i_raster.getSize().h)) {
+			if (!this._bin_raster.getSize().isEqualSize_1(i_raster.getSize().w, i_raster.getSize().h)) {
 				throw new NyARException();
 			}
 			// ラスタを２値イメージに変換する.
 			this._tobin_filter.setThreshold(this._current_threshold);
-			this._tobin_filter.doFilter(i_raster, this._bin_raster);
+			this._tobin_filter.doFilter_1(i_raster, this._bin_raster);
 
 			// スクエアコードを探す(第二引数に指定したマーカ、もしくは新しいマーカを探す。)
-			this._callback.init(i_raster,this._is_active?this._data_current:null);
-			this._square_detect.detectMarkerCB(this._bin_raster, this._callback);
+			this._square_detect.init(i_raster,this._is_active?this._data_current:null);
+			this._square_detect.detectMarker_1(this._bin_raster);
 
 			// 認識状態を更新(マーカを発見したなら、current_dataを渡すかんじ)
-			var is_id_found:Boolean=updateStatus(this._callback.square,this._callback.marker_data);
+			var is_id_found:Boolean=updateStatus(this._square_detect.square,this._square_detect.marker_data);
 
 			//閾値フィードバック(detectExistMarkerにもあるよ)
 			if(is_id_found){
 				//マーカがあれば、マーカの周辺閾値を反映
-				this._current_threshold=(this._current_threshold+this._callback.threshold)/2;
+				this._current_threshold=(this._current_threshold+this._square_detect.threshold)/2;
 			}else{
 				//マーカがなければ、探索+DualPTailで基準輝度検索
-				var th:int=this._threshold_detect.analyzeRaster(i_raster);
+				var th:int=this._threshold_detect.analyzeRaster_1(i_raster);
 				this._current_threshold=(this._current_threshold+th)/2;
 			}		
 			return;
@@ -194,7 +191,7 @@ package org.libspark.flartoolkit.processor
 					}
 				} else if(this._data_current.isEqual(i_marker_data)) {
 					//同じidの再認識
-					this._transmat.transMatContinue(i_square, this._offset, result);
+					this._transmat.transMatContinue(i_square, this._offset, result,result);
 					// OnUpdate
 					this.onUpdateHandler(i_square, result);
 					this._lost_delay_count = 0;
@@ -233,13 +230,12 @@ import jp.nyatla.nyartoolkit.as3.core.types.*;
 import jp.nyatla.nyartoolkit.as3.*;
 import jp.nyatla.nyartoolkit.as3.nyidmarker.data.*;
 import jp.nyatla.nyartoolkit.as3.nyidmarker.*;
-
 import org.libspark.flartoolkit.core.squaredetect.*;
 
 /**
  * detectMarkerのコールバック関数
  */
-class DetectSquareCB implements NyARSquareContourDetector_IDetectMarkerCallback
+class FLDetector extends FLARSquareContourDetector
 {
 	//公開プロパティ
 	public var square:FLARSquare=new FLARSquare();
@@ -259,15 +255,16 @@ class DetectSquareCB implements NyARSquareContourDetector_IDetectMarkerCallback
 	private var _data_temp:INyIdMarkerData;
 	private var _prev_data:INyIdMarkerData;
 	
-	public function DetectSquareCB(i_param:NyARParam,i_encoder:INyIdMarkerDataEncoder)
+	public function FLDetector(i_param:NyARParam,i_encoder:INyIdMarkerDataEncoder)
 	{
+		super(i_param.getScreenSize());
 		this._coordline=new NyARCoord2Linear(i_param.getScreenSize(),i_param.getDistortionFactor());
 		this._data_temp=i_encoder.createDataInstance();
 		this._current_data=i_encoder.createDataInstance();
 		this._encoder=i_encoder;
 		return;
 	}
-	private var __tmp_vertex:Vector.<NyARIntPoint2d>=NyARIntPoint2d.createArray(4);
+	private var __ref_tmp_vertex:Vector.<NyARIntPoint2d>=NyARIntPoint2d.createArray(4);
 	/**
 	 * Initialize call back handler.
 	 */
@@ -284,27 +281,23 @@ class DetectSquareCB implements NyARSquareContourDetector_IDetectMarkerCallback
 	 * 矩形が見付かるたびに呼び出されます。
 	 * 発見した矩形のパターンを検査して、方位を考慮した頂点データを確保します。
 	 */
-	public function onSquareDetect(i_sender:NyARSquareContourDetector,i_coordx:Vector.<int>,i_coordy:Vector.<int>,i_coor_num:int,i_vertex_index:Vector.<int>):void
+	protected override function onSquareDetect(i_coord:NyARIntCoordinates,i_vertex_index:Vector.<int>):void
 	{
 		//既に発見済なら終了
 		if(this.marker_data!=null){
 			return;
 		}
 		//輪郭座標から頂点リストに変換
-		var vertex:Vector.<NyARIntPoint2d>=this.__tmp_vertex;
-		vertex[0].x=i_coordx[i_vertex_index[0]];
-		vertex[0].y=i_coordy[i_vertex_index[0]];
-		vertex[1].x=i_coordx[i_vertex_index[1]];
-		vertex[1].y=i_coordy[i_vertex_index[1]];
-		vertex[2].x=i_coordx[i_vertex_index[2]];
-		vertex[2].y=i_coordy[i_vertex_index[2]];
-		vertex[3].x=i_coordx[i_vertex_index[3]];
-		vertex[3].y=i_coordy[i_vertex_index[3]];
-	
+		var vertex:Vector.<NyARIntPoint2d>=this.__ref_tmp_vertex;
+		vertex[0]=i_coord.items[i_vertex_index[0]];
+		vertex[1]=i_coord.items[i_vertex_index[1]];
+		vertex[2]=i_coord.items[i_vertex_index[2]];
+		vertex[3] = i_coord.items[i_vertex_index[3]];
+		
 		var param:NyIdMarkerParam=this._marker_param;
 		var patt_data:NyIdMarkerPattern=this._marker_data;			
 		// 評価基準になるパターンをイメージから切り出す
-		if (!this._id_pickup.pickFromRaster(this._ref_raster,vertex, patt_data, param)){
+		if (!this._id_pickup.pickFromRaster_2(this._ref_raster,vertex, patt_data, param)){
 			return;
 		}
 		//エンコード
@@ -329,15 +322,18 @@ class DetectSquareCB implements NyARSquareContourDetector_IDetectMarkerCallback
 		var i:int;
 		for(i=0;i<4;i++){
 			var idx:int=(i+4 - param.direction) % 4;
-			this._coordline.coord2Line(i_vertex_index[idx],i_vertex_index[(idx+1)%4],i_coordx,i_coordy,i_coor_num,sq.line[i]);
+			this._coordline.coord2Line(i_vertex_index[idx],i_vertex_index[(idx+1)%4],i_coord,sq.line[i]);
 		}
 		for (i= 0; i < 4; i++) {
 			//直線同士の交点計算
-			if(!NyARLinear.crossPos(sq.line[i],sq.line[(i + 3) % 4],sq.sqvertex[i])){
+			if(!sq.line[i].crossPos_1(sq.line[(i + 3) % 4],sq.sqvertex[i])){
 				throw new NyARException();//ここのエラー復帰するならダブルバッファにすればOK
 			}
 		}
 		this.threshold=param.threshold;
 		this.marker_data=this._current_data;//みつかった。
 	}
-}	
+}		
+	
+	
+	

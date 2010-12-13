@@ -65,7 +65,7 @@ package jp.nyatla.nyartoolkit.as3.core.transmat.rotmatrix
 			var cmat:NyARPerspectiveProjectionMatrix= this._projection_mat_ref;
 			var w1:Number = i_linear1.a * i_linear2.b - i_linear2.a * i_linear1.b;
 			var w2:Number = i_linear1.b * i_linear2.c - i_linear2.b * i_linear1.c;
-			var w3:Number = i_linear1.c * i_linear2.b - i_linear2.c * i_linear1.a;
+			var w3:Number = i_linear1.c * i_linear2.a - i_linear2.c * i_linear1.a;
 
 			var m0:Number = w1 * (cmat.m01 * cmat.m12 - cmat.m02 * cmat.m11) + w2 * cmat.m11 - w3 * cmat.m01;//w1 * (cpara[0 * 4 + 1] * cpara[1 * 4 + 2] - cpara[0 * 4 + 2] * cpara[1 * 4 + 1]) + w2 * cpara[1 * 4 + 1] - w3 * cpara[0 * 4 + 1];
 			var m1:Number = -w1 * cmat.m00 * cmat.m12 + w3 * cmat.m00;//-w1 * cpara[0 * 4 + 0] * cpara[1 * 4 + 2] + w3 * cpara[0 * 4 + 0];

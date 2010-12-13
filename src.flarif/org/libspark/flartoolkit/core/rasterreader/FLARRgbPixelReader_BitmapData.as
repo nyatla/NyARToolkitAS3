@@ -28,6 +28,7 @@
  */
 package org.libspark.flartoolkit.core.rasterreader
 {
+	import flash.display.Bitmap;
 	import jp.nyatla.nyartoolkit.as3.core.rasterreader.*;
 	import flash.display.BitmapData;
 	import jp.nyatla.nyartoolkit.as3.*;
@@ -63,10 +64,15 @@ package org.libspark.flartoolkit.core.rasterreader
 			}
 		}
 
-		public function setPixel(i_x:int, i_y:int, i_rgb:Vector.<int>):void
+		public function setPixel_1(i_x:int, i_y:int, i_rgb:Vector.<int>):void
 		{
-			NyARException.notImplement();
+			this._ref_bitmap.setPixel(i_x,i_y,((i_rgb[0] << 16) & 0xff0000) | ((i_rgb[1] << 8) & 0x00ff00) | (i_rgb[2] & 0x0000ff));
 		}
+		public function setPixel_2(i_x:int, i_y:int, i_r:int, i_g:int, i_b:int):void
+		{
+			this._ref_bitmap.setPixel(i_x,i_y,((i_r << 16) & 0xff0000) | ((i_g << 8) & 0x00ff00) | (i_b & 0x0000ff));
+		}
+		
 		public function setPixels(i_x:Vector.<int>, i_y:Vector.<int>, i_num:int, i_intrgb:Vector.<int>):void
 		{
 			NyARException.notImplement();
@@ -74,7 +80,6 @@ package org.libspark.flartoolkit.core.rasterreader
 		public function switchBuffer(i_ref_buffer:Object):void
 		{
 			NyARException.notImplement();
-		}	
-		
+		}
 	}
 }

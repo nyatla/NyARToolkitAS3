@@ -34,6 +34,9 @@ package org.libspark.flartoolkit.core.raster
 	import jp.nyatla.nyartoolkit.as3.utils.*;
 	import org.libspark.flartoolkit.*;
 	import flash.display.BitmapData;
+	/**
+	 * このRasterは、明点を0xffffff,暗点を0xff000000であらわします。
+	 */
 	public final class FLARBinRaster extends NyARBinRaster
 	{
 		public function FLARBinRaster(i_width:int,i_height:int)

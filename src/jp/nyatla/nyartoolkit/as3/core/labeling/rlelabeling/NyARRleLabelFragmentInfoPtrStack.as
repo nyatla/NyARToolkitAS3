@@ -9,7 +9,7 @@ package jp.nyatla.nyartoolkit.as3.core.labeling.rlelabeling
 	{
 		public function NyARRleLabelFragmentInfoPtrStack( i_length:int )
 		{ 
-			this.initInstance(i_length) ;
+			this.initInstance_1(i_length) ;
 			return  ;
 		}
 		

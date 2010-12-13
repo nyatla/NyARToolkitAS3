@@ -39,7 +39,9 @@ package{
 	
 	public class Main extends Sprite 
 	{
-		public static var win:Main;
+		
+		public static var inst:Main;
+		public var bitmap:Bitmap = new Bitmap(new BitmapData(320,240));
         private var textbox:TextField = new TextField();
 		private var param:FLARParam;
 		private var code:FLARCode;
@@ -49,17 +51,29 @@ package{
 		{
 			this.textbox.text = this.textbox.text + "\n" + i_str;
 		}
+		public static function megs(i_str:String):void
+		{
+			inst.msg(i_str);
+		}
+		public static function bmout(b:BitmapData):void
+		{
+			Main.inst.bitmap.bitmapData.draw(b);
+		}
 
 		public function Main():void 
 		{
-			Main.win = this;
+			Main.inst = this;
 			//デバック用のテキストボックス
 			this.textbox.x = 0; this.textbox.y = 0;
 			this.textbox.width=640,this.textbox.height=480; 
 			this.textbox.condenseWhite = true;
 			this.textbox.multiline =   true;
 			this.textbox.border = true;
+			this.bitmap.x = 640; this.bitmap.y = 0;
+			this.bitmap.width = 160;
+			this.bitmap.height = 120;
             addChild(textbox);
+            addChild(bitmap);
 
 			//ファイルをメンバ変数にロードする。
 			var mf:NyMultiFileLoader=new NyMultiFileLoader();
@@ -282,7 +296,7 @@ class IdMarkerProcessor extends FLSingleNyIdMarkerProcesser
 		super();
 		this._parent=i_parent;
 		this._encoder=new NyIdMarkerDataEncoder_RawBit();
-		initInstance(i_cparam,this._encoder,100);
+		initInstance(i_cparam,this._encoder,80);
 		return;
 	}
 	

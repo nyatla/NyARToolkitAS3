@@ -169,7 +169,7 @@ package
 		public function testNyARReality():void 
 		{
 			var reality:NyARReality=new NyARReality(param.getScreenSize(),10,1000,param.getPerspectiveProjectionMatrix(),null,10,10);
-			var reality_in:NyARRealitySource = new NyARRealitySource_Reference(320, 240, null, 2, 100, NyARBufferType.INT1D_X8R8G8B8_32);
+			var reality_in:NyARRealitySource = new NyARRealitySource_Reference(320, 240, null, 1, 100, NyARBufferType.INT1D_X8R8G8B8_32);
 			var dt:Vector.<int> = Vector.<int>(reality_in.refRgbSource().getBuffer());
 			var sr:Vector.<int> = Vector.<int>(raster_bgra.getBuffer());
 			for (var i:int = 0; i < sr.length; i++) { dt[i] = sr[i]; }
@@ -177,13 +177,13 @@ package
 
 //			FileInputStream fs = new FileInputStream(DATA_FILE);
 //			fs.read((byte[])reality_in.refRgbSource().getBuffer());
-//			Date d2 = new Date();
-//			for(int i=0;i<1000;i++){
+			var date : Date = new Date();
+			for(var i2:int=0;i2<100;i2++){
 				reality.progress(reality_in);
-				reality.progress(reality_in);
-//			}
-//			Date d = new Date();
-//			System.out.println(d.getTime() - d2.getTime());
+			}
+			var date2 : Date = new Date();
+			msg(((date2.valueOf() - date.valueOf()).toString())+"[ms] par 100 frame");
+
 			
 			msg(reality.getNumberOfKnown().toString());
 			msg(reality.getNumberOfUnknown().toString());
@@ -202,7 +202,7 @@ package
 			var ang:NyARDoublePoint3d = new NyARDoublePoint3d();
 			msg("NyARToolkitAS3 check program.");
 			msg("(c)2010 nyatla.");
-			msg("#ready!");/*
+			msg("#ready!");
 			{
 				msg("<NyARSingleDetectMarker>");
 				testNyARSingleDetectMarker();
@@ -218,7 +218,7 @@ package
 			{
 				msg("<SingleProcessor>");
 				testSingleProcessor();
-			}*/
+			}
 			{
 				msg("<Reality>");
 				testNyARReality();
