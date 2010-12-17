@@ -155,7 +155,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk
 			var cotr:NyARTargetList=targets[NyARTargetStatus.ST_CONTURE];
 			var retw:NyARTargetList=targets[NyARTargetStatus.ST_RECT];
 
-			var vecreader:NyARVectorReader_INT1D_GRAY_8=i_s.getBaseVectorReader();
+			var vecreader:INyARVectorReader=i_s.getBaseVectorReader();
 			//ターゲットリストの振り分け
 			var target_array:Vector.<Object>=this._targets.getArray();
 			newtr.clear();
@@ -219,7 +219,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk
 		 * @return
 		 * @throws NyARException
 		 */
-		private function upgradeNewTarget(i_new_target:NyARTarget,i_vecreader:NyARVectorReader_INT1D_GRAY_8):void
+		private function upgradeNewTarget(i_new_target:NyARTarget,i_vecreader:INyARVectorReader):void
 		{
 			//assert(i_new_target._st_type==NyARTargetStatus.ST_NEW);
 
@@ -315,7 +315,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk
 				//ターゲットいっぱい？
 				c.releaseObject();
 				return;
-			}
+			}	
 			return;
 		}	
 		private function upgradeRectTarget(i_rect_target:NyARTarget):void
@@ -405,12 +405,14 @@ package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk
 		 * @param index
 		 * @throws NyARException
 		 */
-		public static function updateContureStatus(i_list:NyARTargetList,i_vecreader:NyARVectorReader_INT1D_GRAY_8,i_stpool:NyARContourTargetStatusPool,source:Vector.<Object>,index:Vector.<int>):void
+		public static function updateContureStatus(i_list:NyARTargetList,i_vecreader:INyARVectorReader,i_stpool:NyARContourTargetStatusPool,source:Vector.<Object>,index:Vector.<int>):void
 		{
+
 			var crd:Vector.<Object>=i_list.getArray();		
 			var d_ptr:NyARTarget;
 			//ターゲットの更新
 			for(var i:int=i_list.getLength()-1;i>=0;i--){
+
 				d_ptr=NyARTarget(crd[i]);
 				var sample_index:int=index[i];
 				//年齢を加算
@@ -444,12 +446,14 @@ package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk
 		/**
 		 * public static function updateRectStatus(i_list:NyARTargetList,i_vecreader:NyARVectorReader_INT1D_GRAY_8,i_stpool:NyARRectTargetStatusPool,source:Vector.<LowResolutionLabelingSamplerOut_Item>,index:Vector.<int>):void
 		 */
-		public static function updateRectStatus(i_list:NyARTargetList,i_vecreader:NyARVectorReader_INT1D_GRAY_8,i_stpool:NyARRectTargetStatusPool,source:Vector.<Object>,index:Vector.<int>):void
+		public static function updateRectStatus(i_list:NyARTargetList,i_vecreader:INyARVectorReader,i_stpool:NyARRectTargetStatusPool,source:Vector.<Object>,index:Vector.<int>):void
 		{	
+			
 			var rct:Vector.<Object>=i_list.getArray();
 			var d_ptr:NyARTarget;
 			//ターゲットの更新
-			for(var i:int=i_list.getLength()-1;i>=0;i--){
+			for (var i:int = i_list.getLength() - 1; i >= 0; i--) {
+				
 				d_ptr=NyARTarget(rct[i]);
 				//年齢を加算
 				d_ptr._status_life--;
@@ -506,6 +510,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk
 			var sample_items:Vector.<Object>=i_source.getArray();
 			for(var i:int=i_source.getLength()-1;i>=0;i--)
 			{
+				
 				//サンプラからの値を其々のターゲットのソースへ分配
 				var sample_item:LowResolutionLabelingSamplerOut_Item=LowResolutionLabelingSamplerOut_Item(sample_items[i]);
 				var id:int;
@@ -694,7 +699,7 @@ class SampleStack extends NyARPointerStack
 	public function SampleStack(i_size:int)
 	{
 		super();
-		this.initInstance(i_size);
+		this.initInstance_1(i_size);
 	}
 }
 

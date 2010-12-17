@@ -43,13 +43,17 @@ package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk
 		private var _do_filter_impl:IdoFilterImpl; 
 		public function NegativeSqRoberts(i_raster_type:int)
 		{
+			initInstance(i_raster_type);
+		}
+		protected function initInstance(i_raster_type:int):void
+		{
 			switch (i_raster_type) {
 			case NyARBufferType.INT1D_GRAY_8:
 				this._do_filter_impl=new IdoFilterImpl_GRAY_8();
 				break;
 			default:
 				throw new NyARException();
-			}
+			}			
 		}
 		public function doFilter(i_input:INyARRaster,i_output:INyARRaster):void
 		{

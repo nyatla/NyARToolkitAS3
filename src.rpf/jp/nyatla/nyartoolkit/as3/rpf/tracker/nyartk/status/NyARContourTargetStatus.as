@@ -39,7 +39,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk.status
 		 * @return
 		 * @throws NyARException
 		 */
-		public function setValue(i_vecreader:NyARVectorReader_INT1D_GRAY_8,i_sample:LowResolutionLabelingSamplerOut_Item):Boolean
+		public function setValue(i_vecreader:INyARVectorReader,i_sample:LowResolutionLabelingSamplerOut_Item):Boolean
 		{
 			return i_vecreader.traceConture_1(i_sample.lebeling_th, i_sample.entry_pos, this.vecpos);
 		}	

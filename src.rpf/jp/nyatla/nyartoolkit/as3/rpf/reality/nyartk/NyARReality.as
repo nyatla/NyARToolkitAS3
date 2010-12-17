@@ -86,7 +86,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk
 			switch(args.length) {
 			case 1:
 				if (args[0] is NyAS3Const_Inherited) {
-					//blank
+					return;
 				}
 				break;				
 			case 5:
@@ -97,14 +97,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk
 				}
 				break;
 			case 7:
-				if (
-				(args[0] is NyARIntSize) && 
-				(args[1] is Number) && 
-				(args[2] is Number) && 
-				(args[3] is NyARPerspectiveProjectionMatrix) && 
-				((args[4] is NyARCameraDistortionFactor) || (args[4] == null)) &&
-				(args[5] is int) &&
-				(args[6] is int))
+				if ((args[0] is NyARIntSize) && (args[1] is Number) && (args[2] is Number) && (args[3] is NyARPerspectiveProjectionMatrix) && ((args[4] is NyARCameraDistortionFactor) || (args[4] == null)) && (args[5] is int) && (args[6] is int))
 				{
 					override_NyARReality_2(NyARIntSize(args[0]), Number(args[1]), Number(args[2]), NyARPerspectiveProjectionMatrix(args[3]), NyARCameraDistortionFactor(args[4]), int(args[5]), int(args[6]));
 					return;
@@ -132,7 +125,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk
 		 * UnKnownターゲットの最大数を指定します。
 		 * @throws NyARException
 		 */
-		public function override_NyARReality_1(i_param:NyARParam, i_near:Number, i_far:Number, i_max_known_target:int, i_max_unknown_target:int):void
+		protected function override_NyARReality_1(i_param:NyARParam, i_near:Number, i_far:Number, i_max_known_target:int, i_max_unknown_target:int):void
 		{
 			//定数とかいろいろ
 			this.MAX_LIMIT_KNOWN=i_max_known_target;
@@ -158,7 +151,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk
 		 * {@link #NyARReality(NyARParam i_param,double i_near,double i_far,int i_max_known_target,int i_max_unknown_target)}を参照
 		 * @throws NyARException
 		 */
-		public function override_NyARReality_2(i_screen:NyARIntSize,i_near:Number,i_far:Number,i_prjmat:NyARPerspectiveProjectionMatrix,i_dist_factor:NyARCameraDistortionFactor,i_max_known_target:int,i_max_unknown_target:int):void
+		protected function override_NyARReality_2(i_screen:NyARIntSize,i_near:Number,i_far:Number,i_prjmat:NyARPerspectiveProjectionMatrix,i_dist_factor:NyARCameraDistortionFactor,i_max_known_target:int,i_max_unknown_target:int):void
 		{
 			this.MAX_LIMIT_KNOWN=i_max_known_target;
 			this.MAX_LIMIT_UNKNOWN=i_max_unknown_target;

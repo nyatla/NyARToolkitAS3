@@ -13,7 +13,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.realitysource.nyartk
 	 */
 	public class NyARRealitySource_Reference extends NyARRealitySource
 	{
-		protected var _filter:NyARRasterFilter_Rgb2Gs_RgbAve;
+		protected var _filter:NyARRasterFilter_Rgb2Gs_RgbAve192;
 		/**
 		 * 
 		 * @param i_width
@@ -34,7 +34,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.realitysource.nyartk
 		public function NyARRealitySource_Reference(i_width:int, i_height:int , i_ref_raster_distortion:NyARCameraDistortionFactor , i_depth:int , i_number_of_sample:int , i_raster_type:int )
 		{
 			this._rgb_source=new NyARRgbRaster(i_width,i_height,i_raster_type);
-			this._filter=new NyARRasterFilter_Rgb2Gs_RgbAve(this._rgb_source.getBufferType());
+			this._filter=new NyARRasterFilter_Rgb2Gs_RgbAve192(this._rgb_source.getBufferType());
 			this._source_perspective_reader=new NyARPerspectiveRasterReader(_rgb_source.getBufferType());
 			this._tracksource=new NyARTrackerSource_Reference(i_number_of_sample,i_ref_raster_distortion,i_width,i_height,i_depth,true);
 			return;

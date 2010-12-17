@@ -115,7 +115,6 @@ class Main_Labeling extends NyARLabeling_Rle
 		item.base_area_center.y=item.base_area.y+item.base_area.h/2;
 		item.base_area_sq_diagonal=(w*w+h*h)*(pix*pix);
 		item.lebeling_th = this.current_th;
-
 	}
 	
 }

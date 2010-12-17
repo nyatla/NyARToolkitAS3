@@ -18,7 +18,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk
 		//継承クラスで設定されるべきオブジェクト
 		protected var _rbraster:NyARGrayscaleRaster;
 		protected var _base_raster:NyARGrayscaleRaster;
-		protected var _vec_reader:NyARVectorReader_INT1D_GRAY_8;	
+		protected var _vec_reader:INyARVectorReader;	
 		protected var _sample_out:LowResolutionLabelingSamplerOut;
 		/**
 		 * Robertsエッジ画像の解像度を指定する。
@@ -34,7 +34,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk
 		 * 基本GS画像に変更を加えた場合は、getSampleOut,またはsyncResource関数を実行して同期してから実行してください。
 		 * @return
 		 */
-		public function getBaseVectorReader():NyARVectorReader_INT1D_GRAY_8
+		public function getBaseVectorReader():INyARVectorReader
 		{
 			return this._vec_reader;
 		}

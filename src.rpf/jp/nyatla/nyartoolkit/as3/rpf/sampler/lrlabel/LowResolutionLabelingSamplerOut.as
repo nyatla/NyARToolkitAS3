@@ -108,6 +108,6 @@ class AreaStack extends NyARPointerStack
 {
 	public function AreaStack(i_length:int)
 	{
-		super.initInstance(i_length);
+		super.initInstance_1(i_length);
 	}
 }

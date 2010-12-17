@@ -8,7 +8,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk
 	{
 		public function NyARTargetList(i_max_target:int)
 		{
-			super.initInstance(i_max_target);
+			super.initInstance_1(i_max_target);
 		}
 		/**
 		 * Sampleの位置キーに一致する可能性の高い要素のインデクスを１つ返します。

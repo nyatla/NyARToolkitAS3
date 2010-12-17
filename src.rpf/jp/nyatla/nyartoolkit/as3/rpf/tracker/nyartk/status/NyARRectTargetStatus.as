@@ -5,7 +5,7 @@ import jp.nyatla.nyartoolkit.as3.NyARException;
 import jp.nyatla.nyartoolkit.as3.core.types.*;
 import jp.nyatla.nyartoolkit.as3.core.utils.NyARMath;
 import jp.nyatla.nyartoolkit.as3.rpf.sampler.lrlabel.*;
-import jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk.NyARVectorReader_INT1D_GRAY_8;
+import jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk.*;
 import jp.nyatla.nyartoolkit.as3.rpf.utils.*;
 
 
@@ -148,7 +148,7 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 	 * @return
 	 * @throws NyARException
 	 */
-	public function setValueWithDeilyCheck(i_vec_reader:NyARVectorReader_INT1D_GRAY_8,i_source:LowResolutionLabelingSamplerOut_Item,i_prev_status:NyARRectTargetStatus):Boolean
+	public function setValueWithDeilyCheck(i_vec_reader:INyARVectorReader,i_source:LowResolutionLabelingSamplerOut_Item,i_prev_status:NyARRectTargetStatus):Boolean
 	{
 		var vecpos:VecLinearCoordinates=this._ref_my_pool._vecpos;
 		//輪郭線を取る
@@ -187,7 +187,7 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 	 * @return
 	 * @throws NyARException
 	 */
-	public function setValueByLineLog(i_vec_reader:NyARVectorReader_INT1D_GRAY_8,i_prev_status:NyARRectTargetStatus):Boolean
+	public function setValueByLineLog(i_vec_reader:INyARVectorReader,i_prev_status:NyARRectTargetStatus):Boolean
 	{
 		//検出範囲からカーネルサイズの2乗値を計算。検出領域の二乗距離の1/(40*40) (元距離の1/40)
 		var d:int=((int)(i_prev_status.estimate_rect.getDiagonalSqDist()/(NyARMath.SQ_40)));
@@ -240,7 +240,7 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 	 * @return
 	 * @throws NyARException
 	 */
-	public function setValueByAutoSelect(i_vec_reader:NyARVectorReader_INT1D_GRAY_8,i_source:LowResolutionLabelingSamplerOut_Item,i_prev_status:NyARRectTargetStatus):Boolean
+	public function setValueByAutoSelect(i_vec_reader:INyARVectorReader,i_source:LowResolutionLabelingSamplerOut_Item,i_prev_status:NyARRectTargetStatus):Boolean
 	{
 		var current_detect_type:int=DT_SQDAILY;
 		//移動速度による手段の切り替え
@@ -366,7 +366,7 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 	 * @return
 	 * @throws NyARException
 	 */
-	private function traceSquareLine(i_reader:NyARVectorReader_INT1D_GRAY_8 , i_edge_size:int,i_prevsq: NyARRectTargetStatus,o_line:Vector.<NyARLinear>):Boolean
+	private function traceSquareLine(i_reader:INyARVectorReader , i_edge_size:int,i_prevsq: NyARRectTargetStatus,o_line:Vector.<NyARLinear>):Boolean
 	{
 		var p1:NyARDoublePoint2d,p2:NyARDoublePoint2d;
 		var vecpos:VecLinearCoordinates=this._ref_my_pool._vecpos;
