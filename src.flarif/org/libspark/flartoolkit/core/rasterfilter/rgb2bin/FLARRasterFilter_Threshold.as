@@ -90,11 +90,10 @@ import jp.nyatla.as3utils.*;
 class doThFilterImpl_BUFFERFORMAT_OBJECT_AS3_BitmapData implements IdoThFilterImpl
 {
 	private static const ZERO_POINT:Point = new Point(0,0);
-	private static const ONE_POINT:Point = new Point(1, 1);
 	private static const MONO_FILTER:ColorMatrixFilter = new ColorMatrixFilter([
-		0.2989, 0.5866, 0.1145, 0, 0,
-		0.2989, 0.5866, 0.1145, 0, 0,
-		0.2989, 0.5866, 0.1145, 0, 0,
+		0,0,0, 0, 0,
+		0,0,0, 0, 0,
+		1/3,1/3,1/3, 0,
 		0, 0, 0, 1, 0
 	]);
 	private var _tmp:BitmapData;	
@@ -115,7 +114,6 @@ class doThFilterImpl_BUFFERFORMAT_OBJECT_AS3_BitmapData implements IdoThFilterIm
 		_tmp.applyFilter(in_buf, in_buf.rect, ZERO_POINT, MONO_FILTER);
 		out_buf.fillRect(out_buf.rect, 0x0);
 		var rect:Rectangle = out_buf.rect;
-		rect.inflate(-1, -1);
-		out_buf.threshold(_tmp, rect, ONE_POINT, '<=', i_threshold, 0xffffffff, 0xff);
+		out_buf.threshold(_tmp, rect, ZERO_POINT, '<=', i_threshold, 0xff0000ff, 0xff);
 	}
 }

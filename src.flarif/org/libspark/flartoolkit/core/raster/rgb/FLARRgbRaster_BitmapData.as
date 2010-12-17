@@ -32,6 +32,8 @@ package org.libspark.flartoolkit.core.raster.rgb
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
 	import jp.nyatla.nyartoolkit.as3.core.rasterreader.*;
 	import org.libspark.flartoolkit.core.rasterreader.*;
+	import org.libspark.flartoolkit.*;
+	import jp.nyatla.as3utils.*;
 	import flash.display.BitmapData;
 	/**
 	 * BitmapDataをデータに持つRasterクラス
@@ -40,13 +42,51 @@ package org.libspark.flartoolkit.core.raster.rgb
 	{
 		private var _bitmapData:BitmapData;
 		private var _rgb_reader:FLARRgbPixelReader_BitmapData;
-
-		public function FLARRgbRaster_BitmapData(i_width:int,i_height:int)
+		private var _is_attached:Boolean;
+		/**
+		 * function FLARRgbRaster_BitmapData_1(i_width:int,i_height:int,i_is_attached:Boolean)
+		 * 指定したサイズのビットマップを持つインスタンスを生成する。
+		 * function FLARRgbRaster_BitmapData_2(i_bmp:BitmapData)
+		 * 指定した外部BitmapDataをラップしたインスタンスを生成する。
+		 */
+		public function FLARRgbRaster_BitmapData(...args:Array)
 		{
-			super(i_width, i_height,NyARBufferType.OBJECT_AS3_BitmapData);
-			this._bitmapData = new BitmapData(i_width,i_height,false);
+			super(new NyAS3Const_Inherited());
+			switch(args.length) {
+			case 1:
+				if (args[0] is NyAS3Const_Inherited) {
+					return;
+				}else if (args[0] is BitmapData) {
+					override_FLARRgbRaster_BitmapData_2(BitmapData(args[0]));
+					return;
+				}
+				break;
+			case 3:
+				if ((args[0] is int) && (args[1] is int) && (args[2] is Boolean))
+				{
+					override_FLARRgbRaster_BitmapData_1(int(args[0]), int(args[1]),Boolean(args[2]));
+					return;
+				}
+				break;
+			default:
+			}			
+			throw new FLARException();
+		}
+		public function override_FLARRgbRaster_BitmapData_1(i_width:int,i_height:int,i_is_attached:Boolean):void
+		{
+			super.overload_NyARRgbRaster_BasicClass(i_width, i_height, NyARBufferType.OBJECT_AS3_BitmapData);
+			this._is_attached = i_is_attached;
+			this._bitmapData = i_is_attached?new BitmapData(i_width,i_height,false):null;
 			this._rgb_reader = new FLARRgbPixelReader_BitmapData(this._bitmapData);
 		}
+		public function override_FLARRgbRaster_BitmapData_2(i_bmp:BitmapData):void
+		{
+			super.overload_NyARRgbRaster_BasicClass(i_bmp.width, i_bmp.height, NyARBufferType.OBJECT_AS3_BitmapData);
+			this._is_attached = true;
+			this._bitmapData = i_bmp;
+			this._rgb_reader = new FLARRgbPixelReader_BitmapData(this._bitmapData);
+		}
+		
 		public override function getRgbPixelReader():INyARRgbPixelReader
 		{
 			return this._rgb_reader;
@@ -63,6 +103,14 @@ package org.libspark.flartoolkit.core.raster.rgb
 		{
 			return this._bitmapData;
 		}
+		public override function wrapBuffer(i_ref_buf:Object):void
+		{
+			if (this._is_attached) {
+				throw new FLARException();
+			}
+			this._bitmapData = BitmapData(i_ref_buf);
+			this._rgb_reader.switchBuffer(i_ref_buf);
+		}		
 	}
 }
 

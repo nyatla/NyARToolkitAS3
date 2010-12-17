@@ -33,15 +33,16 @@ package org.libspark.flartoolkit.core.raster
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
 	import jp.nyatla.nyartoolkit.as3.utils.*;
 	import org.libspark.flartoolkit.*;
-	import flash.display.BitmapData;
+	import flash.display.*;
+	import flash.geom.*;
 	/**
-	 * このRasterは、明点を0xffffff,暗点を0xff000000であらわします。
+	 * このRasterは、0x0000ff - 0x000000の値で、グレースケール画像を表現します。
 	 */
-	public final class FLARBinRaster extends NyARBinRaster
+	public final class FLARGrayscaleRaster extends NyARGrayscaleRaster
 	{
-		public function FLARBinRaster(i_width:int,i_height:int)
+		public function FLARGrayscaleRaster(i_width:int,i_height:int,i_is_alloc:Boolean)
 		{
-			super(i_width,i_height,NyARBufferType.OBJECT_AS3_BitmapData,true);
+			super(i_width,i_height,NyARBufferType.OBJECT_AS3_BitmapData,i_is_alloc);
 		}
 		protected override function initInstance(i_size:NyARIntSize,i_buf_type:int,i_is_alloc:Boolean):Boolean
 		{
@@ -51,6 +52,18 @@ package org.libspark.flartoolkit.core.raster
 			this._buf = i_is_alloc?new BitmapData(i_size.w,i_size.h,false):null;
 			return true;
 		}
-		
+		public override function copyTo(i_left:int,i_top:int,i_skip:int,o_output:NyARGrayscaleRaster):void
+		{
+			//assert (this.getSize().isInnerSize(i_left + o_output.getWidth() * i_skip, i_top+ o_output.getHeight() * i_skip));		
+			//assert (this.isEqualBufferType(o_output.getBufferType()));
+			var d:BitmapData = BitmapData(o_output.getBuffer());
+			var s:BitmapData = BitmapData(this.getBuffer());
+			var mat:Matrix = new Matrix();
+			mat.a = mat.d = (1.0 / (i_skip));
+			mat.tx = i_left;
+			mat.ty = i_top;
+			d.draw(s, mat,null,null,null,false);
+			return;
+		}		
 	}
 }

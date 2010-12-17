@@ -44,11 +44,10 @@ package org.libspark.flartoolkit.core.labeling.fllabeling
 
 	public class FLARLabeling
 	{
-		private static const AR_AREA_MAX:int = 100000;// #define AR_AREA_MAX 100000
-		private static const AR_AREA_MIN:int = 70;// #define AR_AREA_MIN 70
+		private var AR_AREA_MAX:int = 100000;// #define AR_AREA_MAX 100000
+		private var AR_AREA_MIN:int = 70;// #define AR_AREA_MIN 70
 		
 		private static const ZERO_POINT:Point = new Point();
-		private static const ONE_POINT:Point = new Point(1, 1);
 		
 	    private var hSearch:BitmapData;
 	    private var hLineRect:Rectangle;
@@ -65,11 +64,8 @@ package org.libspark.flartoolkit.core.labeling.fllabeling
 		public function labeling_1(i_bin_raster:NyARBinRaster):void
 		{
 			var label_img:BitmapData = this._tmp_bmp;
-			label_img.fillRect(label_img.rect, 0x0);
-			var rect:Rectangle = label_img.rect.clone();
-			rect.inflate( -1, -1);
 			//BIN
-			label_img.copyPixels(BitmapData(i_bin_raster.getBuffer()), rect, ONE_POINT);
+			label_img.copyPixels(BitmapData(i_bin_raster.getBuffer()), label_img.rect, ZERO_POINT);
 			this.labeling(label_img);
 		}
 		public function labeling_2(i_bin_raster:NyARBinRaster,i_area:NyARIntRect):void
@@ -79,11 +75,8 @@ package org.libspark.flartoolkit.core.labeling.fllabeling
 		public function labeling_3(i_gs_raster:NyARGrayscaleRaster,i_th:int):void
 		{
 			var label_img:BitmapData = this._tmp_bmp;
-			label_img.fillRect(label_img.rect, 0x0);
-			var rect:Rectangle = label_img.rect.clone();
-			rect.inflate( -1, -1);
 			//GS->BIN
-			label_img.threshold(BitmapData(i_gs_raster.getBuffer()), rect, ONE_POINT, '<=', i_th, 0xffffffff, 0xff);
+			label_img.threshold(BitmapData(i_gs_raster.getBuffer()), label_img.rect, ZERO_POINT, '<=', i_th, 0xff0000ff, 0xff);
 			this.labeling(label_img);
 		}
 		public function labeling_4(i_gs_raster:NyARGrayscaleRaster,i_area:NyARIntRect,i_th:int):void
@@ -105,14 +98,10 @@ package org.libspark.flartoolkit.core.labeling.fllabeling
 		public function labeling(label_img:BitmapData):void
 		{
 			var tmp_label:NyARRleLabelFragmentInfo;
-//			label_img.fillRect(label_img.rect, 0x0);
-//			var rect:Rectangle = label_img.rect.clone();
-//			rect.inflate(-1, -1);
-//			label_img.copyPixels(BitmapData(i_bin_raster.getBuffer()), rect, ONE_POINT);
 			var fllstack:FLLabelInfoStack=this._fllstack;
 			fllstack.clear();
 
-			var currentRect:Rectangle = label_img.getColorBoundsRect(0xffffff, 0xffffff, true);
+			var currentRect:Rectangle = label_img.getColorBoundsRect(0x0000ff, 0x0000ff, true);
 			hLineRect.y = 0;
 			hLineRect.width = label_img.width;
 			var hSearchRect:Rectangle;
@@ -122,10 +111,10 @@ package org.libspark.flartoolkit.core.labeling.fllabeling
 				while (!currentRect.isEmpty()) {
 					hLineRect.y = currentRect.top;
 					hSearch.copyPixels(label_img, hLineRect, ZERO_POINT);
-					hSearchRect = hSearch.getColorBoundsRect(0xffffff, 0xffffff, true);
+					hSearchRect = hSearch.getColorBoundsRect(0x0000ff, 0x0000ff, true);
 					
 					label_img.floodFill(hSearchRect.x, hLineRect.y, ++index);
-					labelRect = label_img.getColorBoundsRect(0xffffff, index, true);
+					labelRect = label_img.getColorBoundsRect(0x0000ff, index, true);
 					//エリアは近似値
 					var area:int = labelRect.width * labelRect.height;
 					//エリア規制
@@ -146,7 +135,7 @@ package org.libspark.flartoolkit.core.labeling.fllabeling
 						//コール
 						this.onLabelFound(tmp_label);
 					}
-					currentRect = label_img.getColorBoundsRect(0xffffff, 0xffffff, true);
+					currentRect = label_img.getColorBoundsRect(0x0000ff, 0x0000ff, true);
 				}
 			} catch (e:Error){
 				trace('Too many labeled area!! gave up....');
@@ -166,7 +155,12 @@ package org.libspark.flartoolkit.core.labeling.fllabeling
 			}
 			//あれ？見つからないよ？
 			throw new FLARException();
-		}		
+		}
+		public function setAreaRange(i_max:int, i_min:int):void
+		{
+			this.AR_AREA_MAX = i_max;
+			this.AR_AREA_MIN = i_min;
+		}
 	}
 }
 import jp.nyatla.nyartoolkit.as3.core.types.stack.*;

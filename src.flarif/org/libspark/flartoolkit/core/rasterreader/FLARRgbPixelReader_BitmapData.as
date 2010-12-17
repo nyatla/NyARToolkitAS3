@@ -79,7 +79,7 @@ package org.libspark.flartoolkit.core.rasterreader
 		}
 		public function switchBuffer(i_ref_buffer:Object):void
 		{
-			NyARException.notImplement();
+			this._ref_bitmap = BitmapData(i_ref_buffer);
 		}
 	}
 }

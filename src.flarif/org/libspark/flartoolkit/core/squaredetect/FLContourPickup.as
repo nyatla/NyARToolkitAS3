@@ -36,6 +36,9 @@ package org.libspark.flartoolkit.core.squaredetect
 	import jp.nyatla.nyartoolkit.as3.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
 	
+	/**
+	 * OBJECT_AS3_BitmapData形式に対応したNyARContourPickup
+	 */
 	public class FLContourPickup extends NyARContourPickup
 	{
 		
@@ -62,22 +65,6 @@ package org.libspark.flartoolkit.core.squaredetect
 				return super.getContour_2(i_raster,i_area,i_entry_x,i_entry_y,o_coord);
 			}
 		}
-		/**
-		 * ラスタの指定点を基点に、輪郭線を抽出します。開始点は、輪郭の一部、かつ左上のエッジで有る必要があります。
-		 * @param i_raster
-		 * 輪郭線を抽出するラスタを指定します。
-		 * @param i_th
-		 * 輪郭とみなす暗点の敷居値を指定します。
-		 * @param i_entry_x
-		 * 輪郭抽出の開始点です。
-		 * @param i_entry_y
-		 * 輪郭抽出の開始点です。
-		 * @param o_coord
-		 * 輪郭点を格納する配列を指定します。i_array_sizeよりも大きなサイズの配列が必要です。
-		 * @return
-		 * 輪郭の抽出に成功するとtrueを返します。輪郭抽出に十分なバッファが無いと、falseになります。
-		 * @throws NyARException
-		 */
 		public override function getContour_3(i_raster:NyARGrayscaleRaster,i_th:int,i_entry_x:int,i_entry_y:int,o_coord:NyARIntCoordinates):Boolean
 		{
 			var s:NyARIntSize=i_raster.getSize();
@@ -116,42 +103,42 @@ package org.libspark.flartoolkit.core.squaredetect
 				dir = ( dir + 5 ) % 8 ;
 				if( c > i_l && c < i_r && r > i_t && r < i_b ) {
 					for(  ;  ;  ) {
-						if((buf.getPixel( c + xdir[dir],( r + ydir[dir] ) )&0xff) <= i_th ) {
+						if((buf.getPixel( c + xdir[dir],( r + ydir[dir] ) )) <= i_th ) {
 							break ;
 						}
 						
 						dir++ ;
-						if((buf.getPixel( c + xdir[dir],( r + ydir[dir] ) )&0xff) <= i_th ) {
+						if((buf.getPixel( c + xdir[dir],( r + ydir[dir] ) )) <= i_th ) {
 							break ;
 						}
 						
 						dir++ ;
-						if((buf.getPixel( c + xdir[dir],( r + ydir[dir] ) )&0xff) <= i_th ) {
+						if((buf.getPixel( c + xdir[dir],( r + ydir[dir] ) )) <= i_th ) {
 							break ;
 						}
 						
 						dir++ ;
-						if((buf.getPixel( c + xdir[dir],( r + ydir[dir] ) )&0xff) <= i_th ) {
+						if((buf.getPixel( c + xdir[dir],( r + ydir[dir] ) )) <= i_th ) {
 							break ;
 						}
 						
 						dir++ ;
-						if((buf.getPixel( c + xdir[dir],( r + ydir[dir] ) )&0xff) <= i_th ) {
+						if((buf.getPixel( c + xdir[dir],( r + ydir[dir] ) )) <= i_th ) {
 							break ;
 						}
 						
 						dir++ ;
-						if((buf.getPixel( c + xdir[dir],( r + ydir[dir] ) )&0xff) <= i_th ) {
+						if((buf.getPixel( c + xdir[dir],( r + ydir[dir] ) )) <= i_th ) {
 							break ;
 						}
 						
 						dir++ ;
-						if((buf.getPixel( c + xdir[dir],( r + ydir[dir] ) )&0xff) <= i_th ) {
+						if((buf.getPixel( c + xdir[dir],( r + ydir[dir] ) )) <= i_th ) {
 							break ;
 						}
 						
 						dir++ ;
-						if((buf.getPixel( c + xdir[dir],( r + ydir[dir] ) )&0xff) <= i_th ) {
+						if((buf.getPixel( c + xdir[dir],( r + ydir[dir] ) )) <= i_th ) {
 							break ;
 						}
 						
@@ -163,7 +150,7 @@ package org.libspark.flartoolkit.core.squaredetect
 						x = c + xdir[dir] ;
 						y = r + ydir[dir] ;
 						if( x >= i_l && x <= i_r && y >= i_t && y <= i_b ) {
-							if((buf.getPixel(x,y )&0xff)<= i_th ) {
+							if((buf.getPixel(x,y ))<= i_th ) {
 								break ;
 							}
 							
@@ -194,7 +181,7 @@ package org.libspark.flartoolkit.core.squaredetect
 						x= c + xdir[dir] ;
 						y= r + ydir[dir] ;
 						if( x >= i_l && x <= i_r && y >= i_t && y <= i_b ) {
-							if((buf.getPixel(x,y)&0xff) <= i_th ) {
+							if((buf.getPixel(x,y)) <= i_th ) {
 								break ;
 							}
 							
@@ -222,7 +209,6 @@ package org.libspark.flartoolkit.core.squaredetect
 				if( coord_num == max_coord ) {
 					return false ;
 				}
-				
 			}
 			
 			return true;
