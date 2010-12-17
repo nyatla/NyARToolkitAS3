@@ -39,7 +39,7 @@ package jp.nyatla.nyartoolkit.as3.core.raster
 	/**
 	 * 1枚のグレースケール画像を定義するクラスです。画像データは内部保持/外部保持が選択可能です。
 	 */
-	public final class NyARGrayscaleRaster extends NyARRaster_BasicClass
+	public class NyARGrayscaleRaster extends NyARRaster_BasicClass
 	{
 
 		protected var _buf:Object;

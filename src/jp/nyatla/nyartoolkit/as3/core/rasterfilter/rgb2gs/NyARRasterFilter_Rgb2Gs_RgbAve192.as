@@ -7,13 +7,13 @@ package jp.nyatla.nyartoolkit.as3.core.rasterfilter.rgb2gs
 	import jp.nyatla.nyartoolkit.as3.core.types.*;	
 	/**
 	 * RGBラスタをGrayScaleに変換するフィルタを作成します。
-	 * このフィルタは、RGB値の平均値を、(R+G+B)/3で算出します。
+	 * このフィルタは、RGB値の平均値を、(R+G+B)/4で算出します。
 	 *
 	 */
-	public class NyARRasterFilter_Rgb2Gs_RgbAve implements INyARRasterFilter_Rgb2Gs
+	public class NyARRasterFilter_Rgb2Gs_RgbAve192 implements INyARRasterFilter_Rgb2Gs
 	{
 		private var _do_filter_impl:IdoThFilterImpl;
-		public function NyARRasterFilter_Rgb2Gs_RgbAve(...args:Array)
+		public function NyARRasterFilter_Rgb2Gs_RgbAve192(...args:Array)
 		{
 			switch(args.length) {
 			case 1:
@@ -190,14 +190,14 @@ class doThFilterImpl_BUFFERFORMAT_INT1D_X8R8G8B8_32 implements IdoThFilterImpl
 		var row_padding_src:int=row_padding_dst;
 		var pix_count:int=w;
 		var pix_mod_part:int=pix_count-(pix_count%8);
-		var src_ptr:int= t * size.w + l;
+		var src_ptr:int = t * size.w + l;
 		for (var y:int = t; y < b; y++) {
 			var x:int=0;
 			for (x = pix_count-1; x >=pix_mod_part; x--){
 				v=in_buf[src_ptr++];o_output[bp++]=(((v>>16)& 0xff)+((v>>8)& 0xff)+(v &0xff))>>2;
 			}
 			for (;x>=0;x-=8){
-				v=in_buf[src_ptr++];o_output[bp++]=(((v>>16)& 0xff)+((v>>8)& 0xff)+(v &0xff))>>2;
+				v = in_buf[src_ptr++]; o_output[bp++] = (((v >> 16) & 0xff) + ((v >> 8) & 0xff) + (v & 0xff)) >> 2;
 				v=in_buf[src_ptr++];o_output[bp++]=(((v>>16)& 0xff)+((v>>8)& 0xff)+(v &0xff))>>2;
 				v=in_buf[src_ptr++];o_output[bp++]=(((v>>16)& 0xff)+((v>>8)& 0xff)+(v &0xff))>>2;
 				v=in_buf[src_ptr++];o_output[bp++]=(((v>>16)& 0xff)+((v>>8)& 0xff)+(v &0xff))>>2;

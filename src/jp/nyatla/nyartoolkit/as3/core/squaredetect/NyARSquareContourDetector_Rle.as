@@ -177,7 +177,6 @@ class Labeling extends NyARLabeling_Rle
 		if( i_label.clip_t == 0 || i_label.clip_b == this._bottom ) {
 			return  ;
 		}
-		
 		this.label_stack.push(i_label) ;
 	}
 	
