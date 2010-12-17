@@ -169,7 +169,7 @@ package
 		public function testNyARReality():void 
 		{
 			var reality:NyARReality=new NyARReality(param.getScreenSize(),10,1000,param.getPerspectiveProjectionMatrix(),null,10,10);
-			var reality_in:NyARRealitySource = new NyARRealitySource_Reference(320, 240, null, 1, 100, NyARBufferType.INT1D_X8R8G8B8_32);
+			var reality_in:NyARRealitySource = new NyARRealitySource_Reference(320, 240, null, 2, 100, NyARBufferType.INT1D_X8R8G8B8_32);
 			var dt:Vector.<int> = Vector.<int>(reality_in.refRgbSource().getBuffer());
 			var sr:Vector.<int> = Vector.<int>(raster_bgra.getBuffer());
 			for (var i:int = 0; i < sr.length; i++) { dt[i] = sr[i]; }

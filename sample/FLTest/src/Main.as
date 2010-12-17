@@ -36,6 +36,9 @@ package{
 	import org.libspark.flartoolkit.core.transmat.*;
 	import org.libspark.flartoolkit.core.types.*;
 	import org.libspark.flartoolkit.detector.*;
+	import org.libspark.flartoolkit.rpf.reality.nyartk.*;
+	import org.libspark.flartoolkit.rpf.realitysource.nyartk.*;
+	import jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk.*;
 	
 	public class Main extends Sprite 
 	{
@@ -70,8 +73,8 @@ package{
 			this.textbox.multiline =   true;
 			this.textbox.border = true;
 			this.bitmap.x = 640; this.bitmap.y = 0;
-			this.bitmap.width = 160;
-			this.bitmap.height = 120;
+			this.bitmap.width = 320;
+			this.bitmap.height = 240;
             addChild(textbox);
             addChild(bitmap);
 
@@ -97,8 +100,8 @@ package{
 				"../../../data/320x240ABGR.raw",URLLoaderDataFormat.BINARY,
 				function(data:ByteArray):void
 				{
-					var r:FLARRgbRaster_BitmapData = new FLARRgbRaster_BitmapData(320,240);
-					var b:BitmapData =	BitmapData(r.getBuffer());
+					var r:FLARRgbRaster_BitmapData = new FLARRgbRaster_BitmapData(320,240,true);
+					var b:BitmapData =	r.getBitmapData();
 					data.endian = Endian.LITTLE_ENDIAN;
 					for (var i:int = 0; i < 320 * 240; i++) {
 						b.setPixel(i%320,i/320,data.readInt());
@@ -110,8 +113,8 @@ package{
 				"../../../data/320x240NyId.raw",URLLoaderDataFormat.BINARY,
 				function(data:ByteArray):void
 				{
-					var r:FLARRgbRaster_BitmapData = new FLARRgbRaster_BitmapData(320, 240);
-					var b:BitmapData =	BitmapData(r.getBuffer());
+					var r:FLARRgbRaster_BitmapData = new FLARRgbRaster_BitmapData(320, 240,true);
+					var b:BitmapData =	r.getBitmapData();
 					data.endian = Endian.LITTLE_ENDIAN;
 					for (var i:int = 0; i < 320 * 240; i++) {
 						b.setPixel(i%320,i/320,data.readInt());
@@ -143,7 +146,7 @@ package{
 			msg("#benchmark");
 			{
 				var date : Date = new Date();
-				for(var i2:int=0;i2<100;i2++){
+				for(var i2:int=0;i2<1;i2++){
 					d.detectMarkerLite(raster_bgra,100);
 					d.getTransformMatrix(mat);
 				}
@@ -190,7 +193,36 @@ package{
 		{
 			var t:IdMarkerProcessor=new IdMarkerProcessor(param,this);
 			t.detectMarker(id_bgra);
-		}	
+		}
+		public function testFLARReality():void 
+		{
+			var reality:FLARReality=new FLARReality(param.getScreenSize(),10,1000,param.getPerspectiveProjectionMatrix(),null,10,10);
+			//var reality_in:FLARRealitySource_BitmapImage = new FLARRealitySource_BitmapImage(320, 240, null, 2, 100);
+			var reality_in:FLARRealitySource_BitmapImage = new FLARRealitySource_BitmapImage(320, 240, null, 2, 100,BitmapData(raster_bgra.getBuffer()));
+			
+
+			var date : Date = new Date();
+			for(var i2:int=0;i2<100;i2++){
+				reality.progress(reality_in);
+			}
+			var date2 : Date = new Date();
+			msg(((date2.valueOf() - date.valueOf()).toString())+"[ms] par 100 frame");
+
+			
+			msg(reality.getNumberOfKnown().toString());
+			msg(reality.getNumberOfUnknown().toString());
+			msg(reality.getNumberOfDead().toString());
+			var rt:Vector.<NyARRealityTarget>=new Vector.<NyARRealityTarget>(10);
+			reality.selectUnKnownTargets(rt);
+			reality.changeTargetToKnown_1(rt[0],2,80);
+			msg(rt[0]._transform_matrix.m00+","+rt[0]._transform_matrix.m01+","+rt[0]._transform_matrix.m02+","+rt[0]._transform_matrix.m03);
+			msg(rt[0]._transform_matrix.m10+","+rt[0]._transform_matrix.m11+","+rt[0]._transform_matrix.m12+","+rt[0]._transform_matrix.m13);
+			msg(rt[0]._transform_matrix.m20+","+rt[0]._transform_matrix.m21+","+rt[0]._transform_matrix.m22+","+rt[0]._transform_matrix.m23);
+			msg(rt[0]._transform_matrix.m30 + "," + rt[0]._transform_matrix.m31 + "," + rt[0]._transform_matrix.m32 + "," + rt[0]._transform_matrix.m33);
+			bitmap.bitmapData.setPixel(rt[0].refTargetVertex()[0].x, rt[0].refTargetVertex()[0].y, 0xffffff);
+			bitmap.bitmapData.setPixel(rt[0].refTargetVertex()[1].x, rt[0].refTargetVertex()[1].y, 0xffffff);
+			bitmap.bitmapData.setPixel(rt[0].refTargetVertex()[2].x, rt[0].refTargetVertex()[2].y, 0xffffff);
+		}		
 		private function main(e:Event):void
 		{
 //			addChild(new Bitmap(BitmapData(this.id_bgra.getBufferReader().getBuffer())));
@@ -213,7 +245,7 @@ package{
 			"You should have received a copy of the GNU General Public License\n"+
 			"along with this program.  If not, see <http://www.gnu.org/licenses/>.\n");
 			msg("#ready!");
-			{
+/*			{
 				msg("<FLARSingleDetectMarker>");
 				testNyARSingleDetectMarker();
 			}
@@ -229,7 +261,12 @@ package{
 			{
 				msg("<SingleProcessor>");
 				testSingleProcessor();
+			}*/
+			{
+				msg("<FLARReality>");
+				testFLARReality();
 			}
+			
 			msg("#finish!");
 			return;
 		}

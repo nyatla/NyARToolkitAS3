@@ -8,6 +8,7 @@
       <path-element>D:\project.sourceforge\NyARToolkit\NyARToolkitAS3\trunk\sample\FLTest\src</path-element>
       <path-element>D:\project.sourceforge\NyARToolkit\NyARToolkitAS3\trunk\src</path-element>
       <path-element>D:\project.sourceforge\NyARToolkit\NyARToolkitAS3\trunk\src.flarif</path-element>
+      <path-element>D:\project.sourceforge\NyARToolkit\NyARToolkitAS3\trunk\src.rpf</path-element>
       <path-element>D:\application.files\FlashDevelop\Library\AS3\classes</path-element>
     </source-path>
   </compiler>

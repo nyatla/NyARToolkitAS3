@@ -16,6 +16,7 @@
     <class path="src" />
     <class path="..\..\src" />
     <class path="..\..\src.flarif" />
+    <class path="..\..\src.rpf" />
   </classpaths>
   <!-- Build options -->
   <build>
