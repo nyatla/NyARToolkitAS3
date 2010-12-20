@@ -178,7 +178,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk
 
 			this._map.makePairIndexes(this._rectsource,retw,index);
 			updateRectStatus(retw, vecreader, this.rect_pool, this._rectsource.getArray(),index);
-			
+
 			this._map.makePairIndexes(this._coordsource,cotr,index);
 			updateContureStatus(cotr, vecreader,this.contourst_pool,this._coordsource.getArray(),index);
 

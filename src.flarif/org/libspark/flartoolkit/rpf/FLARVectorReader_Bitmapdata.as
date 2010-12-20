@@ -80,6 +80,8 @@ package org.libspark.flartoolkit.rpf
 			//assert (ih >= 3 && iw >= 3);
 			//assert ((ix >= 0) && (iy >= 0) && (ix + iw) <= this._ref_base_raster.getWidth() && (iy + ih) <= this._ref_base_raster.getHeight());
 			var buf:BitmapData =(BitmapData)(this._ref_base_raster.getBuffer());
+			var stride:int =this._ref_base_raster.getWidth();
+			
 			// x=(Σ|Vx|*Xn)/n,y=(Σ|Vy|*Yn)/n
 			// x=(ΣVx)^2/(ΣVx+ΣVy)^2,y=(ΣVy)^2/(ΣVx+ΣVy)^2
 			var sum_x:int, sum_y:int, sum_wx:int, sum_wy:int, sum_vx:int, sum_vy:int;
@@ -91,12 +93,12 @@ package org.libspark.flartoolkit.rpf
 				var cy:int = (i + 1 + iy);
 				for (var i2:int = lw; i2 >= 0; i2--){
 					// 1ビット分のベクトルを計算
-					var b:int = buf.getPixel(cx-1,cy-1);// [idx_m1 - 1];
+					var b:int = buf.getPixel(cx - 1, cy - 1);// [idx_m1 - 1];
 					var d:int = buf.getPixel(cx+1,cy-1);//buf[idx_m1 + 1];
 					var h:int = buf.getPixel(cx-1,cy+1);//buf[idx_p1 - 1];
-					var f:int = buf.getPixel(cx-1,cy+1);//buf[idx_p1 + 1];
-					vx = ((buf.getPixel(cx+1,cy) - buf.getPixel(cx-1,cy)) >> 1)+ ((d - b + f - h) >> 2);//vx = ((buf[idx_0 + 1] - buf[idx_0 - 1]) >> 1)+ ((d - b + f - h) >> 2);
-					vy = ((buf.getPixel(cx,cy+1) - buf.getPixel(cx,cy-1)) >> 1)+ ((f - d + h - b) >> 2);//vy = ((buf[idx_p1] - buf[idx_m1]) >> 1)+ ((f - d + h - b) >> 2);
+					var f:int = buf.getPixel(cx+1,cy+1);//buf[idx_p1 + 1];
+					vx = ((buf.getPixel(cx + 1, cy) - buf.getPixel(cx - 1, cy)) >> 1) + ((d - b + f - h) >> 2);//vx = ((buf[idx_0 + 1] - buf[idx_0 - 1]) >> 1)+ ((d - b + f - h) >> 2);
+					vy = ((buf.getPixel(cx, cy + 1) - buf.getPixel(cx, cy - 1)) >> 1) + ((f - d + h - b) >> 2);//vy = ((buf[idx_p1] - buf[idx_m1]) >> 1)+ ((f - d + h - b) >> 2);
 					cx--;
 
 					// 加重はvectorの絶対値
@@ -148,21 +150,22 @@ package org.libspark.flartoolkit.rpf
 			sum_x = sum_y = sum_wx = sum_wy = sum_vx = sum_vy = 0;
 			var vx:int, vy:int;
 			var ll:int=iw-1;
-			for (var i:int = 0; i < ih - 1; i++) {
-				var iix:int = ix + 1;
-				var iiy:int = i+iy;
-				var a:int = buf.getPixel(iix - 1, iiy);
-				var b:int = buf.getPixel(iix, iiy);
-				var c:int = buf.getPixel(iix - 1, iiy + 1);
-				var d:int = buf.getPixel(iix, iiy + 1);
+			for (var i:int = 0; i<ih-1; i++) {
+				var cx:int = ix + 1;
+				var cy:int = (i + iy);
+				var a:int = buf.getPixel(cx - 1, cy );
+				var b:int = buf.getPixel(cx, cy);
+				var c:int = buf.getPixel(cx - 1, cy+1);
+				var d:int = buf.getPixel(cx, cy + 1);
 				for (var i2:int = 0; i2<ll; i2++){
 					// 1ビット分のベクトルを計算
 					vx=(b-a+d-c)>>2;
 					vy=(c-a+d-b)>>2;
+					cx++;
 					a=b;
 					c=d;
-					b = buf.getPixel(iix, iiy);
-					d = buf.getPixel(iix, iiy + 1);
+					b=buf.getPixel(cx, cy);
+					d=buf.getPixel(cx, cy+1);
 
 					// 加重はvectorの絶対値
 					var wx:int = vx * vx;

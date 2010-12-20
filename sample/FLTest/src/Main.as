@@ -58,10 +58,10 @@ package{
 		{
 			inst.msg(i_str);
 		}
-		public static function bmout(b:BitmapData):void
-		{
-			Main.inst.bitmap.bitmapData.draw(b);
-		}
+//		public static function bmout(b:BitmapData):void
+//		{
+//			Main.inst.bitmap.bitmapData.draw(b);
+//		}
 
 		public function Main():void 
 		{
@@ -72,6 +72,7 @@ package{
 			this.textbox.condenseWhite = true;
 			this.textbox.multiline =   true;
 			this.textbox.border = true;
+			this.textbox.visible = true;
 			this.bitmap.x = 640; this.bitmap.y = 0;
 			this.bitmap.width = 320;
 			this.bitmap.height = 240;
@@ -146,7 +147,7 @@ package{
 			msg("#benchmark");
 			{
 				var date : Date = new Date();
-				for(var i2:int=0;i2<1;i2++){
+				for(var i2:int=0;i2<100;i2++){
 					d.detectMarkerLite(raster_bgra,100);
 					d.getTransformMatrix(mat);
 				}
@@ -214,14 +215,14 @@ package{
 			msg(reality.getNumberOfDead().toString());
 			var rt:Vector.<NyARRealityTarget>=new Vector.<NyARRealityTarget>(10);
 			reality.selectUnKnownTargets(rt);
-			reality.changeTargetToKnown_1(rt[0],2,80);
-			msg(rt[0]._transform_matrix.m00+","+rt[0]._transform_matrix.m01+","+rt[0]._transform_matrix.m02+","+rt[0]._transform_matrix.m03);
-			msg(rt[0]._transform_matrix.m10+","+rt[0]._transform_matrix.m11+","+rt[0]._transform_matrix.m12+","+rt[0]._transform_matrix.m13);
-			msg(rt[0]._transform_matrix.m20+","+rt[0]._transform_matrix.m21+","+rt[0]._transform_matrix.m22+","+rt[0]._transform_matrix.m23);
-			msg(rt[0]._transform_matrix.m30 + "," + rt[0]._transform_matrix.m31 + "," + rt[0]._transform_matrix.m32 + "," + rt[0]._transform_matrix.m33);
-			bitmap.bitmapData.setPixel(rt[0].refTargetVertex()[0].x, rt[0].refTargetVertex()[0].y, 0xffffff);
-			bitmap.bitmapData.setPixel(rt[0].refTargetVertex()[1].x, rt[0].refTargetVertex()[1].y, 0xffffff);
-			bitmap.bitmapData.setPixel(rt[0].refTargetVertex()[2].x, rt[0].refTargetVertex()[2].y, 0xffffff);
+			reality.changeTargetToKnown_1(rt[1],2,80);
+			msg(rt[1]._transform_matrix.m00+","+rt[1]._transform_matrix.m01+","+rt[1]._transform_matrix.m02+","+rt[1]._transform_matrix.m03);
+			msg(rt[1]._transform_matrix.m10+","+rt[1]._transform_matrix.m11+","+rt[1]._transform_matrix.m12+","+rt[1]._transform_matrix.m13);
+			msg(rt[1]._transform_matrix.m20+","+rt[1]._transform_matrix.m21+","+rt[1]._transform_matrix.m22+","+rt[1]._transform_matrix.m23);
+			msg(rt[1]._transform_matrix.m30 + "," + rt[1]._transform_matrix.m31 + "," + rt[1]._transform_matrix.m32 + "," + rt[1]._transform_matrix.m33);
+			bitmap.bitmapData.setPixel(rt[1].refTargetVertex()[0].x, rt[1].refTargetVertex()[0].y, 0xffffff);
+			bitmap.bitmapData.setPixel(rt[1].refTargetVertex()[1].x, rt[1].refTargetVertex()[1].y, 0xffffff);
+			bitmap.bitmapData.setPixel(rt[1].refTargetVertex()[2].x, rt[1].refTargetVertex()[2].y, 0xffffff);
 		}		
 		private function main(e:Event):void
 		{
@@ -261,12 +262,12 @@ package{
 			{
 				msg("<SingleProcessor>");
 				testSingleProcessor();
-			}/*
+			}
 			{
 				msg("<FLARReality>");
 				testFLARReality();
 			}
-*/			
+			
 			msg("#finish!");
 			return;
 		}

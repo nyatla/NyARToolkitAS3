@@ -133,8 +133,8 @@ package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk
 				return false;
 			}
 			// dist最大数の決定
-			if (dist > 22) {
-				dist = 22;
+			if (dist > 12) {
+				dist = 12;
 			}
 			// サンプリングサイズを決定(移動速度とサイズから)
 			var s:int = i_edge * 2 + 1;
@@ -152,7 +152,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk
 				coord.items[i - 1].y = y < 0 ? 0 : (y >= b ? b : y);
 			}
 
-			coord.length = dist - 4;
+			coord.length = dist - 2;
 			// 点数は20点程度を得る。
 			return traceConture_2(coord, 1, s, o_coord);
 		}
@@ -171,8 +171,8 @@ package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk
 				return false;
 			}
 			// dist最大数の決定
-			if (dist > 14) {
-				dist = 14;
+			if (dist > 12) {
+				dist = 12;
 			}
 			// サンプリングサイズを決定(移動速度とサイズから)
 			var s:int = i_edge * 2 + 1;
@@ -182,15 +182,15 @@ package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk
 			var b:int = base_s.h - s;
 
 			// 最大24点を定義して、そのうち両端の2個を除いた点を使用する。
-			for (var i:int = 3; i < dist - 1; i++) {
+			for (var i:int = 1; i < dist - 1; i++) {
 				var x:int = (int) (i * dx / dist + i_pos1.x - i_edge);
 				var y:int = (int) (i * dy / dist + i_pos1.y - i_edge);
 				// limit
-				coord.items[i - 3].x = x < 0 ? 0 : (x >= r ? r : x);
-				coord.items[i - 3].y = y < 0 ? 0 : (y >= b ? b : y);
+				coord.items[i - 1].x = x < 0 ? 0 : (x >= r ? r : x);
+				coord.items[i - 1].y = y < 0 ? 0 : (y >= b ? b : y);
 			}
 
-			coord.length = dist - 4;
+			coord.length = dist - 2;
 			// 点数は10点程度を得る。
 			return traceConture_2(coord, 1, s, o_coord);
 		}
@@ -281,7 +281,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk
 				//if (pos_ptr.getAbsVecCos(pos[sum-1]) < NyARMath.COS_DEG_5 && pos_ptr.getAbsVecCos(ave_dx,ave_dy)<NyARMath.COS_DEG_20) {
 				if (checkVecCos(pos[sum],pos[sum-1],ave_dx,ave_dy)) {
 					//相関なし->新しい要素を作る。
-					if(this.leastSquaresWithNormalize(pos,sum,o_coord.items[number_of_data],sq_sum/(sum*20))){
+					if(this.leastSquaresWithNormalize(pos,sum,o_coord.items[number_of_data],sq_sum/(sum*5))){
 						number_of_data++;
 					}
 					ave_dx=pos_ptr.dx;
@@ -302,7 +302,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk
 					return false;
 				}
 			}
-			if(this.leastSquaresWithNormalize(pos,sum,o_coord.items[number_of_data],sq_sum/(sum*10))){
+			if(this.leastSquaresWithNormalize(pos,sum,o_coord.items[number_of_data],sq_sum/(sum*5))){
 				number_of_data++;
 			}
 			// ベクトル化2:最後尾と先頭の要素が似ていれば連結する。

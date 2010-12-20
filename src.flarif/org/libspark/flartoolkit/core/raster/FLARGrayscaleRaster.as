@@ -40,6 +40,7 @@ package org.libspark.flartoolkit.core.raster
 	 */
 	public final class FLARGrayscaleRaster extends NyARGrayscaleRaster
 	{
+		public var vec_imege:Vector.<uint>;
 		public function FLARGrayscaleRaster(i_width:int,i_height:int,i_is_alloc:Boolean)
 		{
 			super(i_width,i_height,NyARBufferType.OBJECT_AS3_BitmapData,i_is_alloc);
@@ -64,6 +65,14 @@ package org.libspark.flartoolkit.core.raster
 			mat.ty = i_top;
 			d.draw(s, mat,null,null,null,false);
 			return;
-		}		
+		}
+		/**
+		 * このインスタンスのvectorImageとBitmapImageを同期する。
+		 */
+		public function syncVecImage():void
+		{
+			 vec_imege = BitmapData(this._buf).getVector(new Rectangle(0,0,this._size.w,this._size.h));
+			 return;
+		}
 	}
 }

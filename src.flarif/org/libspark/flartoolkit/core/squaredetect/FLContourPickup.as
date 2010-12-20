@@ -147,7 +147,6 @@ package org.libspark.flartoolkit.core.squaredetect
 						if((buf.getPixel( c + xdir[dir],( r + ydir[dir] ) )) <= i_th ) {
 							break ;
 						}
-						TrackerView.megs(">>"+coord_num);
 						throw new NyARException(  ) ;
 					}
 				}
@@ -165,7 +164,6 @@ package org.libspark.flartoolkit.core.squaredetect
 						dir++ ;
 					}
 					if ( i == 8 ) {
-						TrackerView.megs(">>>"+coord_num);
 						throw new NyARException(  ) ;
 					}
 					

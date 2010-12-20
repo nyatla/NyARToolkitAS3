@@ -75,6 +75,7 @@ package org.libspark.flartoolkit.rpf
 		public override function syncResource():void
 		{
 			//内部状態の同期
+			FLARGrayscaleRaster(this._base_raster).syncVecImage();
 			this._base_raster.copyTo(0,0,this._rob_resolution,this._rb_source);
 			this._rfilter.doFilter(this._rb_source,this._rbraster);
 		}
