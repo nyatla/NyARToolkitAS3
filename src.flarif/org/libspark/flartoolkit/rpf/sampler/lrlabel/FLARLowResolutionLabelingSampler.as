@@ -59,7 +59,7 @@ package org.libspark.flartoolkit.rpf.sampler.lrlabel
 			//パラメータの設定
 			o_out.initializeParams();
 			//ラべリング
-			lb.setAreaRange(10000,1);
+			lb.setAreaRange(10000,3);
 			lb.labeling_3(i_in, i_th);
 		}
 	}
@@ -116,7 +116,6 @@ class Main_Labeling extends FLARLabeling
 		item.base_area_center.y=item.base_area.y+item.base_area.h/2;
 		item.base_area_sq_diagonal=(w*w+h*h)*(pix*pix);
 		item.lebeling_th = this.current_th;
-
 	}
 	
 }

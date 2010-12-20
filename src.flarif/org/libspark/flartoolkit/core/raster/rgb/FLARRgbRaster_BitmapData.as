@@ -35,6 +35,7 @@ package org.libspark.flartoolkit.core.raster.rgb
 	import org.libspark.flartoolkit.*;
 	import jp.nyatla.as3utils.*;
 	import flash.display.BitmapData;
+	import flash.media.*;
 	/**
 	 * BitmapDataをデータに持つRasterクラス
 	 */
@@ -102,6 +103,10 @@ package org.libspark.flartoolkit.core.raster.rgb
 		public function getBitmapData():BitmapData
 		{
 			return this._bitmapData;
+		}
+		public function setVideo(i_video:Video):void
+		{
+			this._bitmapData.draw(i_video);
 		}
 		public override function wrapBuffer(i_ref_buf:Object):void
 		{

@@ -11,6 +11,7 @@ package org.libspark.flartoolkit.rpf
 	import org.libspark.flartoolkit.core.raster .*;
 	import org.libspark.flartoolkit.rpf.sampler.lrlabel.*;
 	import org.libspark.flartoolkit.core.squaredetect.*;
+	import org.libspark.flartoolkit.core.rasterfilter.rgb2gs.*;
 
 	/**
 	 * NyARTrackerSourceのリファレンス実装です。

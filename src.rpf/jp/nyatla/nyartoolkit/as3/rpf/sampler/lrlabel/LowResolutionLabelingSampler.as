@@ -59,7 +59,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.sampler.lrlabel
 			//パラメータの設定
 			o_out.initializeParams();
 			//ラべリング
-			lb.setAreaRange(10000,1);
+			lb.setAreaRange(10000,3);
 			lb.labeling_3(i_in,i_th);
 		}
 	}

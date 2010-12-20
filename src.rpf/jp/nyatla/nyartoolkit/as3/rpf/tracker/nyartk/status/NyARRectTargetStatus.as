@@ -372,7 +372,7 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 		var vecpos:VecLinearCoordinates=this._ref_my_pool._vecpos;
 		//NyARIntRect i_rect
 		p1=i_prevsq.estimate_vertex[0];
-		var dist_limit:int=i_edge_size*i_edge_size*2;
+		var dist_limit:int=i_edge_size*i_edge_size;
 		//強度敷居値(セルサイズ-1)
 //		int min_th=i_edge_size*2+1;
 //		min_th=(min_th*min_th);
@@ -394,7 +394,7 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 //			}
 //@todo:パラメタ調整
 			//角度規制(元の線分との角度を確認)
-			if(vecpos.items[vid].getAbsVecCos_3(i_prevsq.vertex[i],i_prevsq.vertex[(i+1)%4])<NyARMath.COS_DEG_8){
+			if(vecpos.items[vid].getAbsVecCos_3(i_prevsq.vertex[i],i_prevsq.vertex[(i+1)%4])<NyARMath.COS_DEG_5){
 				//System.out.println("CODE1");
 				return false;
 			}

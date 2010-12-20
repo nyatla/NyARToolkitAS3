@@ -56,7 +56,7 @@ package org.libspark.flartoolkit.core.labeling.fllabeling
 		public function FLARLabeling(i_width:int,i_height:int)
 		{
 			this._tmp_bmp = new BitmapData(i_width, i_height, false,0x00);
-			this.hSearch = new BitmapData(i_width, 1, false, 0x000000);
+			this.hSearch = new BitmapData(i_width, 1, false, 0x00);
 			this.hLineRect = new Rectangle(0, 0, 1, 1);			
 			this._fllstack=new FLLabelInfoStack(i_width*i_height*2048/(320*240)+32);
 			return;
@@ -76,7 +76,10 @@ package org.libspark.flartoolkit.core.labeling.fllabeling
 		{
 			var label_img:BitmapData = this._tmp_bmp;
 			//GS->BIN
-			label_img.threshold(BitmapData(i_gs_raster.getBuffer()), label_img.rect, ZERO_POINT, '<=', i_th, 0xff0000ff, 0xff);
+			var s:BitmapData =BitmapData(i_gs_raster.getBuffer());
+
+			label_img.fillRect(label_img.rect, 0x0);		
+			label_img.threshold(BitmapData(i_gs_raster.getBuffer()), label_img.rect, ZERO_POINT, '<=', i_th, 0xff0000ff, 0x000000ff);
 			this.labeling(label_img);
 		}
 		public function labeling_4(i_gs_raster:NyARGrayscaleRaster,i_area:NyARIntRect,i_th:int):void
@@ -106,19 +109,20 @@ package org.libspark.flartoolkit.core.labeling.fllabeling
 			hLineRect.width = label_img.width;
 			var hSearchRect:Rectangle;
 			var labelRect:Rectangle;
-			var index:int = 0;
+			var index:int = 0x100;
 			try {
 				while (!currentRect.isEmpty()) {
 					hLineRect.y = currentRect.top;
 					hSearch.copyPixels(label_img, hLineRect, ZERO_POINT);
-					hSearchRect = hSearch.getColorBoundsRect(0x0000ff, 0x0000ff, true);
+					hSearchRect = hSearch.getColorBoundsRect(0xffffff, 0x0000ff, true);
 					
 					label_img.floodFill(hSearchRect.x, hLineRect.y, ++index);
-					labelRect = label_img.getColorBoundsRect(0x0000ff, index, true);
+					labelRect = label_img.getColorBoundsRect(0xffffff, index, true);
 					//エリアは近似値
 					var area:int = labelRect.width * labelRect.height;
 					//エリア規制
 					if (area <= AR_AREA_MAX && area >= AR_AREA_MIN) {
+
 						tmp_label = NyARRleLabelFragmentInfo(fllstack.prePush());
 						if (tmp_label == null) {
 							break;
@@ -135,7 +139,7 @@ package org.libspark.flartoolkit.core.labeling.fllabeling
 						//コール
 						this.onLabelFound(tmp_label);
 					}
-					currentRect = label_img.getColorBoundsRect(0x0000ff, 0x0000ff, true);
+					currentRect = label_img.getColorBoundsRect(0xffffff, 0x0000ff, true);
 				}
 			} catch (e:Error){
 				trace('Too many labeled area!! gave up....');
@@ -149,7 +153,7 @@ package org.libspark.flartoolkit.core.labeling.fllabeling
 			var i:int;
 			for (i = i_label.clip_l; i <= clip1; i++) { // for( i = clip[0]; i <=clip[1]; i++, p1++ ) {
 				w = i_image.getPixel(i, i_label.clip_t);
-				if (w > 0 && w == i_index) {
+				if (w == i_index) {
 					return i;
 				}
 			}

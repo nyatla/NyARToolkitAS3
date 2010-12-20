@@ -245,7 +245,7 @@ package{
 			"You should have received a copy of the GNU General Public License\n"+
 			"along with this program.  If not, see <http://www.gnu.org/licenses/>.\n");
 			msg("#ready!");
-/*			{
+			{
 				msg("<FLARSingleDetectMarker>");
 				testNyARSingleDetectMarker();
 			}
@@ -261,12 +261,12 @@ package{
 			{
 				msg("<SingleProcessor>");
 				testSingleProcessor();
-			}*/
+			}/*
 			{
 				msg("<FLARReality>");
 				testFLARReality();
 			}
-			
+*/			
 			msg("#finish!");
 			return;
 		}

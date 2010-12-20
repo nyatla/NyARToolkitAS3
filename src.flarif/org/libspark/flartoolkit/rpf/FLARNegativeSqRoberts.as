@@ -140,9 +140,14 @@ class IdoFilterImpl_BitmapData extends IdoFilterImpl
 				p10 = p11;
 
 			}
+			out_ptr.setPixel(ix-1, iy,0xff);
 			ix = 0;
 			iy++;
-		}	
+		}
+		for(x=width-1;x>=0;x--){
+			out_ptr.setPixel(x, iy,0xff);
+		}
+
 		return;
 	}
 }

@@ -29,6 +29,7 @@
 package org.libspark.flartoolkit.core.squaredetect 
 {
 	import flash.display.BitmapData;
+	import flash.geom.Matrix;
 	import jp.nyatla.nyartoolkit.as3.core.squaredetect.*;
 	import jp.nyatla.nyartoolkit.as3.core.raster.*;
 	import org.libspark.flartoolkit.core.raster.*;
@@ -67,6 +68,7 @@ package org.libspark.flartoolkit.core.squaredetect
 		}
 		public override function getContour_3(i_raster:NyARGrayscaleRaster,i_th:int,i_entry_x:int,i_entry_y:int,o_coord:NyARIntCoordinates):Boolean
 		{
+			try{
 			var s:NyARIntSize=i_raster.getSize();
 			switch(i_raster.getBufferType()){
 			case NyARBufferType.OBJECT_AS3_BitmapData:
@@ -74,6 +76,10 @@ package org.libspark.flartoolkit.core.squaredetect
 			default:
 				return super.getContour_3(i_raster,i_th,i_entry_x,i_entry_y,o_coord);
 			}
+			}catch (e:Error ) {
+				
+			}
+			return false;
 		}
 		public override function getContour_4(i_raster:NyARGrayscaleRaster,i_area:NyARIntRect,i_th:int,i_entry_x:int,i_entry_y:int,o_coord:NyARIntCoordinates):Boolean
 		{
@@ -141,7 +147,7 @@ package org.libspark.flartoolkit.core.squaredetect
 						if((buf.getPixel( c + xdir[dir],( r + ydir[dir] ) )) <= i_th ) {
 							break ;
 						}
-						
+						TrackerView.megs(">>"+coord_num);
 						throw new NyARException(  ) ;
 					}
 				}
@@ -158,7 +164,8 @@ package org.libspark.flartoolkit.core.squaredetect
 						
 						dir++ ;
 					}
-					if( i == 8 ) {
+					if ( i == 8 ) {
+						TrackerView.megs(">>>"+coord_num);
 						throw new NyARException(  ) ;
 					}
 					
@@ -269,7 +276,6 @@ package org.libspark.flartoolkit.core.squaredetect
 						if((buf.getPixel( c + xdir[dir],( r + ydir[dir] ) )) >0 ) {
 							break ;
 						}
-						
 						throw new NyARException(  ) ;
 					}
 				}

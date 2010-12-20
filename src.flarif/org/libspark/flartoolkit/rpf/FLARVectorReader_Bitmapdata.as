@@ -80,7 +80,6 @@ package org.libspark.flartoolkit.rpf
 			//assert (ih >= 3 && iw >= 3);
 			//assert ((ix >= 0) && (iy >= 0) && (ix + iw) <= this._ref_base_raster.getWidth() && (iy + ih) <= this._ref_base_raster.getHeight());
 			var buf:BitmapData =(BitmapData)(this._ref_base_raster.getBuffer());
-			var stride:int =this._ref_base_raster.getWidth();
 			// x=(Σ|Vx|*Xn)/n,y=(Σ|Vy|*Yn)/n
 			// x=(ΣVx)^2/(ΣVx+ΣVy)^2,y=(ΣVy)^2/(ΣVx+ΣVy)^2
 			var sum_x:int, sum_y:int, sum_wx:int, sum_wy:int, sum_vx:int, sum_vy:int;
@@ -88,17 +87,18 @@ package org.libspark.flartoolkit.rpf
 			var lw:int=iw - 3;
 			var vx:int, vy:int;
 			for (var i:int = ih - 3; i >= 0; i--) {
-				var iix:int = (iw - 3 + 1 + ix);
-				var iiy:int = (i + 1 + iy);
+				var cx:int = (iw - 3 + 1 + ix);
+				var cy:int = (i + 1 + iy);
 				for (var i2:int = lw; i2 >= 0; i2--){
 					// 1ビット分のベクトルを計算
-					var b:int = buf.getPixel(iix - 1, iiy - 1);
-					var d:int = buf.getPixel(iix + 1, iiy - 1);
-					var h:int = buf.getPixel(iix - 1,iiy + 1);
-					var f:int = buf.getPixel(iix+1,iiy + 1);
-					vx = ((buf.getPixel(iix+1,iy) - buf.getPixel(iix-1,iiy)) >> 1)+ ((d - b + f - h) >> 2);
-					vy = ((buf.getPixel(iix, iy + 1) - buf.getPixel(iix, iiy - 1)) >> 1) + ((f - d + h - b) >> 2);
-					iix--;
+					var b:int = buf.getPixel(cx-1,cy-1);// [idx_m1 - 1];
+					var d:int = buf.getPixel(cx+1,cy-1);//buf[idx_m1 + 1];
+					var h:int = buf.getPixel(cx-1,cy+1);//buf[idx_p1 - 1];
+					var f:int = buf.getPixel(cx-1,cy+1);//buf[idx_p1 + 1];
+					vx = ((buf.getPixel(cx+1,cy) - buf.getPixel(cx-1,cy)) >> 1)+ ((d - b + f - h) >> 2);//vx = ((buf[idx_0 + 1] - buf[idx_0 - 1]) >> 1)+ ((d - b + f - h) >> 2);
+					vy = ((buf.getPixel(cx,cy+1) - buf.getPixel(cx,cy-1)) >> 1)+ ((f - d + h - b) >> 2);//vy = ((buf[idx_p1] - buf[idx_m1]) >> 1)+ ((f - d + h - b) >> 2);
+					cx--;
+
 					// 加重はvectorの絶対値
 					var wx:int = vx * vx;
 					var wy:int = vy * vy;
@@ -135,9 +135,11 @@ package org.libspark.flartoolkit.rpf
 			}
 			//加重平均の分母を返却
 			return sum_wx+sum_wy;
-		}
+		}		
+
 		public override function getAreaVector22(ix:int,iy:int,iw:int,ih:int,o_posvec:NyARVecLinear2d):int
 		{
+			//なんかうまくうごかない。
 			//assert (ih >= 3 && iw >= 3);
 			//assert ((ix >= 0) && (iy >= 0) && (ix + iw) <= this._ref_base_raster.getWidth() && (iy + ih) <= this._ref_base_raster.getHeight());
 			var buf:BitmapData =(BitmapData)(this._ref_base_raster.getBuffer());
