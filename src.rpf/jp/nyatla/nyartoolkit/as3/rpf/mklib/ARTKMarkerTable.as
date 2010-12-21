@@ -1,5 +1,13 @@
 package jp.nyatla.nyartoolkit.as3.rpf.mklib 
 {
+	import jp.nyatla.nyartoolkit.as3.core.match.*;
+
+	import jp.nyatla.nyartoolkit.as3.core.*;
+	import jp.nyatla.nyartoolkit.as3.core.types.*;
+	import jp.nyatla.nyartoolkit.as3.core.rasterreader.*;	
+	import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
+	import jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk.*;
+	import jp.nyatla.nyartoolkit.as3.rpf.realitysource.nyartk.*;
 	/**
 	 * 簡易なARToolKitパターンテーブルです。
 	 * このクラスは、ARToolKitスタイルのパターンファイルとIdとメタデータセットテーブルを定義します。
@@ -63,10 +71,10 @@ package jp.nyatla.nyartoolkit.as3.rpf.mklib
 		 * マーカの幅[通常mm単位]
 		 * @return
 		 */
-		public function addMarker(i_code:NyARCode,i_id:int,i_name:String,i_width:Number,i_height:Number):Boolean
+		public function addMarker_1(i_code:NyARCode,i_id:int,i_name:String,i_width:Number,i_height:Number):Boolean
 		{
 			//assert(i_code.getHeight()== this._resolution_height && i_code.getHeight()== this._resolution_width);
-			var d:SerialTableRow=this._table.prePush();
+			var d:SerialTableRow=SerialTableRow(this._table.prePush());
 			if(d==null){
 				return false;
 			}
@@ -87,14 +95,14 @@ package jp.nyatla.nyartoolkit.as3.rpf.mklib
 		 * @return
 		 * @throws NyARException
 		 */
-		public function addMarker(i_raster:NyARRgbRaster,i_id:int,i_name:String,i_width:Number,i_height:Number):Boolean
+		public function addMarker_2(i_raster:NyARRgbRaster,i_id:int,i_name:String,i_width:Number,i_height:Number):Boolean
 		{
-			var d:SerialTableRow=this._table.prePush();
+			var d:SerialTableRow=SerialTableRow(this._table.prePush());
 			if(d==null){
 				return false;
 			}
 			var c:NyARCode=new NyARCode(this._resolution_width,this._resolution_height);
-			c.setRaster(i_raster);
+			c.setRaster_2(i_raster);
 			d.setValue(c,i_id,i_name,i_width,i_height);
 			return true;
 		}
@@ -112,9 +120,9 @@ package jp.nyatla.nyartoolkit.as3.rpf.mklib
 		 * @return
 		 * @throws NyARException
 		 */
-		public function addMarkerFromARPattFile(i_filename:String,i_id:int,i_name:String,i_width:Number,i_height:Number):Number
+		public function addMarkerFromARPattFile(i_filename:String,i_id:int,i_name:String,i_width:Number,i_height:Number):Boolean
 		{
-			var d:SerialTableRow=this._table.prePush();
+			var d:SerialTableRow=SerialTableRow(this._table.prePush());
 			if(d==null){
 				return false;
 			}
@@ -144,12 +152,12 @@ package jp.nyatla.nyartoolkit.as3.rpf.mklib
 			//パターン抽出
 			var tmp_patt_result:NyARMatchPattResult=this.__tmp_patt_result;
 			var r:NyARPerspectiveRasterReader=i_rtsorce.refPerspectiveRasterReader();
-			r.read4Point(i_rtsorce.refRgbSource(),i_target.refTargetVertex(),this._edge_x,this._edge_y,this._sample_per_pix,this._tmp_raster);
+			r.read4Point_1(i_rtsorce.refRgbSource(),i_target.refTargetVertex(),this._edge_x,this._edge_y,this._sample_per_pix,this._tmp_raster);
 			//比較パターン生成
-			this._deviation_data.setRaster(this._tmp_raster);
+			this._deviation_data.setRaster_1(this._tmp_raster);
 			var ret:int=-1;
 			var dir:int=-1;
-			var cf:Number=Double.MIN_VALUE;
+			var cf:Number=Number.MIN_VALUE;
 			for(var i:int=this._table.getLength()-1;i>=0;i--){
 				this._match_patt.setARCode(this._table.getItem(i).code);
 				this._match_patt.evaluate(this._deviation_data, tmp_patt_result);
@@ -163,7 +171,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.mklib
 				return false;
 			}
 			//戻り値を設定
-			var row:SerialTableRow=this._table.getItem(ret);
+			var row:SerialTableRow=SerialTableRow(this._table.getItem(ret));
 			o_result.artk_direction=dir;
 			o_result.confidence=cf;
 			o_result.idtag=row.idtag;
@@ -173,9 +181,11 @@ package jp.nyatla.nyartoolkit.as3.rpf.mklib
 			return true;
 		}
 	}
-	}
 
 }
+
+import jp.nyatla.nyartoolkit.as3.core.types.stack.*;
+import jp.nyatla.nyartoolkit.as3.core.*;
 class SerialTableRow
 {
 	public var idtag:int;
@@ -183,7 +193,7 @@ class SerialTableRow
 	public var code:NyARCode;
 	public var marker_width:Number;
 	public var marker_height:Number;
-	public final void setValue(i_code:NyARCode,i_idtag:int,i_name:String,i_width:Number,i_height:Number):void
+	public function setValue(i_code:NyARCode,i_idtag:int,i_name:String,i_width:Number,i_height:Number):void
 	{
 		this.code=i_code;
 		this.marker_height=i_height;
@@ -195,11 +205,11 @@ class SerialTableRow
 
 class MarkerTable extends NyARObjectStack
 {
-	public MarkerTable(i_length:int)
+	public function MarkerTable(i_length:int)
 	{
-		super.initInstance(i_length);
+		super.initInstance_1(i_length);
 	}
-	protected function createElement_1():Object
+	protected override function createElement_1():Object
 	{
 		return new SerialTableRow();
 	}

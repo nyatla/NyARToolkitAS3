@@ -22,9 +22,9 @@ package org.libspark.flartoolkit.rpf.realitysource.nyartk
 		/**
 		 * ビットマップのアタッチされていない、
 		 * @param i_width
-		 * ラスタのサイズを指定します。
+		 * ラスタのサイズを指定します。i_attach_bitmapがnullの時のみ有効です。
 		 * @param i_height
-		 * ラスタのサイズを指定します。
+		 * ラスタのサイズを指定します。i_attach_bitmapがnullの時のみ有効です。
 		 * @param i_ref_raster_distortion
 		 * 歪み矯正の為のオブジェクトを指定します。歪み矯正が必要ない時は、NULLを指定します。
 		 * @param i_depth
@@ -43,7 +43,7 @@ package org.libspark.flartoolkit.rpf.realitysource.nyartk
 				:new FLARRgbRaster_BitmapData(i_attach_bitmap);
 			this._filter=new FLARRasterFilter_Rgb2Gs_RgbAve192();
 			this._source_perspective_reader=new NyARPerspectiveRasterReader(this._rgb_source.getBufferType());
-			this._tracksource=new FLARTrackerSource_Reference(i_number_of_sample,i_ref_raster_distortion,i_width,i_height,i_depth,true);
+			this._tracksource=new FLARTrackerSource_Reference(i_number_of_sample,i_ref_raster_distortion,this._rgb_source.getWidth(),this._rgb_source.getHeight(),i_depth,true);
 			return;
 		}
 		/**
@@ -77,7 +77,6 @@ package org.libspark.flartoolkit.rpf.realitysource.nyartk
 		{
 			(FLARRgbRaster_BitmapData(this._rgb_source)).wrapBuffer(i_buffer);
 		}
-
 	}	
 
 }
