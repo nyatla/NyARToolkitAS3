@@ -1,54 +1,141 @@
-ARToolKit ActionScript3 class library NyARToolkit.
-Copyright (C)2010 Ryo Iizuka
+======================================================================
+NyARToolkitAS3
+ version 3.0.0
+======================================================================
 
-version 2.5.2
+Copyright (C)2008-2010 Ryo Iizuka
 
 http://nyatla.jp/nyartoolkit/
 airmail(at)ebony.plala.or.jp
 wm(at)nyatla.jp
---------------------------------------------------
+
+----------------------------------------------------------------------
+ About NyARToolkit
+----------------------------------------------------------------------
+ * NyARToolkitは、NyARToolKit 3.0.0のAPIを基盤としたARアプリケーション向けの
+   クラスライブラリです。
+ * Flash10以上に対応しています。
+ * ARToolKitの基本機能と、NyARToolKitオリジナルの拡張機能、フレームワーク
+   で構成しています。
+ * ライブラリは4部構成です。NyARTookitを純粋に移植したsrcモジュール、NyARToolkitの
+   RPF(Reality Platform)クラスのあるsrc.rpf,Flash向けの拡張クラスのあるsrc.flarif,
+   サンプルのある、sampleです。
+ * このSDKが提供する3Dレンダラアダプタは、paperVision3Dのみです。他の3Dレンダラ
+   アダプタに対応するときの参考にして下さい。(FLARToolKitでは対応すると思います。)
+ * sampleモジュールは、いくつかの動作チェックプログラムと、RPFを使ったサンプルアプ
+   リケーションがあります。
 
 
+ ARToolKitについては、下記のURLをご覧ください。
+ http://www.hitl.washington.edu/artoolkit/
+
+----------------------------------------------------------------------
+NyARToolkitAS3の特徴
+----------------------------------------------------------------------
+NyARToolkitAS3の特徴を紹介します。
+
+ * 入力画像、内部画像のフォーマットが、BitmapData形式です。
+ * ロジックレベルでは、ARToolKitよりも高速です。
+ * 次の項目について、高速な機能が利用できます。(ラべリング、姿勢最適化、
+   画像処理、行列計算、方程式計算)
+ * NyId規格のIDマーカが使用できます。
+ * RPF(RealityPlatform - マーカ状態管理システム)が利用できます。
+
+注意点
+
+ * RPFの不具合の為、RPFを使用してアプリケーションを作成すると、小さなマーカ
+   の認識率が低くなり、従来のNyARToolKitAS3よりも、約1.5倍負荷が増えてしまいます。
+   修正まで、しばらくお待ちください。
 
 
-・NyARToolkitAS/2.5.2
-
-NyARToolkitAS3は、NyARToolkitのActionScript版です。
-NyARToolkit 2.5.2をベースに構築されています。
-
-
-NyARToolkitAS3は、FLARToolKitへ最新のAPIを供給する目的で実装されています。
-単独でも動作しますが、FLARToolKitと組み合わせての利用をお勧めします。
-http://www.libspark.org/wiki/saqoosha/FLARToolKit
+----------------------------------------------------------------------
+ NyARToolkitAS3 License
+----------------------------------------------------------------------
 
 
-・ライセンス
+NyARToolkitAS3は、商用ライセンスとGPLv3以降のデュアルライセンスを採用して
+います。
 
-NyARToolkitは、商用ライセンスとGPLv3以降のデュアルライセンスを採用しています。
-
-
- -GPL
- GPLについては、LICENCE.txtをお読みください。
-
- -商用ライセンス
- 商用ライセンスについては、ARToolWorks社に管理を委託しております。
- http://www.artoolworks.com/Home.html
-
- 日本国内での販売については、下記にお問い合わせ下さい。
- http://www.msoft.co.jp/pressrelease/press090928-1.html
+GPLv3を承諾された場合には、商用、非商用にかかわらず、無償でご利用にな
+れます。GPLv3を承諾できない場合には、商用ライセンスの購入をご検討くだ
+さい。
 
 
+ * GPLv3
+   GPLv3については、LICENCE.txtをお読みください。
+
+ * 商用ライセンス(日本国)
+   株式会社 エム・ソフトにお問い合わせください。
+   http://www.msoft.co.jp/pressrelease/press090928-1.html
+
+ * 商用ライセンス(その他の国)
+   商用ライセンスについては、ARToolWorks社に管理を委託しております。
+   http://www.artoolworks.com/Home.html
+
+----------------------------------------------------------------------
+ インストール
+----------------------------------------------------------------------
+FlashDevelopでコンパイルできるプロジェクトが、sampleフォルダにあります。
+
+FlashDevelopはこちらからダウンロードして下さい。
+http://www.flashdevelop.org/wikidocs/index.php?title=Main_Page
+
+----------------------------------------------------------------------
+ 外部ライブラリ
+----------------------------------------------------------------------
+NyARToolkitAS3のサンプルを動作させるには、PaperVision3dが必要です。
+
+http://blog.papervision3d.org/
+
+新しいバージョンのものがあれば、そちらを使用してください。
 
 
-・謝辞
+----------------------------------------------------------------------
+ サンプルの概要
+----------------------------------------------------------------------
+サンプルプログラムの概要です。2つのFlashDevelopプロジェクトについて、
+説明します。
 
-加藤博一先生
-http://www.hitl.washington.edu/artoolkit/
-ARToolKitを世に送り出してくださいました。有難うございます。
+Sample/nytest project
 
-Mr. Mark Billinghurst
-ARToolKitを世に送り出し、NyARToolKit/FLARToolKitのライセンス・
-流通環境整備に協力して頂きました。有難うございます。
+ * Main.as
+   NyARToolkitの基本クラスのテストと、ベンチマークをします。テストした結果を、
+   コンソールに出力します。
+   依存する外部ライブラリはありません。
+
+Sample/FLTest project
+
+ * Main.as
+   NyARToolkitのFlash拡張部分のテストと、ベンチマークプログラムです。
+   テスト結果をコンソールに出力します。
+   依存する外部ライブラリはありません。
+
+ * ARTKView.as
+   RPFを使った、ARToolKitマーカの出力プログラムです。マーカには、Hiroマーカ
+   を使ってください。
+
+ * NyIdView.as
+   RPFを使った、NyIdマーカの出力プログラムです。
+
+----------------------------------------------------------------------
+ 既知の不具合
+----------------------------------------------------------------------
+ 1.RPFの姿勢フィードバックが未実装。
+ 2.RPFの輪郭線抽出系のノイズ処理が最小二乗法の為、遅延が大きい。
+ 3.RPFの輪郭線抽出系のアルゴリズム不備で輪郭線のドリフトが発生し、トラッキング
+   性能が低下する。
+ 4.RPFの二次元系追跡機能の性能が低い。
+ 5.RPFのエッジ抽出が、ブラーに弱い。
+ 6.RPFの初期検出性能が、旧NyARToolkit系と比較して、低い。
+
+----------------------------------------------------------------------
+ Special thanks
+----------------------------------------------------------------------
+加藤博一先生 (Hirokazu Kato, Ph. D.)
+ http://www.hitl.washington.edu/artoolkit/
+
+Prof. Mark Billinghurst
+ http://www.hitlabnz.org/
 
 Saqooshaさん
-FLARToolKitの実装、高速化をして頂きました。有難うございます。
+ http://saqoo.sh/a/

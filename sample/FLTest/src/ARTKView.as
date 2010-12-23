@@ -1,4 +1,8 @@
-package  
+/**
+ * このサンプルプログラムは、ARマーカを認識するサンプルです。
+ * 複数のマーカ、複数のパターンを同時に認識します。
+ */
+package 
 {
 	import org.papervision3d.lights.PointLight3D;
 	import org.papervision3d.materials.WireframeMaterial;
@@ -89,7 +93,8 @@ package
 				var r:ARTKMarkerTable_GetBestMatchTargetResult = new ARTKMarkerTable_GetBestMatchTargetResult();
 				//ターゲットに一致するデータを検索
 				
-				if(this._marker_tbl .getBestMatchTarget(t,this._reality_src,r)){
+				if (this._marker_tbl .getBestMatchTarget(t, this._reality_src, r)) {
+					//r.idtagやr.nameを調べると、どのマーカに反応したか判る。
 					if(r.confidence>0.6)
 					{
 						//ここで既に認識しているターゲットを除外すれば、内側矩形の誤認識へ減るけど、マーカパターン変えた方が早いかも。
@@ -156,7 +161,7 @@ package
 			this._controler = new PV3dControler(this._reality.refCamera3d(), WIDTH, HEIGHT, this);
 			//RealitySourceの生成(Pv3dコントローラのビットマップを借用)
 			this._reality_src = new FLARRealitySource_BitmapImage( -1, -1, null, 2, 100, this._controler._background.bitmapData);
-			//マーカデーブルの生成
+			//マーカデーブルの生成(登録数2,16x16,25%エッジ,解像度4)
 			this._marker_tbl = new ARTKMarkerTable(2, 16, 16, 25, 25, 4);
 			this._marker_tbl.addMarker_1(this.code, 1, "", 80, 80);
 			//カメラ

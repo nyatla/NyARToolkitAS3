@@ -1,5 +1,13 @@
 package jp.nyatla.nyartoolkit.as3.rpf.mklib 
 {
+	import jp.nyatla.nyartoolkit.as3.nyidmarker.*;
+	import jp.nyatla.nyartoolkit.as3.core.types.*;
+	import jp.nyatla.nyartoolkit.as3.core.raster.*;
+	import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
+	import jp.nyatla.nyartoolkit.as3.nyidmarker.data.*;
+	import jp.nyatla.nyartoolkit.as3.rpf.realitysource.nyartk.*;
+	import jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk.status.*;
+	import jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk.*;
 	/**
 	 * 簡易な同期型NyIdマーカIDテーブルです。
 	 * このクラスは、RawBitフォーマットドメインのNyIdマーカのIdとメタデータセットテーブルを定義します。
@@ -46,9 +54,9 @@ package jp.nyatla.nyartoolkit.as3.rpf.mklib
 		 * @param　i_width
 		 * ヒットしたマーカのサイズ値を指定します。
 		 */
-		public function addSerialIdRangeItem(i_name:String,i_st:Number,i_ed:Number,i_width:Number):Number
+		public function addSerialIdRangeItem(i_name:String,i_st:Number,i_ed:Number,i_width:Number):Boolean
 		{
-			var d:SerialTable=this._table.prePush();
+			var d:SerialTableRow=SerialTableRow(this._table.prePush());
 			if(d==null){
 				return false;
 			}
@@ -66,7 +74,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.mklib
 		 */
 		public function addSerialIdItem(i_name:String,i_serial:Number,i_width:Number):Boolean
 		{
-			var d:SerialTableRow=this._table.prePush();
+			var d:SerialTableRow=SerialTableRow(this._table.prePush());
 			if(d==null){
 				return false;
 			}
@@ -82,11 +90,11 @@ package jp.nyatla.nyartoolkit.as3.rpf.mklib
 		 */
 		public function addAnyItem(i_name:String,i_width:Number):Boolean
 		{
-			var d:SerialTableRow=this._table.prePush();
+			var d:SerialTableRow=SerialTableRow(this._table.prePush());
 			if(d==null){
 				return false;
 			}
-			d.setValue(i_name,0,Long.MAX_VALUE,i_width);
+			d.setValue(i_name,0,Number.MAX_VALUE,i_width);
 			return true;
 		}	
 		/**
@@ -98,9 +106,9 @@ package jp.nyatla.nyartoolkit.as3.rpf.mklib
 		 * @return
 		 * @throws NyARException
 		 */
-		public function identifyId(i_vertex:Vector.<NyARDoublePoint2d>,i_raster:INyARRgbRaster,o_result:IdentifyIdResult):Boolean
+		public function identifyId_1(i_vertex:Vector.<NyARDoublePoint2d>,i_raster:INyARRgbRaster,o_result:RawbitSerialIdTable_IdentifyIdResult):Boolean
 		{
-			if(!this._id_pickup.pickFromRaster(i_raster,i_vertex,this._temp_nyid_info,this._temp_nyid_param))
+			if(!this._id_pickup.pickFromRaster_1(i_raster,i_vertex,this._temp_nyid_info,this._temp_nyid_param))
 			{
 				return false;
 			}
@@ -158,10 +166,10 @@ package jp.nyatla.nyartoolkit.as3.rpf.mklib
 		 * 特定に成功すると、trueを返します。
 		 * @throws NyARException 
 		 */
-		public function identifyId(i_target:NyARRealityTarget,i_rtsorce:NyARRealitySource,o_result:IdentifyIdResult):Boolean
+		public function identifyId_2(i_target:NyARRealityTarget,i_rtsorce:NyARRealitySource,o_result:RawbitSerialIdTable_IdentifyIdResult):Boolean
 		{
 			//NyARDoublePoint2d[] i_vertex,NyARRgbRaster i_raster,SelectResult o_result
-			return this.identifyId(
+			return this.identifyId_1(
 				((NyARRectTargetStatus)(i_target._ref_tracktarget._ref_status)).vertex,
 				i_rtsorce.refRgbSource(),
 				o_result);
@@ -170,6 +178,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.mklib
 	}
 
 }
+import jp.nyatla.nyartoolkit.as3.core.types.stack.*;
 
 class SerialTableRow
 {
@@ -190,17 +199,18 @@ class SerialTable extends NyARObjectStack
 {
 	public function SerialTable(i_length:int)
 	{
-		super.initInstance(i_length);
+		super();
+		super.initInstance_1(i_length);
 	}
-	protected function createElement():SerialTableRow
+	protected override function createElement_1():Object
 	{
 		return new SerialTableRow();
 	}
-	public function getItembySerialId(long i_serial):SerialTableRow
+	public function getItembySerialId(i_serial:Number):SerialTableRow
 	{
 		for(var i:int=this._length-1;i>=0;i--)
 		{
-			var s:SerialTableRow=this._items[i];
+			var s:SerialTableRow=SerialTableRow(this._items[i]);
 			if(i_serial<s.id_st || i_serial>s.id_ed){
 				continue;
 			}
