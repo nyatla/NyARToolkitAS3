@@ -17,7 +17,7 @@
     </library-path>
   </compiler>
   <file-specs>
-    <path-element>D:\project.sourceforge\NyARToolkit\NyARToolkitAS3\trunk\sample\FLTest\src\NyIdView.as</path-element>
+    <path-element>D:\project.sourceforge\NyARToolkit\NyARToolkitAS3\trunk\sample\FLTest\src\TrackerView.as</path-element>
   </file-specs>
   <default-background-color>#FFFFFF</default-background-color>
   <default-frame-rate>30</default-frame-rate>

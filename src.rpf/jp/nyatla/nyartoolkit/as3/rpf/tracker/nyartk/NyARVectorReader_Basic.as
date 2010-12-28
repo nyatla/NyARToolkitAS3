@@ -233,10 +233,10 @@ package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk
 			//0個目のライン探索
 			var number_of_data:int = 0;
 			var sq:Number;
-			var sq_sum:Number=0;
+			var sq_sum:int=0;
 			//0番目のピクセル
 			pos[0].scalar=sq=this.getAreaVector33(coord[0].x * i_pos_mag, coord[0].y * i_pos_mag,i_cell_size, i_cell_size,pos[0]);
-			sq_sum+=sq;
+			sq_sum+=int(sq);
 			//[2]に0を保管
 
 			//1点目だけは前方と後方、両方に探索をかける。
@@ -252,7 +252,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk
 				// ベクトル取得
 				pos_ptr=pos[sum];
 				pos_ptr.scalar=sq=this.getAreaVector33(coord[i].x * i_pos_mag,coord[i].y * i_pos_mag, i_cell_size, i_cell_size,pos_ptr);
-				sq_sum+=sq;
+				sq_sum+=int(sq);
 				// 類似度判定
 				if(checkVecCos(pos[sum],pos[sum-1],ave_dx,ave_dy))
 				{
@@ -274,7 +274,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk
 				// ベクトル取得
 				pos_ptr=pos[sum];
 				pos_ptr.scalar=sq=this.getAreaVector33(coord[i].x * i_pos_mag,coord[i].y * i_pos_mag, i_cell_size, i_cell_size,pos_ptr);
-				sq_sum+=sq;			
+				sq_sum+=int(sq);			
 				if(sq==0){
 					continue;
 				}
