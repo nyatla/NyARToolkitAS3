@@ -145,7 +145,7 @@ package jp.nyatla.nyartoolkit.as3.core.labeling.rlelabeling
 			var len:int=i_rel_img.r - l;
 			i_rel_img.fid = i_nof;// REL毎の固有ID
 			var v:NyARRleLabelFragmentInfo = NyARRleLabelFragmentInfo(o_stack.prePush());
-			if(o_stack==null){
+			if(v==null){
 				return false;
 			}
 			v.entry_x = l;
