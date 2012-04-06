@@ -37,7 +37,6 @@ package jp.nyatla.nyartoolkit.as3.core.raster.rgb {
 	 * 
 	 */
 	public interface INyARRgbRaster extends INyARRaster {
-
-		function getRgbPixelReader():INyARRgbPixelReader
+		function getRgbPixelDriver():INyARRgbPixelDriver;
 	}
 }

@@ -30,112 +30,62 @@
  */
 package jp.nyatla.nyartoolkit.as3.core.raster
 {
-	import jp.nyatla.nyartoolkit.as3.core.rasterreader.*;
-	import jp.nyatla.nyartoolkit.as3.core.types.*;
-	import jp.nyatla.nyartoolkit.as3.utils.*;	
-	import jp.nyatla.nyartoolkit.as3.*;
-	import jp.nyatla.as3utils.*;
-
-	public class NyARBinRaster extends NyARRaster_BasicClass
+	/**
+	 * このクラスは、0/ 255 の二値GrayscaleRasterです。
+	 */
+	public class NyARBinRaster extends NyARGrayscaleRaster
 	{
-		protected var _buf:Object;
 		/**
-		 * バッファオブジェクトがアタッチされていればtrue
-		 */
-		protected var _is_attached_buffer:Boolean;
-		/**
-		 * 
-		 */
-		public function NyARBinRaster(...args:Array)
-		{
-			super(NyAS3Const_Inherited);
-			switch(args.length) {
-			case 1:
-				if (args[0] is NyAS3Const_Inherited) {
-					//blank
-				}
-				break;
-			case 2:
-				//(int,int)
-				override_NyARBinRaster2(int(args[0]), int(args[1]));
-				break;
-			case 3:
-				//(int,int,bool)
-				override_NyARBinRaster3(int(args[0]), int(args[1]),Boolean(args[2]));
-				break;
-			case 4:
-				//(int,int,int,bool)
-				override_NyARBinRaster4(int(args[0]), int(args[1]),int(args[2]),Boolean(args[3]));
-				break;
-			default:
-				throw new NyARException();
-			}
-		}
-
-		/**
-		 *
+		 * コンストラクタです。
+		 * 画像のサイズパラメータを指定して、{@link NyARBufferType#INT2D_BIN_8}形式のバッファを持つインスタンスを生成します。
+		 * このラスタは、内部参照バッファを持ちます。
 		 * @param i_width
+		 * ラスタのサイズ
 		 * @param i_height
-		 * @param i_raster_type
-		 * NyARBufferTypeに定義された定数値を指定してください。
-		 * @param i_is_alloc
+		 * ラスタのサイズ
 		 * @throws NyARException
 		 */
-		protected function override_NyARBinRaster4(i_width:int, i_height:int, i_raster_type:int, i_is_alloc:Boolean):void
+		public function NyARBinRaster(i_width:int,i_height:int)
 		{
-			super.overload_NyARRaster_BasicClass(i_width,i_height,i_raster_type);
-			if(!initInstance(this._size,i_raster_type,i_is_alloc)){
-				throw new NyARException();
-			}
+			super(i_width,i_height,NyARBufferType.INT1D_BIN_8,true);
 		}
-		protected function override_NyARBinRaster3(i_width:int, i_height:int, i_is_alloc:Boolean):void
-		{
-			super.overload_NyARRaster_BasicClass(i_width,i_height,NyARBufferType.INT1D_BIN_8);
-			if(!initInstance(this._size,NyARBufferType.INT1D_BIN_8,i_is_alloc)){
-				throw new NyARException();
-			}
-		}
-		protected function override_NyARBinRaster2(i_width:int, i_height:int):void
-		{
-			super.overload_NyARRaster_BasicClass(i_width,i_height,NyARBufferType.INT1D_BIN_8);
-			if(!initInstance(this._size,NyARBufferType.INT1D_BIN_8,true)){
-				throw new NyARException();
-			}
-		}	
-		protected function initInstance(i_size:NyARIntSize,i_buf_type:int,i_is_alloc:Boolean):Boolean
+		/*
+		 * この関数は、インスタンスの初期化シーケンスを実装します。
+		 * コンストラクタから呼び出します。
+		 * @param i_size
+		 * ラスタのサイズ
+		 * @param i_buf_type
+		 * バッファ形式定数
+		 * @param i_is_alloc
+		 * 内部バッファ/外部バッファのフラグ
+		 * @return
+		 * 初期化に成功するとtrue
+		 * @throws NyARException 
+		 */
+		protected function initInstance(i_size:NyARIntSize,i_buf_type:int,i_is_alloc:Boolean):void
 		{
 			switch(i_buf_type)
 			{
 				case NyARBufferType.INT1D_BIN_8:
-					this._buf = i_is_alloc?new Vector.<int>(i_size.w*i_size.h):null;
+					this._buf = i_is_alloc?new int[i_size.w*i_size.h]:null;
 					break;
 				default:
-					return false;
+					super.initInstance(i_size, i_buf_type, i_is_alloc);
+					return;
 			}
+			this._pixdrv=NyARGsPixelDriverFactory.createDriver(this);
 			this._is_attached_buffer=i_is_alloc;
-			return true;
+			return;
 		}
-		public override function getBuffer():Object
+		public function createInterface(i_iid:Class):Object
 		{
-			return this._buf;
-		}
-		/**
-		 * インスタンスがバッファを所有するかを返します。
-		 * コンストラクタでi_is_allocをfalseにしてラスタを作成した場合、
-		 * バッファにアクセスするまえに、バッファの有無をこの関数でチェックしてください。
-		 * @return
-		 */	
-		public override function hasBuffer():Boolean
-		{
-			return this._buf!=null;
-		}
-		public override function wrapBuffer(i_ref_buf:Object):void
-		{
-			NyAS3Utils.assert(!this._is_attached_buffer);//バッファがアタッチされていたら機能しない。
-			this._buf=i_ref_buf;
+			if(i_iid==NyARLabeling_Rle_IRasterDriver){
+				return NyARLabeling_Rle_RasterDriverFactory.createDriver(this);
+			}
+			if(i_iid==NyARContourPickup_IRasterDriver){
+				return NyARContourPickup_ImageDriverFactory.createDriver(this);
+			}
+			throw new NyARException();
 		}
 	}
-
-
-
 }

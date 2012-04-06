@@ -123,6 +123,11 @@ package jp.nyatla.nyartoolkit.as3.core.raster
 			NyAS3Utils.assert(!this._is_attached_buffer);//バッファがアタッチされていたら機能しない。
 			this._buf=i_ref_buf;
 		}
+		public override createInterface(iIid:Class):Object
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
 	}	
  
 

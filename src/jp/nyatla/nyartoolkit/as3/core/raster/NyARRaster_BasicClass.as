@@ -101,6 +101,10 @@ package jp.nyatla.nyartoolkit.as3.core.raster
 		{
 			throw new NyARException();
 		}
+		public function getBuffer():Object{}
+		public function hasBuffer():Boolean{}
+		public function wrapBuffer(i_ref_buf:Object):void{}
+		public function createInterface(i_iid:Class):Object{}
 		
 
 		

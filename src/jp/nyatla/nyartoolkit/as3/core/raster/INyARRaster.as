@@ -35,5 +35,11 @@ package jp.nyatla.nyartoolkit.as3.core.raster {
 		 * @param i_ref_buf
 		 */
 		function wrapBuffer(i_ref_buf:Object):void;
+		/**
+		 * ARTKに必要なラスタドライバインタフェイスを返す。
+		 * @return
+		 */
+		function createInterface(i_iid:Class):Object;
+		
 	}
 }

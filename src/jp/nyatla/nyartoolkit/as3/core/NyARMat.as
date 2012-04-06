@@ -48,13 +48,52 @@ package jp.nyatla.nyartoolkit.as3.core
 
 		private var clm:int;
 		private var row:int;
-		public function NyARMat(i_row:int,i_clm:int)
+		
+		public function NyARMat(...args:Array)
+		{
+			super(NyAS3Const_Inherited);
+			switch(args.length) {
+			case 1:
+				if (args[0] is NyAS3Const_Inherited) {
+					//blank
+				}
+				break;
+			case 2:
+				overload_NyARMat_2ii(int(args[0]), int(args[1]));
+				break;
+			case 4:
+				overload_NyARMat_4iiao(int(args[0]), int(args[1]),Vector.<Vector.<Number>>(args[2]),Boolean(args[3]));
+				break;
+			default:
+				throw new NyARException();
+			}			
+		}		
+
+		private function overload_NyARMat_2ii(i_row:int,i_clm:int)
 		{
 			this.m = ArrayUtils.create2dNumber(i_row, i_clm);
 			this.__matrixSelfInv_nos=new Vector.<Number>(i_row);
 			this.clm = i_clm;
 			this.row = i_row;
 			return;
+		}
+		/**
+		 * 配列i_mをラップしてインスタンスを生成します。
+		 * 
+		 * @param i_row
+		 * 行列の行数です。
+		 * @param i_clm
+		 * 行列の列数です。
+		 * @param i_m
+		 * 行列の　バッファです。double[i_row][i_clm]の配列を指定します。
+		 * @param i_is_attached_buffer
+		 * i_mをインスタンスが管理するかを示します。trueの場合、i_mの所有権はインスタンスに移ります。
+		 */
+		private function overload_NyARMat_4iiao(i_row:int,i_clm:int,i_m:Vector.<Vector.<Number>>,i_is_attached_buffer:Boolean)
+		{
+			this.clm=i_clm;
+			this.row=i_row;
+			this._m=i_m;
 		}
 		/**
 		 * 行列の列数を返します。
@@ -169,7 +208,65 @@ package jp.nyatla.nyartoolkit.as3.core
 			}
 			return true;
 		}
-		
+
+		/**
+		 * i_copy_fromの内容を、thisへコピーします。 
+		 * @param i_copy_from
+		 * コピー元の行列です。
+		 * この行列のサイズは、thisと同じでなければなりません。
+		 */
+		public function setValue(i_copy_from:NyARMat):void
+		{
+			// サイズ確認
+			if (this.row != i_copy_from.row || this.clm != i_copy_from.clm) {
+				throw new NyARException();
+			}
+			// 値コピー
+			for (var r:int = this.row - 1; r >= 0; r--) {
+				for (var c:int = this.clm - 1; c >= 0; c--) {
+					this._m[r][c] = i_copy_from._m[r][c];
+				}
+			}
+		}
+		/**
+		 * 行列のバッファを返します。
+		 * 返却値の有効期間に注意してください。
+		 * この値の有効時間は、次にこのこのインスタンスの関数を実行するまでの間です。
+		 * @return
+		 * 行列のバッファ
+		 */
+		public function getArray():Vector.<Vector.<Number>>
+		{
+			return _m;
+		}
+		/**
+		 * 行列の要素を、全て0にします。
+		 */
+		public function loadZero():void
+		{
+			// For順変更OK
+			for (var i:int = this.row - 1; i >= 0; i--) {
+				for (var i2:int = this.clm - 1; i2 >= 0; i2--) {
+					this._m[i][i2] = 0.0;
+				}
+			}
+		}
+		/**
+		 * i_srcの転置行列をインスタンスにセットします。
+		 * @param i_src
+		 * 入力元のオブジェクト。(i_src.row == this.clm)&&(i_src.clm == this.row)でなければなりません。
+		 */
+		public function transpose(i_src:NyARMat):void
+		{
+			if (this.row != i_src.clm || this.clm != i_src.row) {
+				throw new NyARException();
+			}
+			for (var r:int = 0; r < this.row; r++) {
+				for (var c:int = 0; c < this.clm; c++) {
+					this._m[r][c] = i_src._m[c][r];
+				}
+			}		
+		}
 //		***************************************
 //		There are not used by NyARToolKit.
 //		***************************************

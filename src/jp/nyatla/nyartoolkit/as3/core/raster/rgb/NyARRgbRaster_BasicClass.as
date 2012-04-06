@@ -13,7 +13,7 @@ package jp.nyatla.nyartoolkit.as3.core.raster.rgb {
 	public class NyARRgbRaster_BasicClass implements INyARRgbRaster
 	{
 		protected var _size:NyARIntSize;
-		private var _buffer_type:int;
+		protected var _buffer_type:int;
 		public function NyARRgbRaster_BasicClass(...args:Array)
 		{
 			switch(args.length) {
@@ -71,8 +71,8 @@ package jp.nyatla.nyartoolkit.as3.core.raster.rgb {
 			var width:int=i_input.getWidth();
 			var height:int=i_input.getHeight();
 			var rgb:Vector.<int>=new int[3];
-			var inr:INyARRgbPixelReader=i_input.getRgbPixelReader();
-			var outr:INyARRgbPixelReader=o_output.getRgbPixelReader();
+			var inr:INyARRgbPixelDriver=i_input.getRgbPixelDriver();
+			var outr:INyARRgbPixelDriver=o_output.getRgbPixelDriver();
 			for(var i:int=height-1;i>=0;i--){
 				for(var i2:int=width-1;i2>=0;i2--){
 					inr.getPixel(i2,i,rgb);
@@ -95,6 +95,13 @@ package jp.nyatla.nyartoolkit.as3.core.raster.rgb {
 		public function wrapBuffer(i_ref_buf:Object):void
 		{
 			throw new NyARException();
-		}		
+		}
+		// abstract functions
+		public function hasBuffer():Boolean{};
+		public function getRgbPixelDriver():INyARRgbPixelDriver{};
+		public function wrapBuffer(i_ref_buf:Object):void{};
+		public function createInterface(i_iid:Class):Object{};
+		public function getBuffer():Object{};
+		
 	}
 }

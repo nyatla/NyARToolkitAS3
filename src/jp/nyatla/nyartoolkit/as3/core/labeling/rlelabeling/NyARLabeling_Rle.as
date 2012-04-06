@@ -51,8 +51,13 @@ package jp.nyatla.nyartoolkit.as3.core.labeling.rlelabeling
 		protected var _raster_size:NyARIntSize=new NyARIntSize();
 		public function NyARLabeling_Rle(i_width:int,i_height:int)
 		{
+			this.initInstance(i_width, i_height);
+		}
+		protected function initInstance(i_width:int,i_height:int):void
+		{
 			this._raster_size.setValue(i_width,i_height);
-			this._rlestack=new RleInfoStack(i_width*i_height*2048/(320*240)+32);
+			var t:int=(int)((Number(i_width))*i_height*2048/(320*240)+32);//full HD support
+			this._rlestack=new RleInfoStack(t);
 			this._rle1 = RleElement.createArray(i_width/2+1);
 			this._rle2 = RleElement.createArray(i_width/2+1);
 			this._max_area=AR_AREA_MAX;
@@ -72,72 +77,72 @@ package jp.nyatla.nyartoolkit.as3.core.labeling.rlelabeling
 			return;
 		}
 
-		/**
-		 * i_bin_bufのgsイメージをREL圧縮する。
-		 * @param i_bin_buf
-		 * @param i_st
-		 * @param i_len
-		 * @param i_out
-		 * @param i_th
-		 * BINラスタのときは0,GSラスタの時は閾値を指定する。
-		 * この関数は、閾値を暗点と認識します。
-		 * 暗点<=th<明点
-		 * @return
-		 */
-		private function toRel(i_bin_buf:Vector.<int>,i_st:int,i_len:int,i_out:Vector.<RleElement>,i_th:int):int
-		{
-			var current:int = 0;
-			var r:int = -1;
+		///**
+		 //* i_bin_bufのgsイメージをREL圧縮する。
+		 //* @param i_bin_buf
+		 //* @param i_st
+		 //* @param i_len
+		 //* @param i_out
+		 //* @param i_th
+		 //* BINラスタのときは0,GSラスタの時は閾値を指定する。
+		 //* この関数は、閾値を暗点と認識します。
+		 //* 暗点<=th<明点
+		 //* @return
+		 //*/
+		//private function toRel(i_bin_buf:Vector.<int>,i_st:int,i_len:int,i_out:Vector.<RleElement>,i_th:int):int
+		//{
+			//var current:int = 0;
+			//var r:int = -1;
 			// 行確定開始
-			var x:int = i_st;
-			var right_edge:int = i_st + i_len - 1;
-			while (x < right_edge) {
+			//var x:int = i_st;
+			//var right_edge:int = i_st + i_len - 1;
+			//while (x < right_edge) {
 				// 暗点(0)スキャン
-				if (i_bin_buf[x] > i_th) {
-					x++;//明点
-					continue;
-				}
+				//if (i_bin_buf[x] > i_th) {
+					//x++;//明点
+					//continue;
+				//}
 				// 暗点発見→暗点長を調べる
-				r = (x - i_st);
-				i_out[current].l = r;
-				r++;// 暗点+1
-				x++;
-				while (x < right_edge) {
-					if (i_bin_buf[x] > i_th) {
+				//r = (x - i_st);
+				//i_out[current].l = r;
+				//r++;// 暗点+1
+				//x++;
+				//while (x < right_edge) {
+					//if (i_bin_buf[x] > i_th) {
 						// 明点(1)→暗点(0)配列終了>登録
-						i_out[current].r = r;
-						current++;
-						x++;// 次点の確認。
-						r = -1;// 右端の位置を0に。
-						break;
-					} else {
+						//i_out[current].r = r;
+						//current++;
+						//x++;// 次点の確認。
+						//r = -1;// 右端の位置を0に。
+						//break;
+					//} else {
 						// 暗点(0)長追加
-						r++;
-						x++;
-					}
-				}
-			}
+						//r++;
+						//x++;
+					//}
+				//}
+			//}
 			// 最後の1点だけ判定方法が少し違うの。
-			if (i_bin_buf[x] > i_th) {
+			//if (i_bin_buf[x] > i_th) {
 				// 明点→rカウント中なら暗点配列終了>登録
-				if (r >= 0) {
-					i_out[current].r = r;
-					current++;
-				}
-			} else {
+				//if (r >= 0) {
+					//i_out[current].r = r;
+					//current++;
+				//}
+			//} else {
 				// 暗点→カウント中でなければl1で追加
-				if (r >= 0) {
-					i_out[current].r = (r + 1);
-				} else {
+				//if (r >= 0) {
+					//i_out[current].r = (r + 1);
+				//} else {
 					// 最後の1点の場合
-					i_out[current].l = (i_len - 1);
-					i_out[current].r = (i_len);
-				}
-				current++;
-			}
+					//i_out[current].l = (i_len - 1);
+					//i_out[current].r = (i_len);
+				//}
+				//current++;
+			//}
 			// 行確定
-			return current;
-		}
+			//return current;
+		//}
 
 		private function addFragment(i_rel_img:RleElement,i_nof:int,i_row_index:int,o_stack:RleInfoStack):Boolean
 		{
@@ -160,59 +165,46 @@ package jp.nyatla.nyartoolkit.as3.core.labeling.rlelabeling
 			return true;
 		}
 		/**
-		 * BINラスタをラベリングします。
+		 * この関数は、ラスタを敷居値i_thで2値化して、ラベリングします。
+		 * 検出したラベルは、自己コールバック関数{@link #onLabelFound}で通知します。
 		 * @param i_bin_raster
-		 * @param o_stack
-		 * 結果を蓄積するスタックオブジェクトを指定します。
-		 * 関数は、このオブジェクトに結果を追記します。
-		 * @return
-		 * @throws NyARException
-		 */
-		public function labeling_1(i_bin_raster:NyARBinRaster):void
-		{
-			//assert(i_bin_raster.isEqualBufferType(NyARBufferType.INT1D_BIN_8));
-			var size:NyARIntSize=i_bin_raster.getSize();
-			this.imple_labeling(i_bin_raster,0,0,0,size.w,size.h);
-		}
-		public function labeling_2(i_bin_raster:NyARBinRaster,i_area:NyARIntRect):void
-		{
-			//assert(i_bin_raster.isEqualBufferType(NyARBufferType.INT1D_BIN_8));
-			this.imple_labeling(i_bin_raster,0,i_area.x,i_area.y,i_area.w,i_area.h);
-		}		
-		/**
-		 * 単一閾値を使ってGSラスタをBINラスタに変換しながらラベリングします。
-		 * @param i_gs_raster
-		 * @param i_top
-		 * @param i_bottom
-		 * @param o_stack
-		 * @return
-		 * @throws NyARException
-		 */
-		public function labeling_3(i_gs_raster:NyARGrayscaleRaster,i_th:int):void
-		{
-			//NyAS3Utils.assert(i_bin_raster.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
-			var size:NyARIntSize=i_gs_raster.getSize();
-			this.imple_labeling(i_gs_raster,i_th,0,0,size.w,size.h);
-		}
-		/**
-		 * BINラスタをラベリングします。
-		 * @param i_gs_raster
+		 * 入力画像。対応する形式は、クラスの説明を参照してください。
 		 * @param i_th
-		 * 画像を２値化するための閾値。暗点<=th<明点となります。
-		 * @param i_top
-		 * @param i_bottom
-		 * @param o_stack
-		 * @return
+		 * 敷居値を指定します。2値画像の場合は、0を指定してください。
 		 * @throws NyARException
 		 */
-		public function labeling_4(i_gs_raster:NyARGrayscaleRaster,i_area:NyARIntRect,i_th:int):void
+		public function labeling_1(i_raster:INyARGrayscaleRaster,i_th:int):void
 		{
-			//NyAS3Utils.assert(i_gs_raster.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
-			this.imple_labeling(i_gs_raster,i_th,i_area.x,i_area.y,i_area.w,i_area.h);
+			var size:NyARIntSize=i_raster.getSize();
+			this.imple_labeling(i_raster,i_th,0,0,size.w,size.h);
 		}
+		/**
+		 * この関数は、ラスタを敷居値i_thで2値化して、ラベリングします。
+		 * 検出したラベルは、自己コールバック関数{@link #onLabelFound}で通知します。
+		 * @param i_bin_raster
+		 * 入力画像。対応する形式は、クラスの説明を参照してください。
+		 * @param i_area
+		 * ラべリングする画像内の範囲
+		 * @param i_th
+		 * 敷居値
+		 * @throws NyARException
+		 */
+		public function labeling_2(i_raster:INyARGrayscaleRaster,i_area:NyARIntRect,i_th:int):void
+		{
+			this.imple_labeling(i_raster,0,i_area.x,i_area.y,i_area.w,i_area.h);
+		}		
+
+		private var _last_input_raster:INyARRaster=null;
+		private var _image_driver:IRasterDriver;
+		
 		private function imple_labeling(i_raster:INyARRaster,i_th:int,i_left:int,i_top:int,i_width:int,i_height:int):void
 		{			
 			//assert(i_raster.getSize().isEqualSize(this._raster_size));
+			//ラスタドライバのチェック
+			if(_last_input_raster!=i_raster){
+				this._image_driver=IRasterDriver(i_raster.createInterface(IRasterDriver));
+			}
+			var pixdrv:IRasterDriver=this._image_driver;
 			var rle_prev:Vector.<RleElement> = this._rle1;
 			var rle_current:Vector.<RleElement> = this._rle2;
 			// リセット処理
@@ -230,9 +222,10 @@ package jp.nyatla.nyartoolkit.as3.core.labeling.rlelabeling
 			var label_count:int = 0;
 			var rle_top_index:int=i_left+row_stride*i_top;
 			
+			var ypos:int=i_top;
 			// 初段登録
+			len_prev = pixdrv.xLineToRle(i_left,ypos,i_width,i_th,rle_prev);
 
-			len_prev = toRel(in_buf, rle_top_index, i_width, rle_prev, i_th);
 			var i:int;
 			for (i = 0; i < len_prev; i++) {
 				// フラグメントID=フラグメント初期値、POS=Y値、RELインデクス=行
@@ -244,10 +237,11 @@ package jp.nyatla.nyartoolkit.as3.core.labeling.rlelabeling
 			}
 			var f_array:Vector.<Object> = Vector.<Object>(rlestack.getArray());
 			// 次段結合
-			for (var y:int = i_top + 1; y < bottom; y++) {
+			for (var y:int = i_top + 1; y < bottom; y++)
+			{
 				// カレント行の読込
-				rle_top_index+=row_stride;
-				len_current = toRel(in_buf,rle_top_index, i_width, rle_current,i_th);
+				ypos++;
+				len_current = pixdrv.xLineToRle(i_left,ypos,i_width,i_th, rle_current);
 				var index_prev:int = 0;
 
 				SCAN_CUR: for (i = 0; i < len_current; i++) {
@@ -430,6 +424,37 @@ final class RleInfoStack extends NyARObjectStack
 	}
 }
 
+
+
+interface IRasterDriver 
+{
+	function xLineToRle(i_x:int,i_y:int,i_len:int,i_th:int,i_out:Vector.<RleElement>):int;
+}
+/**
+ * Labeling用の画像ドライバを構築します。
+ */
+class RasterDriverFactory
+{
+	/**
+	 * この関数はラスタから呼ばれる。
+	 * @param i_raster
+	 * @return
+	 */
+	public function createDriver(i_raster:INyARGrayscaleRaster):IRasterDriver
+	{
+		switch(i_raster.getBufferType()){
+		case NyARBufferType.INT1D_GRAY_8:
+		case NyARBufferType.INT1D_BIN_8:
+			return new NyARRlePixelDriver_BIN_GS8(i_raster);
+		default:
+			if(i_raster instanceof INyARGrayscaleRaster){
+				return new NyARRlePixelDriver_GSReader(INyARGrayscaleRaster(i_raster));
+			}
+			throw new NyARException();
+		}
+	}		
+}
+
 class RleElement
 {
 	public var l:int;
@@ -446,4 +471,138 @@ class RleElement
 }
 
 
+//
+//画像ドライバ
+//
 
+class NyARRlePixelDriver_BIN_GS8 implements IRasterDriver
+{
+	private var _ref_raster:INyARRaster;
+	public function NyARRlePixelDriver_BIN_GS8(i_ref_raster:INyARRaster)
+	{
+		this._ref_raster=i_ref_raster;
+	}
+	public function xLineToRle(i_x:int, i_y:int, i_len:int,i_th:int,i_out:Vector.<RleElement>):int
+	{
+		var buf:Vector.<int>=Vector.<int>(this._ref_raster.getBuffer());
+		var current:int = 0;
+		var r:int = -1;
+		// 行確定開始
+		var st:int=i_x+this._ref_raster.getWidth()*i_y;
+		var x:int = st;
+		var right_edge:int = st + i_len - 1;
+		while (x < right_edge) {
+			// 暗点(0)スキャン
+			if (buf[x] > i_th) {
+				x++;//明点
+				continue;
+			}
+			// 暗点発見→暗点長を調べる
+			r = (x - st);
+			i_out[current].l = r;
+			r++;// 暗点+1
+			x++;
+			while (x < right_edge) {
+				if (buf[x] > i_th) {
+					// 明点(1)→暗点(0)配列終了>登録
+					i_out[current].r = r;
+					current++;
+					x++;// 次点の確認。
+					r = -1;// 右端の位置を0に。
+					break;
+				} else {
+					// 暗点(0)長追加
+					r++;
+					x++;
+				}
+			}
+		}
+		// 最後の1点だけ判定方法が少し違うの。
+		if (buf[x] > i_th) {
+			// 明点→rカウント中なら暗点配列終了>登録
+			if (r >= 0) {
+				i_out[current].r = r;
+				current++;
+			}
+		} else {
+			// 暗点→カウント中でなければl1で追加
+			if (r >= 0) {
+				i_out[current].r = (r + 1);
+			} else {
+				// 最後の1点の場合
+				i_out[current].l = (i_len - 1);
+				i_out[current].r = (i_len);
+			}
+			current++;
+		}
+		// 行確定
+		return current;
+	}
+}
+
+/**
+ * GSPixelDriverを使ったクラス
+ */
+class NyARRlePixelDriver_GSReader implements IRasterDriver
+{
+	private var _ref_driver:INyARGsPixelDriver;
+	public function NyARRlePixelDriver_GSReader(i_raster:INyARGrayscaleRaster)
+	{
+		this._ref_driver=i_raster.getGsPixelDriver();
+	}
+	public function xLineToRle(i_x:int,i_y:int,i_len:int,i_th:int,i_out:RleElement):int
+	{
+		var current:int = 0;
+		var r:int = -1;
+		// 行確定開始
+		var st:int=i_x;
+		var x:int = st;
+		var right_edge:int = st + i_len - 1;
+		while (x < right_edge) {
+			// 暗点(0)スキャン
+			if (this._ref_driver.getPixel(x,i_y) > i_th) {
+				x++;//明点
+				continue;
+			}
+			// 暗点発見→暗点長を調べる
+			r = (x - st);
+			i_out[current].l = r;
+			r++;// 暗点+1
+			x++;
+			while (x < right_edge) {
+				if (this._ref_driver.getPixel(x,i_y) > i_th) {
+					// 明点(1)→暗点(0)配列終了>登録
+					i_out[current].r = r;
+					current++;
+					x++;// 次点の確認。
+					r = -1;// 右端の位置を0に。
+					break;
+				} else {
+					// 暗点(0)長追加
+					r++;
+					x++;
+				}
+			}
+		}
+		// 最後の1点だけ判定方法が少し違うの。
+		if (this._ref_driver.getPixel(x,i_y) > i_th) {
+			// 明点→rカウント中なら暗点配列終了>登録
+			if (r >= 0) {
+				i_out[current].r = r;
+				current++;
+			}
+		} else {
+			// 暗点→カウント中でなければl1で追加
+			if (r >= 0) {
+				i_out[current].r = (r + 1);
+			} else {
+				// 最後の1点の場合
+				i_out[current].l = (i_len - 1);
+				i_out[current].r = (i_len);
+			}
+			current++;
+		}
+		// 行確定
+		return current;
+	}
+}

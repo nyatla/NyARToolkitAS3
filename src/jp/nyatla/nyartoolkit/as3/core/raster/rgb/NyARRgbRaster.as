@@ -8,7 +8,8 @@ package jp.nyatla.nyartoolkit.as3.core.raster.rgb
 	public class NyARRgbRaster extends NyARRgbRaster_BasicClass
 	{
 		protected var _buf:Object;
-		protected var _reader:INyARRgbPixelReader;
+		/** ピクセルリーダ*/
+		protected var _rgb_pixel_driver:INyARRgbPixelDriver;
 		/**
 		 * バッファオブジェクトがアタッチされていればtrue
 		 */
@@ -24,6 +25,9 @@ package jp.nyatla.nyartoolkit.as3.core.raster.rgb
 					//blank
 				}
 				break;
+			case 2:
+				overload_NyARRgbRaster_2ii(int(args[0]), int(args[1]));
+				break;
 			case 3:
 				overload_NyARRgbRaster3(int(args[0]), int(args[1]),int(args[2]));
 				break;
@@ -34,7 +38,22 @@ package jp.nyatla.nyartoolkit.as3.core.raster.rgb
 				throw new NyARException();
 			}			
 		}
-		
+		/**
+		 * コンストラクタです。
+		 * 画像サイズを指定してインスタンスを生成します。
+		 * @param i_width
+		 * ラスタのサイズ
+		 * @param i_height
+		 * ラスタのサイズ
+		 * @throws NyARException
+		 */
+		public function overload_NyARRgbRaster_2ii(i_width:int,i_height:int):void
+		{
+			super.overload_NyARRgbRaster_BasicClass(i_width,i_height,NyARBufferType.INT1D_X8R8G8B8_32);
+			if(!initInstance(this._size,NyARBufferType.INT1D_X8R8G8B8_32,true)){
+				throw new NyARException();
+			}
+		}		
 		/**
 		 * 
 		 * @param i_width
@@ -66,6 +85,7 @@ package jp.nyatla.nyartoolkit.as3.core.raster.rgb
 				throw new NyARException();
 			}
 		}
+		
 		/**
 		 * Readerとbufferを初期化する関数です。コンストラクタから呼び出します。
 		 * 継承クラスでこの関数を拡張することで、対応するバッファタイプの種類を増やせます。
@@ -76,21 +96,21 @@ package jp.nyatla.nyartoolkit.as3.core.raster.rgb
 		 */
 		protected function initInstance(i_size:NyARIntSize,i_raster_type:int,i_is_alloc:Boolean):Boolean
 		{
+			//バッファの構築
 			switch(i_raster_type)
 			{
 				case NyARBufferType.INT1D_X8R8G8B8_32:
-					this._buf=i_is_alloc?new Vector.<int>(i_size.w*i_size.h):null;
-					this._reader=new NyARRgbPixelReader_INT1D_X8R8G8B8_32(Vector.<int>(this._buf),i_size);
+					this._buf=i_is_alloc?new int[i_size.w*i_size.h]:null;
 					break;
-				case NyARBufferType.BYTE1D_B8G8R8X8_32:
-				case NyARBufferType.BYTE1D_R8G8B8_24:
 				default:
 					return false;
 			}
+			//readerの構築
+			this._rgb_pixel_driver=NyARRgbPixelDriverFactory.createDriver(this);
 			this._is_attached_buffer=i_is_alloc;
 			return true;
 		}
-		public override function getRgbPixelReader():INyARRgbPixelReader 
+		public override function getRgbPixelDriver():INyARRgbPixelDriver
 		{
 			return this._reader;
 		}
@@ -107,8 +127,31 @@ package jp.nyatla.nyartoolkit.as3.core.raster.rgb
 			NyAS3Utils.assert(!this._is_attached_buffer);//バッファがアタッチされていたら機能しない。
 			this._buf=i_ref_buf;
 			//ピクセルリーダーの参照バッファを切り替える。
-			this._reader.switchBuffer(i_ref_buf);
+			this._rgb_pixel_driver.switchRaster(this);
 		}
+		public function createInterface(iIid:Class):Object
+		{
+			if(iIid==INyARPerspectiveCopy){
+				return NyARPerspectiveCopyFactory.createDriver(this);
+			}
+			if(iIid==NyARMatchPattDeviationColorData.IRasterDriver){
+				return NyARMatchPattDeviationColorData.RasterDriverFactory.createDriver(this);
+			}
+			if(iIid==INyARRgb2GsFilter){
+				//デフォルトのインタフェイス
+				return NyARRgb2GsFilterFactory.createRgbAveDriver(this);
+			}else if(iIid==INyARRgb2GsFilterRgbAve){
+				return NyARRgb2GsFilterFactory.createRgbAveDriver(this);
+			}else if(iIid==INyARRgb2GsFilterRgbCube){
+				return NyARRgb2GsFilterFactory.createRgbCubeDriver(this);
+			}else if(iIid==INyARRgb2GsFilterYCbCr){
+				return NyARRgb2GsFilterFactory.createYCbCrDriver(this);
+			}
+			if(iIid==INyARRgb2GsFilterArtkTh){
+				return NyARRgb2GsFilterArtkThFactory.createDriver(this);
+			}
+			throw new NyARException();
+		}		
 	}
 
 
