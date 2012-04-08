@@ -87,16 +87,16 @@ package jp.nyatla.nyartoolkit.as3.core.match
 		{
 			NyAS3Utils.assert(this._code_patt!=null);
 			//
-			var linput:Vector.<int> = i_patt.refData();
+			var linput:Vector.<int> = i_patt.getData();
 			var sum:int;
-			var max:Number = Number.MIN_VALUE;
+			var max:Number = 0;
 			var res:int = NyARMatchPattResult.DIRECTION_UNKNOWN;
 			var for_mod:int=this._optimize_for_mod;
 			for (var j:int = 0; j < 4; j++) {
 				//合計値初期化
 				sum=0;
 				var code_patt:NyARMatchPattDeviationColorData=this._code_patt.getColorData(j);
-				var pat_j:Vector.<int> = code_patt.refData();
+				var pat_j:Vector.<int> = code_patt.getData();
 				//<全画素について、比較(FORの1/16展開)>
 				var i:int;
 				for(i=this._rgbpixels-1;i>=for_mod;i--){

@@ -39,183 +39,188 @@ package jp.nyatla.nyartoolkit.as3.core.pickup
 	import jp.nyatla.nyartoolkit.as3.*;
 	public class NyARColorPatt_Perspective implements INyARColorPatt
 	{
-		protected var _patdata:Vector.<int>;
-		protected var _pickup_lt:NyARIntPoint2d = new NyARIntPoint2d();	
-		protected var _pickup_wh:NyARIntSize=new NyARIntSize();
-		protected var _resolution:int;
+		private var _edge:NyARIntPoint2d=new NyARIntPoint2d();
+		/** パターン格納用のバッファ*/
+		protected var _patdata=Vector.<int>;
+		/** サンプリング解像度*/
+		protected var _sample_per_pixel:int;
+		/** このラスタのサイズ*/	
 		protected var _size:NyARIntSize;
-		protected var _perspective_gen:NyARPerspectiveParamGenerator_O1;
-		private var _pixelreader:NyARRgbPixelReader_INT1D_X8R8G8B8_32;
-		private static const LOCAL_LT:int=1;
+		private var _pixelreader:INyARRgbPixelDriver;
 		private static const BUFFER_FORMAT:int=NyARBufferType.INT1D_X8R8G8B8_32;
-		
-		private function initializeInstance(i_width:int,i_height:int,i_point_per_pix:int):void
+		private function initInstance(i_width:int,i_height:int,i_point_per_pix:int):void
 		{
 			NyAS3Utils.assert(i_width>2 && i_height>2);
-			this._resolution=i_point_per_pix;	
+			this._sample_per_pixel=i_point_per_pix;	
 			this._size=new NyARIntSize(i_width,i_height);
-			this._patdata = new Vector.<int>(i_height*i_width);
-			this._pixelreader=new NyARRgbPixelReader_INT1D_X8R8G8B8_32(this._patdata,this._size);
-			return;		
+			this._patdata = new int[i_height*i_width];
+			this._pixelreader=NyARRgbPixelDriverFactory.createDriver(this);
+			return;
 		}
+		public function NyARColorPatt_Perspective(i_width:int , i_height:int, i_point_per_pix:int)
+		{
+		public function NyARRgbRaster(...args:Array)
+		{
+			super(NyAS3Const_Inherited);
+			switch(args.length) {
+			case 1:
+				if (args[0] is NyAS3Const_Inherited) {
+					//blank
+				}
+				break;
+			case 3:
+				NyARColorPatt_Perspective_3iii(int(args[0]), int(args[1]),int(args[2]));
+				break;
+			case 4:
+				NyARColorPatt_Perspective_4iii(int(args[0]), int(args[1]),int(args[2]),int(args[3]));
+				break;
+			default:
+				throw new NyARException();
+			}			
+		}
+
 		/**
-		 * 例えば、64
-		 * @param i_width
-		 * 取得画像の解像度幅
-		 * @param i_height
-		 * 取得画像の解像度高さ
-		 */
-		/**
-		 * 例えば、64
+		 * コンストラクタです。
+		 * エッジサイズ0,入力ラスタタイプの制限無しでインスタンスを作成します。
+		 *　高速化が必要な時は、入力ラスタタイプを制限するコンストラクタを使ってください。
 		 * @param i_width
 		 * 取得画像の解像度幅
 		 * @param i_height
 		 * 取得画像の解像度高さ
 		 * @param i_point_per_pix
 		 * 1ピクセルあたりの縦横サンプリング数。2なら2x2=4ポイントをサンプリングする。
+		 * @throws NyARException 
+		 */
+		private function NyARColorPatt_Perspective_3iii(i_width:int , i_height:int, i_point_per_pix:int):void
+		{
+			this.initInstance(i_width,i_height,i_point_per_pix);
+			this._edge.setValue(0,0);
+			return;
+		}
+		/**
+		 * コンストラクタです。
+		 * エッジサイズ,入力ラスタタイプの制限を指定してインスタンスを作成します。
+		 * @param i_width
+		 * 取得画像の解像度幅
+		 * @param i_height
+		 * 取得画像の解像度高さ
+		 * @param i_point_per_pix
+		 * 1ピクセルあたりの解像度
 		 * @param i_edge_percentage
 		 * エッジ幅の割合(ARToolKit標準と同じなら、25)
+		 * @throws NyARException 
 		 */
-		public function NyARColorPatt_Perspective(i_width:int,i_height:int,i_point_per_pix:int,i_edge_percentage:int=-1)
+		private function NyARColorPatt_Perspective_4iii(i_width:int, i_height:int,i_point_per_pix:int,i_edge_percentage:int):void
 		{
-			if (i_edge_percentage == -1) {
-				initializeInstance(i_width,i_height,i_point_per_pix);
-				setEdgeSize(0,0,i_point_per_pix);
-			}else{
-				//入力制限
-				initializeInstance(i_width,i_height,i_point_per_pix);
-				setEdgeSizeByPercent(i_edge_percentage, i_edge_percentage, i_point_per_pix);
-			}
+			this.initInstance(i_width,i_height,i_point_per_pix);
+			this._edge.setValue(i_edge_percentage, i_edge_percentage);
 			return;
-		}	
+		}
 		/**
-		 * 矩形領域のエッジサイズを指定します。
-		 * エッジの計算方法は以下の通りです。
-		 * 1.マーカ全体を(i_x_edge*2+width)x(i_y_edge*2+height)の解像度でパラメタを計算します。
-		 * 2.ピクセルの取得開始位置を(i_x_edge/2,i_y_edge/2)へ移動します。
-		 * 3.開始位置から、width x height個のピクセルを取得します。
-		 * 
-		 * ARToolKit標準マーカの場合は、width/2,height/2を指定してください。
-		 * @param i_x_edge
-		 * @param i_y_edge
+		 * 矩形領域のエッジ（枠）サイズを、割合で指定します。
+		 * @param i_x_percent
+		 * 左右のエッジの割合です。0から50の間の数で指定します。
+		 * @param i_y_percent
+		 * 上下のエッジの割合です。0から50の間の数で指定します。
+		 * @param i_sample_per_pixel
+		 * 1ピクセルあたりの縦横サンプリング数。2なら2x2=4ポイントをサンプリングする。
 		 */
-		public function setEdgeSize(i_x_edge:int,i_y_edge:int,i_resolution:int):void
+		public function setEdgeSizeByPercent(i_x_percent:int,i_y_percent:int,i_sample_per_pixel:int):void
 		{
-			//NyAS3Utils.assert(i_x_edge>=0);
-			//NyAS3Utils.assert(i_y_edge>=0);
-			//Perspectiveパラメタ計算器を作成
-			this._perspective_gen=new NyARPerspectiveParamGenerator_O1(LOCAL_LT,LOCAL_LT);
-			//ピックアップ開始位置を計算
-			this._pickup_lt.setValue(i_x_edge*i_resolution+LOCAL_LT,i_y_edge*i_resolution+LOCAL_LT);
-			this._pickup_wh.setValue((i_x_edge*2+this._size.w)*i_resolution,(i_y_edge*2+this._size.h)*i_resolution);
-			this._resolution=i_resolution;	
-			return;
-
-		}
-		public function setEdgeSizeByPercent(i_x_percent:int,i_y_percent:int,i_resolution:int):void
-		{
-			NyAS3Utils.assert(i_x_percent>=0);
-			NyAS3Utils.assert(i_y_percent>=0);
-			setEdgeSize(this._size.w*i_x_percent/50,this._size.h*i_y_percent/50,i_resolution);
+			assert(i_x_percent>=0);
+			assert(i_y_percent>=0);
+			this._edge.setValue(i_x_percent, i_y_percent);
+			this._sample_per_pixel=i_sample_per_pixel;
 			return;
 		}
-
-		
-		public final function getWidth():int
+		/**
+		 * この関数はラスタの幅を返します。
+		 */
+		public function getWidth():int
 		{
 			return this._size.w;
 		}
-		public final function getHeight():int
+		/**
+		 * この関数はラスタの高さを返します。
+		 */
+		public function getHeight():int
 		{
 			return this._size.h;
 		}
-		public final function getSize():NyARIntSize
+		/**
+		 * この関数はラスタのサイズの参照値を返します。
+		 */
+		public function getSize():NyARIntSize
 		{
 			return 	this._size;
 		}
-		public final function getRgbPixelReader():INyARRgbPixelReader
+		/**
+		 * この関数は、ラスタの画素読み取りオブジェクトの参照値を返します。
+		 */	
+		public function getRgbPixelDriver():INyARRgbPixelDriver
 		{
 			return this._pixelreader;
 		}
-		public final function getBuffer():Object
+		/**
+		 * この関数は、ラスタ画像のバッファを返します。
+		 * バッファ形式は、{@link NyARBufferType#INT1D_X8R8G8B8_32}(int[])です。
+		 */	
+		public function getBuffer():Object
 		{
 			return this._patdata;
 		}
-		public final function hasBuffer():Boolean
+		/**
+		 * この関数は、インスタンスがバッファを所有しているかを返します。基本的にtrueです。
+		 */	
+		public function hasBuffer():Boolean
 		{
 			return this._patdata!=null;
 		}
-		public final function wrapBuffer(i_ref_buf:Object):void
+		/**
+		 * この関数は使用不可能です。
+		 */
+		public function wrapBuffer(Object i_ref_buf):void
 		{
 			NyARException.notImplement();
 		}
-		public final function getBufferType():int
+		/**
+		 * この関数は、バッファタイプの定数を返します。
+		 */
+		public function getBufferType():int
 		{
 			return BUFFER_FORMAT;
 		}
-		public final function isEqualBufferType(i_type_value:int):Boolean
+		/**
+		 * この関数は、インスタンスのバッファタイプが引数のものと一致しているか判定します。
+		 */	
+		public function isEqualBufferType(i_type_value:int):Boolean
 		{
 			return BUFFER_FORMAT==i_type_value;
 		}
-		
-		private var __pickFromRaster_rgb_tmp:Vector.<int> = new Vector.<int>(3);
-		protected var __pickFromRaster_cpara:Vector.<Number> = new Vector.<Number>(8);
-		
+		private var _last_input_raster:INyARRgbRaster=null;
+		private var _raster_driver:INyARPerspectiveCopy;
 		/**
-		 * @see INyARColorPatt#pickFromRaster
+		 * この関数は、ラスタのi_vertexsで定義される四角形からパターンを取得して、インスタンスに格納します。
 		 */
 		public function pickFromRaster(image:INyARRgbRaster,i_vertexs:Vector.<NyARIntPoint2d>):Boolean
 		{
+			if(this._last_input_raster!=image){
+				this._raster_driver=(INyARPerspectiveCopy) image.createInterface(INyARPerspectiveCopy.class);
+				this._last_input_raster=image;
+			}
 			//遠近法のパラメータを計算
-			var cpara:Vector.<Number> = this.__pickFromRaster_cpara;
-			if (!this._perspective_gen.getParam(this._pickup_wh,i_vertexs, cpara)) {
-				return false;
-			}
-			
-			var resolution:int=this._resolution;
-			var img_x:int = image.getWidth();
-			var img_y:int = image.getHeight();
-			var res_pix:int=resolution*resolution;
+			return this._raster_driver.copyPatt(i_vertexs,this._edge.x,this._edge.y,this._sample_per_pixel, this);
+		}
 
-			var rgb_tmp:Vector.<int> = this.__pickFromRaster_rgb_tmp;
-
-			//ピクセルリーダーを取得
-			var reader:INyARRgbPixelReader =image.getRgbPixelReader();
-			var p:int=0;
-			for(var iy:int=0;iy<this._size.h*resolution;iy+=resolution){
-				//解像度分の点を取る。
-				for(var ix:int=0;ix<this._size.w*resolution;ix+=resolution){
-					var r:int,g:int,b:int;
-					r=g=b=0;
-					for(var i2y:int=iy;i2y<iy+resolution;i2y++){
-						var cy:int=this._pickup_lt.y+i2y;
-						for(var i2x:int=ix;i2x<ix+resolution;i2x++){
-							//1ピクセルを作成
-							var cx:int=this._pickup_lt.x+i2x;
-							var d:Number=cpara[6]*cx+cpara[7]*cy+1.0;
-							var x:int=(int)((cpara[0]*cx+cpara[1]*cy+cpara[2])/d);
-							var y:int=(int)((cpara[3]*cx+cpara[4]*cy+cpara[5])/d);
-							if(x<0){x=0;}
-							if(x>=img_x){x=img_x-1;}
-							if(y<0){y=0;}
-							if(y>=img_y){y=img_y-1;}
-							
-							reader.getPixel(x, y, rgb_tmp);
-							r+=rgb_tmp[0];
-							g+=rgb_tmp[1];
-							b+=rgb_tmp[2];
-						}
-					}
-					r/=res_pix;
-					g/=res_pix;
-					b/=res_pix;
-					this._patdata[p]=((r&0xff)<<16)|((g&0xff)<<8)|((b&0xff));
-					p++;
-				}
+		public function createInterface(iIid:Class):Object
+		{
+			if(iIid==INyARPerspectiveCopy){
+				return NyARPerspectiveCopyFactory.createDriver(this);
 			}
-				//ピクセル問い合わせ
-				//ピクセルセット
-			return true;
+			if(iIid==NyARMatchPattDeviationColorData.IRasterDriver){
+				return NyARMatchPattDeviationColorData.RasterDriverFactory.createDriver(this);
+			}		
+			throw new NyARException();
 		}
 
 	}

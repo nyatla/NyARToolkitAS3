@@ -15,7 +15,28 @@ package jp.nyatla.nyartoolkit.as3.core.param
 		private static const SIZE_OF_PARAM_SET:int = 4 + 4 + (3 * 4 * 8) + (4 * 8);
 		private var _dist:NyARCameraDistortionFactor =new NyARCameraDistortionFactor();
 		private var _projection_matrix:NyARPerspectiveProjectionMatrix =new NyARPerspectiveProjectionMatrix();
-
+		public function loadDefaultParameter():void
+		{
+			var tmp:Vector.<Number>={[318.5,263.5,26.2,1.0127565206658486]};
+			this._screen_size.setValue(640,480);
+			this._dist.setValue(tmp);
+			this._projection_matrix.m00=700.9514702992245;
+			this._projection_matrix.m01=0;
+			this._projection_matrix.m02=316.5;
+			this._projection_matrix.m03=0;
+			this._projection_matrix.m10=0;
+			this._projection_matrix.m11=726.0941816535367;
+			this._projection_matrix.m12=241.5;
+			this._projection_matrix.m13=0.0;
+			this._projection_matrix.m20=0.0;
+			this._projection_matrix.m21=0.0;
+			this._projection_matrix.m22=1.0;
+			this._projection_matrix.m23=0.0;
+			this._projection_matrix.m30=0.0;
+			this._projection_matrix.m31=0.0;
+			this._projection_matrix.m32=0.0;
+			this._projection_matrix.m33=1.0;
+		}
 		public function getScreenSize():NyARIntSize
 		{
 			return this._screen_size;
@@ -51,7 +72,7 @@ package jp.nyatla.nyartoolkit.as3.core.param
 		 * @return
 		 * 
 		 */
-		public function changeScreenSize(i_xsize:int,i_ysize:int):void
+		public function changeScreenSize_1(i_xsize:int,i_ysize:int):void
 		{
 			var scale:Number = Number(i_xsize) / Number(this._screen_size.w);// scale = (double)xsize / (double)(source->xsize);
 			//スケールを変更
@@ -60,6 +81,15 @@ package jp.nyatla.nyartoolkit.as3.core.param
 			this._screen_size.w = i_xsize;// newparam->xsize = xsize;
 			this._screen_size.h = i_ysize;// newparam->ysize = ysize;
 			return;
+		}
+		/**
+		 * この関数は、現在のスクリーンサイズを変更します。
+		 * {@link #changeScreenSize(int, int)のラッパーです。
+		 * @param i_s
+		 */
+		public function changeScreenSize_2(i_s:NyARIntSize):void
+		{
+			this.changeScreenSize(i_s.w,i_s.h);
 		}
 		/**
 		 * 右手系の視錐台を作ります。

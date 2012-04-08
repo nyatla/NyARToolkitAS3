@@ -38,7 +38,7 @@ package jp.nyatla.nyartoolkit.as3.core.match
 		private var _pow:Number;
 		//
 		private var _number_of_pixels:int;
-		public function refData():Vector.<int>
+		public function getData():Vector.<int>
 		{
 			return this._data;
 		}

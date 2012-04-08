@@ -43,7 +43,7 @@ package jp.nyatla.nyartoolkit.as3.core.match
 		private var _size:NyARIntSize;
 		//
 		private var _optimize_for_mod:int;
-		public function refData():Vector.<int>
+		public function getData():Vector.<int>
 		{
 			return this._data;
 		}
@@ -54,13 +54,12 @@ package jp.nyatla.nyartoolkit.as3.core.match
 						  
 		public function NyARMatchPattDeviationColorData(i_width:int,i_height:int)
 		{
-			this._size=new NyARIntSize(i_width,i_height);
-			var number_of_pix:int=this._size.w*this._size.h;
-			this._data=new Vector.<int>(number_of_pix*3);
-			this._optimize_for_mod=number_of_pix-(number_of_pix%8);	
+			this._size = new NyARIntSize(i_width, i_height);
+			this._data=new Vector.<int>(this._size.w*this._size.h*3);
 			return;
 		}
-
+		private var _last_input_raster:INyARRaster=null;
+		private var _last_drv:IRasterDriver;
 		
 		/**
 		 * NyARRasterからパターンデータをセットします。
@@ -70,16 +69,12 @@ package jp.nyatla.nyartoolkit.as3.core.match
 		 */
 		public function setRaster_1(i_raster:INyARRgbRaster):void
 		{
-			//assert(i_raster.getSize().isEqualSize(this._size));
-			switch(i_raster.getBufferType())
-			{
-			case NyARBufferType.INT1D_X8R8G8B8_32:
-				this._pow=setRaster_INT1D_X8R8G8B8_32((Vector.<int>)(i_raster.getBuffer()),this._size.w*this._size.h,this._optimize_for_mod,this._data);
-				break;
-			default:
-				this._pow=setRaster_ANY(i_raster.getRgbPixelReader(),this._size,this._size.w*this._size.h,this._data);
-				break;
+			//ドライバの生成
+			if(this._last_input_raster!=i_raster){
+				this._last_drv=IRasterDriver(i_raster.createInterface(IRasterDriver));
+				this._last_input_raster=i_raster;
 			}
+			this._pow=this._last_drv.makeColorData(this._data);
 			return;
 		}
 		/**
@@ -93,8 +88,8 @@ package jp.nyatla.nyartoolkit.as3.core.match
 		{
 			var width:int=this._size.w;
 			var height:int=this._size.h;
-			var i_number_of_pix:int=width*height;
-			var reader:INyARRgbPixelReader=i_raster.getRgbPixelReader();
+			var i_number_of_pix:int = width * height;
+			var reader:INyARRgbPixelDriver=i_raster.getRgbPixelDriver();
 			var rgb:Vector.<int>=new Vector.<int>(3);
 			var out:Vector.<int>=this._data;
 			var ave:int;//<PV/>
@@ -293,3 +288,165 @@ package jp.nyatla.nyartoolkit.as3.core.match
 		}
 	}
 }
+
+
+/**
+ * Rasterからデータを生成するインタフェイス。
+ */
+interface IRasterDriver
+{
+	/**
+	 * この関数は、参照するラスタの差分画像データを取得する。
+	 * @param o_out
+	 * 差分画像データ
+	 * @return
+	 * pow値
+	 */
+	function makeColorData(o_out:Vector.<int>):Number;
+}
+class RasterDriverFactory
+{
+	public static function createDriver(i_raster:INyARRgbRaster):IRasterDriver
+	{
+		switch(i_raster.getBufferType())
+		{
+		case NyARBufferType.INT1D_X8R8G8B8_32:
+			return new NyARMatchPattDeviationDataDriver_INT1D_X8R8G8B8_32(i_raster);
+		default:
+			break;
+		}
+		return new NyARMatchPattDeviationDataDriver_RGBAny(i_raster);
+	}
+}
+//
+//	画像ドライバ
+//
+
+class NyARMatchPattDeviationDataDriver_INT1D_X8R8G8B8_32 implements NyARMatchPattDeviationColorData.IRasterDriver
+{
+	private var _ref_raster:INyARRgbRaster;
+	public function NyARMatchPattDeviationDataDriver_INT1D_X8R8G8B8_32(i_raster:INyARRgbRaster)
+	{
+		this._ref_raster=i_raster;
+	}
+	public function makeColorData(o_out:Vector.<int>):Number
+	{
+		//i_buffer[XRGB]→差分[R,G,B]変換			
+		var i:int;
+		var rgb:int;//<PV/>
+		//<平均値計算(FORの1/8展開)>
+		var ave:int;//<PV/>
+		var buf:Vector.<int>=(Vector.<int>)(this._ref_raster.getBuffer());
+		var size:NyARIntSize=this._ref_raster.getSize();
+		var number_of_pix:int=size.w*size.h;
+		var optimize_mod:int=number_of_pix-(number_of_pix%8);
+		ave=0;
+		for(i=number_of_pix-1;i>=optimize_mod;i--){
+			rgb = buf[i];ave += ((rgb >> 16) & 0xff) + ((rgb >> 8) & 0xff) + (rgb & 0xff);
+		}
+		for (;i>=0;) {
+			rgb = buf[i];ave += ((rgb >> 16) & 0xff) + ((rgb >> 8) & 0xff) + (rgb & 0xff);i--;
+			rgb = buf[i];ave += ((rgb >> 16) & 0xff) + ((rgb >> 8) & 0xff) + (rgb & 0xff);i--;
+			rgb = buf[i];ave += ((rgb >> 16) & 0xff) + ((rgb >> 8) & 0xff) + (rgb & 0xff);i--;
+			rgb = buf[i];ave += ((rgb >> 16) & 0xff) + ((rgb >> 8) & 0xff) + (rgb & 0xff);i--;
+			rgb = buf[i];ave += ((rgb >> 16) & 0xff) + ((rgb >> 8) & 0xff) + (rgb & 0xff);i--;
+			rgb = buf[i];ave += ((rgb >> 16) & 0xff) + ((rgb >> 8) & 0xff) + (rgb & 0xff);i--;
+			rgb = buf[i];ave += ((rgb >> 16) & 0xff) + ((rgb >> 8) & 0xff) + (rgb & 0xff);i--;
+			rgb = buf[i];ave += ((rgb >> 16) & 0xff) + ((rgb >> 8) & 0xff) + (rgb & 0xff);i--;
+		}
+		//<平均値計算(FORの1/8展開)/>
+		ave=number_of_pix*255*3-ave;
+		ave =255-(ave/ (number_of_pix * 3));//(255-R)-ave を分解するための事前計算
+
+		var sum:int = 0,w_sum;
+		var input_ptr:int=number_of_pix*3-1;
+		//<差分値計算(FORの1/8展開)>
+		for (i = number_of_pix-1; i >=optimize_mod;i--) {
+			rgb = buf[i];
+			w_sum = (ave - (rgb & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//B
+			w_sum = (ave - ((rgb >> 8) & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//G
+			w_sum = (ave - ((rgb >> 16) & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//R
+		}
+		for (; i >=0;) {
+			rgb = buf[i];i--;
+			w_sum = (ave - (rgb & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//B
+			w_sum = (ave - ((rgb >> 8) & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//G
+			w_sum = (ave - ((rgb >> 16) & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//R
+			rgb = buf[i];i--;
+			w_sum = (ave - (rgb & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//B
+			w_sum = (ave - ((rgb >> 8) & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//G
+			w_sum = (ave - ((rgb >> 16) & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//R
+			rgb = buf[i];i--;
+			w_sum = (ave - (rgb & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//B
+			w_sum = (ave - ((rgb >> 8) & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//G
+			w_sum = (ave - ((rgb >> 16) & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//R
+			rgb = buf[i];i--;
+			w_sum = (ave - (rgb & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//B
+			w_sum = (ave - ((rgb >> 8) & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//G
+			w_sum = (ave - ((rgb >> 16) & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//R
+			rgb = buf[i];i--;
+			w_sum = (ave - (rgb & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//B
+			w_sum = (ave - ((rgb >> 8) & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//G
+			w_sum = (ave - ((rgb >> 16) & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//R
+			rgb = buf[i];i--;
+			w_sum = (ave - (rgb & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//B
+			w_sum = (ave - ((rgb >> 8) & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//G
+			w_sum = (ave - ((rgb >> 16) & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//R
+			rgb = buf[i];i--;
+			w_sum = (ave - (rgb & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//B
+			w_sum = (ave - ((rgb >> 8) & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//G
+			w_sum = (ave - ((rgb >> 16) & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//R
+			rgb = buf[i];i--;
+			w_sum = (ave - (rgb & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//B
+			w_sum = (ave - ((rgb >> 8) & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//G
+			w_sum = (ave - ((rgb >> 16) & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//R
+		}
+		//<差分値計算(FORの1/8展開)/>
+		var p:Number=Math.sqrt((double) sum);
+		return p!=0.0?p:0.0000001;
+	}
+}
+class NyARMatchPattDeviationDataDriver_RGBAny implements NyARMatchPattDeviationColorData.IRasterDriver
+{
+	private var _ref_raster:INyARRgbRaster;
+	public function NyARMatchPattDeviationDataDriver_RGBAny(INyARRgbRaster i_raster)
+	{
+		this._ref_raster=i_raster;
+	}
+	private var __rgb:Vector.<int>=new Vector.<int>(3);
+	public function makeColorData(o_out:Vector.<int>):Number
+	{
+		var size:NyARIntSize=this._ref_raster.getSize();
+		var pixdev:INyARRgbPixelDriver=this._ref_raster.getRgbPixelDriver();
+		var rgb:Vector.<int>=this.__rgb;
+		var width:int=size.w;
+		//<平均値計算>
+		var ave:int=0;//<PV/>
+		for(var y:int=size.h-1;y>=0;y--){
+			for(var x:int=width-1;x>=0;x--){
+				pixdev.getPixel(x,y,rgb);
+				ave += rgb[0]+rgb[1]+rgb[2];
+			}
+		}
+		//<平均値計算>
+		var number_of_pix:int=size.w*size.h;
+		ave=number_of_pix*255*3-ave;
+		ave =255-(ave/ (number_of_pix * 3));//(255-R)-ave を分解するための事前計算
+
+		var sum:int = 0,w_sum;
+		var input_ptr:int=number_of_pix*3-1;
+		//<差分値計算>
+		for(var y:int=size.h-1;y>=0;y--){
+			for(var x:int=width-1;x>=0;x--){
+				pixdev.getPixel(x,y,rgb);
+				w_sum = (ave - rgb[2]) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//B
+				w_sum = (ave - rgb[1]) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//G
+				w_sum = (ave - rgb[0]) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//R
+			}
+		}
+		//<差分値計算(FORの1/8展開)/>
+		var p:Number=Math.sqrt((double) sum);
+		return p!=0.0?p:0.0000001;
+		
+	}
+}	

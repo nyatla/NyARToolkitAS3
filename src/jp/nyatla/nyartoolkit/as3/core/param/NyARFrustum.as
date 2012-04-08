@@ -26,10 +26,25 @@ package jp.nyatla.nyartoolkit.as3.core.param
 		 * @param i_far
 		 * 遠平面までの距離です。単位はmm
 		 */
-		public function NyARFrustum(i_projection:NyARPerspectiveProjectionMatrix,i_width:int,i_height:int,i_near:Number,i_far:Number)
+		public function NyARFrustum(i_perspective_mat:NyARPerspectiveProjectionMatrix,i_width:int,i_height:int,i_near:Number,i_far:Number)
 		{
-			this.setValue(i_projection, i_width, i_height, i_near, i_far);
+			this.setValue(i_perspective_mat, i_width, i_height, i_near, i_far);
 		}
+		/**
+		 * この関数は、視錐台行列をインスタンスにセットします。
+		 * @param i_projection
+		 * ARToolKitスタイルの射影変換行列
+		 * @param i_width
+		 * スクリーンサイズです。
+		 * @param i_height
+		 * スクリーンサイズです。
+		 */
+		public function setValue_1(i_projection_mat:NyARDoubleMatrix44,i_width:int,i_height:int):void
+		{
+			this._frustum_rh.setValue(i_projection_mat);
+			this._inv_frustum_rh.inverse(this._frustum_rh);
+			this._screen_size.setValue(i_width,i_height);
+		}		
 		/**
 		 * ARToolKitスタイルの射影変換行列から、視錐台をセットします。
 		 * @param i_projection
@@ -40,12 +55,12 @@ package jp.nyatla.nyartoolkit.as3.core.param
 		 * @param i_far
 		 * farポイントをmm単位で指定します。
 		 */
-		public function setValue( i_projection:NyARPerspectiveProjectionMatrix , i_width:int , i_height:int , i_near:Number , i_far:Number ):void
-		{ 
-			i_projection.makeCameraFrustumRH(i_width , i_height , i_near , i_far , this._frustum_rh) ;
-			this._inv_frustum_rh.inverse(this._frustum_rh) ;
-			this._screen_size.setValue(i_width , i_height) ;
-		}
+		public function setValue_2(i_artk_perspective_mat:NyARPerspectiveProjectionMatrix,i_width:int,i_height:int,i_near:Number,i_far:Number):void
+		{
+			i_artk_perspective_mat.makeCameraFrustumRH(i_width, i_height, i_near, i_far,this._frustum_rh);
+			this._inv_frustum_rh.inverse(this._frustum_rh);
+			this._screen_size.setValue(i_width,i_height);
+		}	
 		/**
 		 * 画像上の座標を、撮像点座標に変換します。
 		 * この座標は、カメラ座標系です。
@@ -132,7 +147,7 @@ package jp.nyatla.nyartoolkit.as3.core.param
 		 * @param i_z
 		 * @param o_pos2d
 		 */
-		public function project(i_x:Number,i_y:Number,i_z:Number,o_pos2d:NyARDoublePoint2d):void
+		public function project_1(i_x:Number,i_y:Number,i_z:Number,o_pos2d:NyARDoublePoint2d):void
 		{
 			var m:NyARDoubleMatrix44=this._frustum_rh;
 			var v3_1:Number=1/i_z*m.m32;
@@ -143,11 +158,22 @@ package jp.nyatla.nyartoolkit.as3.core.param
 			return;
 		}
 		/**
+		 * カメラ座標系の点を、スクリーン座標の点へ変換します。
+		 * @param i_pos
+		 * カメラ座標系の点
+		 * @param o_pos2d
+		 * 結果を受け取るオブジェクトです。
+		 */
+		public function project_2(i_pos:NyARDoublePoint3d,o_pos2d:NyARDoublePoint2d):void
+		{
+			this.project(i_pos.x,i_pos.y,i_pos.z,o_pos2d);
+		}
+		/**
 		 * 透視変換行列の参照値を返します。
 		 * この値は読出し専用です。変更しないでください。
 		 * @return
 		 */
-		public function refMatrix():NyARDoubleMatrix44
+		public function getMatrix():NyARDoubleMatrix44
 		{
 			return this._frustum_rh;
 		}
@@ -156,11 +182,32 @@ package jp.nyatla.nyartoolkit.as3.core.param
 		 * この値は読出し専用です。変更しないでください。
 		 * @return
 		 */
-		public function refInvMatrix():NyARDoubleMatrix44
+		public function getInvMatrix():NyARDoubleMatrix44
 		{
 			return this._inv_frustum_rh;
 		}
-		
+		public function getFrustumParam(o_value:NyARFrustum_FrustumParam):NyARFrustum_FrustumParam
+		{
+			var near:Number;
+			var mat:NyARDoubleMatrix44 =this._frustum_rh;
+			o_value.far=mat.m23/(mat.m22+1);
+			o_value.near=near=mat.m23/(mat.m22-1);
+			o_value.left=(mat.m02-1)*near/mat.m00;
+			o_value.right=(mat.m02+1)*near/mat.m00;
+			o_value.bottom=(mat.m12-1)*near/mat.m11;
+			o_value.top=(mat.m12+1)*near/mat.m11;
+			return o_value;
+		}
+		public function getPerspectiveParam(o_value:NyARFrustum_PerspectiveParam):PerspectiveParam
+		{
+			var mat:NyARDoubleMatrix44=this._frustum_rh;
+			o_value.far=mat.m23/(mat.m22+1);
+			o_value.near=mat.m23/(mat.m22-1);
+			o_value.aspect=mat.m11/mat.m00;
+			o_value.fovy=2*Math.atan(1/(mat.m00*o_value.aspect));
+			return o_value;
+		}
+	
 	}
 		
 
