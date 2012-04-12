@@ -2,10 +2,11 @@ package jp.nyatla.nyartoolkit.as3.rpf.realitysource.nyartk
 {
 
 
-	import jp.nyatla.nyartoolkit.as3.NyARException;
-	import jp.nyatla.nyartoolkit.as3.core.raster.rgb.INyARRgbRaster;
-	import jp.nyatla.nyartoolkit.as3.core.rasterreader.NyARPerspectiveRasterReader;
-	import jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk.NyARTrackerSource;
+	import jp.nyatla.nyartoolkit.as3.core.*;
+	import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
+	import jp.nyatla.nyartoolkit.as3.core.rasterfilter.rgb2gs.*;
+	import jp.nyatla.nyartoolkit.as3.core.rasterdriver.*;
+	import jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk.*;
 
 	import jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk.*;
 	/**
@@ -24,7 +25,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.realitysource.nyartk
 		/**
 		 * RealitySourceの主ラスタにリンクしたPerspectiveReader。継承先のコンストラクタで実体を割り当ててください。
 		 */
-		protected var _source_perspective_reader:NyARPerspectiveRasterReader;
+		protected var _source_perspective_reader:INyARPerspectiveCopy;
 
 		/**
 		 * TrackerSorceのホルダ。継承先のコンストラクタで実体を割り当ててください。
@@ -71,7 +72,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.realitysource.nyartk
 		 * {@link #_rgb_source}を参照するPerspectiveRasterReaderを返します。
 		 * @return
 		 */
-		public function refPerspectiveRasterReader():NyARPerspectiveRasterReader
+		public function refPerspectiveRasterReader():INyARPerspectiveCopy
 		{
 			return this._source_perspective_reader;
 		}

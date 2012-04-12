@@ -30,7 +30,7 @@
  */
 package jp.nyatla.nyartoolkit.as3.core.types
 {
-	import jp.nyatla.nyartoolkit.as3.*;
+	import jp.nyatla.nyartoolkit.as3.core.*;
 	/**
 	 * データ型です。
 	 * 2次元の浮動小数点方の点を格納します。
@@ -165,6 +165,18 @@ package jp.nyatla.nyartoolkit.as3.core.types
 		public function sqNorm():Number
 		{
 			return this.x*this.x+this.y+this.y;
+		}
+		/**
+		 * この関数は、頂点を移動します。
+		 * @param i_tx
+		 * 移動する距離x
+		 * @param i_ty
+		 * 移動する距離y
+		 */
+		public function translate(i_tx:Number,i_ty:Number):void
+		{
+			this.x+=i_tx;
+			this.y+=i_ty;
 		}
 	}
 

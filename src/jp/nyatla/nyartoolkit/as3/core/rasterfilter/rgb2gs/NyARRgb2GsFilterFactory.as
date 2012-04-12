@@ -25,59 +25,60 @@
 package jp.nyatla.nyartoolkit.as3.core.rasterfilter.rgb2gs 
 {
 	import jp.nyatla.nyartoolkit.as3.core.raster.*;
+	import jp.nyatla.nyartoolkit.as3.core.types.*;
 	import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
 
-public class NyARRgb2GsFilterFactory
-{
-	/**
-	 * この関数は、(R*G*B)/3 でグレースケール化するフィルタを生成します。
-	 * 最適化されている形式は以下の通りです。
-	 * <ul>
-	 * <li>{@link NyARBufferType#BYTE1D_B8G8R8X8_32}</li>
-	 * </ul>
-	 * @param i_raster
-	 * @return
-	 * @throws NyARException
-	 */
-	public static function createRgbAveDriver(i_raster:INyARRgbRaster):INyARRgb2GsFilterRgbAve
+	public class NyARRgb2GsFilterFactory
 	{
-		switch(i_raster.getBufferType()){
-		case NyARBufferType.INT1D_X8R8G8B8_32:
-			return new NyARRgb2GsFilterRgbAve_INT1D_X8R8G8B8_32(i_raster);
-		default:
-			return new NyARRgb2GsFilterRgbAve_Any(i_raster);
+		/**
+		 * この関数は、(R*G*B)/3 でグレースケール化するフィルタを生成します。
+		 * 最適化されている形式は以下の通りです。
+		 * <ul>
+		 * <li>{@link NyARBufferType#BYTE1D_B8G8R8X8_32}</li>
+		 * </ul>
+		 * @param i_raster
+		 * @return
+		 * @throws NyARException
+		 */
+		public static function createRgbAveDriver(i_raster:INyARRgbRaster):INyARRgb2GsFilterRgbAve
+		{
+			switch(i_raster.getBufferType()){
+			case NyARBufferType.INT1D_X8R8G8B8_32:
+				return new NyARRgb2GsFilterRgbAve_INT1D_X8R8G8B8_32(i_raster);
+			default:
+				return new NyARRgb2GsFilterRgbAve_Any(i_raster);
+			}
 		}
-	}
-	/**
-	 * この関数は、(R*G*B>>16) でグレースケール化するフィルタを生成します。
-	 * 最適化されていません。
-	 * @param i_raster
-	 * @return
-	 * @throws NyARException
-	 */
-	public static function createRgbCubeDriver(i_raster:INyARRgbRaster):INyARRgb2GsFilterRgbAve
-	{
-		switch(i_raster.getBufferType()){
-		default:
-			return new NyARRgb2GsFilterRgbCube_Any(i_raster);
-		}
-	}
-	/**
-	 * この関数は(Yrcb)でグレースケール化するフィルタを生成します。
-	 * 最適化されていません。
-	 * @param i_raster
-	 * @return
-	 * @throws NyARException
-	 */
-	public static function createYCbCrDriver(i_raster:INyARRgbRaster):INyARRgb2GsFilterYCbCr
-	{
-		switch(i_raster.getBufferType()){
-		default:
-			return new NyARRgb2GsFilterYCbCr_Any(i_raster);
-		}
+		/**
+		 * この関数は、(R*G*B>>16) でグレースケール化するフィルタを生成します。
+		 * 最適化されていません。
+		 * @param i_raster
+		 * @return
+		 * @throws NyARException
+		 */
+//		public static function createRgbCubeDriver(i_raster:INyARRgbRaster):INyARRgb2GsFilterRgbAve
+//		{
+//			switch(i_raster.getBufferType()){
+//			default:
+//				return new NyARRgb2GsFilterRgbCube_Any(i_raster);
+//			}
+//		}
+		/**
+		 * この関数は(Yrcb)でグレースケール化するフィルタを生成します。
+		 * 最適化されていません。
+		 * @param i_raster
+		 * @return
+		 * @throws NyARException
+		 */
+//		public static function createYCbCrDriver(i_raster:INyARRgbRaster):INyARRgb2GsFilterYCbCr
+//		{
+//			switch(i_raster.getBufferType()){
+//			default:
+//				return new NyARRgb2GsFilterYCbCr_Any(i_raster);
+//			}
+//		}
 	}
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -85,14 +86,18 @@ public class NyARRgb2GsFilterFactory
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-
+import jp.nyatla.nyartoolkit.as3.core.types.*;
+import jp.nyatla.nyartoolkit.as3.core.raster.*;
+import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
+import jp.nyatla.nyartoolkit.as3.core.rasterfilter.rgb2gs.*;
+import jp.nyatla.as3utils.*;
 
 class NyARRgb2GsFilterRgbAve_INT1D_X8R8G8B8_32 implements INyARRgb2GsFilterRgbAve
 {
 	private var _ref_raster:INyARRaster;
 	public function NyARRgb2GsFilterRgbAve_INT1D_X8R8G8B8_32(i_ref_raster:INyARRaster)
 	{
-		assert i_ref_raster.isEqualBufferType(NyARBufferType.INT1D_X8R8G8B8_32);
+		NyAS3Utils.assert(i_ref_raster.isEqualBufferType(NyARBufferType.INT1D_X8R8G8B8_32));
 		this._ref_raster=i_ref_raster;
 	}
 	public function convert(i_raster:INyARGrayscaleRaster):void
@@ -110,13 +115,14 @@ class NyARRgb2GsFilterRgbAve_INT1D_X8R8G8B8_32 implements INyARRgb2GsFilterRgbAv
 		var pix_count:int=w;
 		var pix_mod_part:int=pix_count-(pix_count%8);
 		var src_ptr:int=t*size.w+l;
-		var in_buf:Vector.<int> = (Vector.<int>) this._ref_raster.getBuffer();
+		var in_buf:Vector.<int> = Vector.<int>(this._ref_raster.getBuffer());
 		switch(o_raster.getBufferType()){
 		case NyARBufferType.INT1D_GRAY_8:
 			var v:int;
+			var x:int, y:int;
 			var out_buf:Vector.<int>=Vector.<int>(o_raster.getBuffer());
-			for (var y:int = t; y < b; y++) {
-				var x:int=0;
+			for (y = t; y < b; y++) {
+				x=0;
 				for (x = pix_count-1; x >=pix_mod_part; x--){
 					v=in_buf[src_ptr++];out_buf[bp++]=(((v>>16)& 0xff)+((v>>8)& 0xff)+(v &0xff))>>2;
 				}
@@ -136,8 +142,8 @@ class NyARRgb2GsFilterRgbAve_INT1D_X8R8G8B8_32 implements INyARRgb2GsFilterRgbAv
 			return;
 		default:
 			var out_drv:INyARGsPixelDriver=o_raster.getGsPixelDriver();
-			for (var y:int = t; y < b; y++) {
-				for (var x:int = 0; x<pix_count; x++){
+			for (y = t; y < b; y++) {
+				for (x = 0; x<pix_count; x++){
 					v=in_buf[src_ptr++];
 					out_drv.setPixel(x,y,(((v>>16)& 0xff)+((v>>8)& 0xff)+(v &0xff))/3);
 				}

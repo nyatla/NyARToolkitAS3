@@ -73,7 +73,7 @@ package jp.nyatla.nyartoolkit.as3.core.raster
 		 * @param i_is_alloc
 		 * @throws NyARException
 		 */
-		public function overload_NyARRaster4(i_width:int, i_height:int, i_buffer_type:int, i_is_alloc:Boolean):void
+		protected function overload_NyARRaster4(i_width:int, i_height:int, i_buffer_type:int, i_is_alloc:Boolean):void
 		{
 			super.overload_NyARRaster_BasicClass(i_width,i_height,i_buffer_type);
 			if(!initInstance(this._size,i_buffer_type,i_is_alloc)){
@@ -82,7 +82,7 @@ package jp.nyatla.nyartoolkit.as3.core.raster
 			return;
 		}	
 
-		public function overload_NyARRaster3(i_width:int, i_height:int, i_buffer_type:int):void
+		protected function overload_NyARRaster3(i_width:int, i_height:int, i_buffer_type:int):void
 		{
 			super.overload_NyARRaster_BasicClass(i_width,i_height,i_buffer_type);
 			if(!initInstance(this._size,i_buffer_type,true)){

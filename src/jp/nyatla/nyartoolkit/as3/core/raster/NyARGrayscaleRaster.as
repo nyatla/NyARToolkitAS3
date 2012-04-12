@@ -32,8 +32,12 @@ package jp.nyatla.nyartoolkit.as3.core.raster
 {
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
 	import jp.nyatla.nyartoolkit.as3.utils.as3.*;
-	import jp.nyatla.nyartoolkit.as3.core.rasterreader.*;
+	import jp.nyatla.nyartoolkit.as3.core.rasterdriver.*;
+	import jp.nyatla.nyartoolkit.as3.core.labeling.rlelabeling.*;
+	import jp.nyatla.nyartoolkit.as3.core.pixeldriver.*;
+	import jp.nyatla.nyartoolkit.as3.core.squaredetect.*;
 	import jp.nyatla.nyartoolkit.as3.*;
+	import jp.nyatla.nyartoolkit.as3.core.*;
 	import jp.nyatla.as3utils.*;
 
 	
@@ -99,7 +103,6 @@ package jp.nyatla.nyartoolkit.as3.core.raster
 		
 		public function NyARGrayscaleRaster(...args:Array)
 		{
-			super(NyAS3Const_Inherited);
 			switch(args.length) {
 			case 1:
 				if (args[0] is NyAS3Const_Inherited) {
@@ -203,18 +206,18 @@ package jp.nyatla.nyartoolkit.as3.core.raster
 			}
 			this._is_attached_buffer = i_is_alloc;
 			//ピクセルドライバの生成
-			this._pixdrv=NyARGsPixelDriverFactory.createDriver(this);
+			this._pixdrv=NyARGsPixelDriverFactory.createDriver_1(this);
 		}
 		public function createInterface(i_iid:Class):Object
 		{
 			if(i_iid==NyARLabeling_Rle_IRasterDriver){
-				return NyARLabeling_Rle.RasterDriverFactory.createDriver(this);
+				return NyARLabeling_Rle_RasterDriverFactory.createDriver(this);
 			}
 			if(i_iid==NyARContourPickup_IRasterDriver){
-				return NyARContourPickup.ImageDriverFactory.createDriver(this);
+				return NyARContourPickup_ImageDriverFactory.createDriver(this);
 			}
 			if(i_iid==INyARHistogramFromRaster){
-				return NyARHistogramFromRasterFactory.createInstance(this);
+				return NyARHistogramFromRasterFactory.createInstance_1(this);
 			}
 			throw new NyARException();
 		}	
@@ -242,7 +245,7 @@ package jp.nyatla.nyartoolkit.as3.core.raster
 		 */
 		public function wrapBuffer(i_ref_buf:Object):void
 		{
-			assert (!this._is_attached_buffer);// バッファがアタッチされていたら機能しない。
+			NyAS3Utils.assert (!this._is_attached_buffer);// バッファがアタッチされていたら機能しない。
 			//ラスタの形式は省略。
 			this._pixdrv.switchRaster(this);
 			this._buf = i_ref_buf;

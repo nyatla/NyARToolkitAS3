@@ -30,6 +30,11 @@
  */
 package jp.nyatla.nyartoolkit.as3.core.raster
 {
+	import jp.nyatla.nyartoolkit.as3.core.*;
+	import jp.nyatla.nyartoolkit.as3.core.types.*;
+	import jp.nyatla.nyartoolkit.as3.core.pixeldriver.*;
+	import jp.nyatla.nyartoolkit.as3.core.labeling.rlelabeling.*;
+	import jp.nyatla.nyartoolkit.as3.core.squaredetect.*;
 	/**
 	 * このクラスは、0/ 255 の二値GrayscaleRasterです。
 	 */
@@ -62,7 +67,7 @@ package jp.nyatla.nyartoolkit.as3.core.raster
 		 * 初期化に成功するとtrue
 		 * @throws NyARException 
 		 */
-		protected function initInstance(i_size:NyARIntSize,i_buf_type:int,i_is_alloc:Boolean):void
+		protected override function initInstance(i_size:NyARIntSize,i_buf_type:int,i_is_alloc:Boolean):void
 		{
 			switch(i_buf_type)
 			{
@@ -73,11 +78,11 @@ package jp.nyatla.nyartoolkit.as3.core.raster
 					super.initInstance(i_size, i_buf_type, i_is_alloc);
 					return;
 			}
-			this._pixdrv=NyARGsPixelDriverFactory.createDriver(this);
+			this._pixdrv=NyARGsPixelDriverFactory.createDriver_1(this);
 			this._is_attached_buffer=i_is_alloc;
 			return;
 		}
-		public function createInterface(i_iid:Class):Object
+		public override function createInterface(i_iid:Class):Object
 		{
 			if(i_iid==NyARLabeling_Rle_IRasterDriver){
 				return NyARLabeling_Rle_RasterDriverFactory.createDriver(this);

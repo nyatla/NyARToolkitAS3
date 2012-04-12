@@ -32,7 +32,7 @@ package jp.nyatla.nyartoolkit.as3.core.utils
 {
 	import jp.nyatla.as3utils.*;
 	import jp.nyatla.nyartoolkit.as3.core.transmat.rotmatrix.NyARRotVector;
-	import jp.nyatla.nyartoolkit.as3.*;
+	import jp.nyatla.nyartoolkit.as3.core.*;
 	public class NyAREquationSolver
 	{
 		public static function solve2Equation_3(i_a:Number, i_b:Number,i_c:Number,o_result:Vector.<Number>):int

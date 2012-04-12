@@ -30,7 +30,7 @@
  */
 package jp.nyatla.nyartoolkit.as3.core.types
 {
-	import jp.nyatla.nyartoolkit.as3.*;
+	import jp.nyatla.nyartoolkit.as3.core.*;
 	public class NyARIntSize
 	{
 		public var h:int;

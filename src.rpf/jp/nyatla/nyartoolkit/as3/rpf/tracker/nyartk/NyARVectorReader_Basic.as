@@ -25,7 +25,7 @@
 package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk
 {
 
-	import jp.nyatla.nyartoolkit.as3.NyARException;
+	import jp.nyatla.nyartoolkit.as3.core.*;
 	import jp.nyatla.nyartoolkit.as3.core.param.NyARCameraDistortionFactor;
 	import jp.nyatla.nyartoolkit.as3.core.raster.NyARGrayscaleRaster;
 	import jp.nyatla.nyartoolkit.as3.core.squaredetect.NyARContourPickup;
@@ -91,8 +91,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk
 		{
 			var coord:NyARIntCoordinates = this._coord_buf;
 			// Robertsラスタから輪郭抽出
-			if (!this._cpickup.getContour_3(this._ref_rob_raster, i_th, i_entry.x, i_entry.y,
-					coord)) {
+			if (!this._cpickup.getContour_1(this._ref_rob_raster, i_th, i_entry.x, i_entry.y,coord)) {
 				// 輪郭線MAXならなにもできないね。
 				return false;
 

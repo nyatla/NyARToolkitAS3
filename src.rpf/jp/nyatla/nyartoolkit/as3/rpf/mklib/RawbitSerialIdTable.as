@@ -25,7 +25,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.mklib
 	public class RawbitSerialIdTable
 	{
 		private var _table:SerialTable;
-		private var _id_pickup:NyIdMarkerPickup = new NyIdMarkerPickup();
+		private var _id_pickup:NyIdMarkerPickup;
 		private var _temp_nyid_info:NyIdMarkerPattern=new NyIdMarkerPattern();
 		private var _temp_nyid_param:NyIdMarkerParam =new NyIdMarkerParam();
 		
@@ -40,6 +40,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.mklib
 		 */
 		public function RawbitSerialIdTable(i_max:int)
 		{
+			this._id_pickup= new NyIdMarkerPickup();
 			this._table=new SerialTable(i_max);
 		}
 		/**
@@ -96,7 +97,9 @@ package jp.nyatla.nyartoolkit.as3.rpf.mklib
 			}
 			d.setValue(i_name,0,Number.MAX_VALUE,i_width);
 			return true;
-		}	
+		}
+		private var _last_laster:INyARRaster=null;
+		private var _gs_pix_reader:INyARGsPixelDriver;
 		/**
 		 * i_raster上にあるi_vertexの頂点で定義される四角形のパターンから、一致するID値を特定します。
 		 * @param i_vertex
@@ -108,7 +111,11 @@ package jp.nyatla.nyartoolkit.as3.rpf.mklib
 		 */
 		public function identifyId_1(i_vertex:Vector.<NyARDoublePoint2d>,i_raster:INyARRgbRaster,o_result:RawbitSerialIdTable_IdentifyIdResult):Boolean
 		{
-			if(!this._id_pickup.pickFromRaster_1(i_raster,i_vertex,this._temp_nyid_info,this._temp_nyid_param))
+			if(this._last_laster!=i_raster){
+				this._gs_pix_reader=NyARGsPixelDriverFactory.createDriver(i_raster);
+				this._last_laster=i_raster;
+			}
+			if(!this._id_pickup.pickFromRaster(this._gs_pix_reader,i_vertex,this._temp_nyid_info,this._temp_nyid_param))
 			{
 				return false;
 			}

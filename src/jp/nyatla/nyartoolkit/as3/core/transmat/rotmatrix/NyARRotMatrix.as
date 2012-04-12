@@ -47,12 +47,12 @@ package jp.nyatla.nyartoolkit.as3.core.transmat.rotmatrix
 		 */
 		public function NyARRotMatrix(i_matrix:NyARPerspectiveProjectionMatrix)
 		{
-			this.__initRot_vec1=new NyARRotVector(i_matrix);
-			this.__initRot_vec2=new NyARRotVector(i_matrix);
+			this.__initRot_vec1=new NyARRotVectorV2(i_matrix);
+			this.__initRot_vec2=new NyARRotVectorV2(i_matrix);
 			return;
 		}
-		private var __initRot_vec1:NyARRotVector;
-		private var __initRot_vec2:NyARRotVector;
+		private var __initRot_vec1:NyARRotVectorV2;
+		private var __initRot_vec2:NyARRotVectorV2;
 		/**
 		 * NyARTransMatResultの内容からNyARRotMatrixを復元します。
 		 * @param i_prev_result
@@ -81,8 +81,8 @@ package jp.nyatla.nyartoolkit.as3.core.transmat.rotmatrix
 		 */
 		public function initRotBySquare(i_linear:Vector.<NyARLinear>, i_sqvertex:Vector.<NyARDoublePoint2d>):void
 		{
-			var vec1:NyARRotVector=this.__initRot_vec1;
-			var vec2:NyARRotVector=this.__initRot_vec2;
+			var vec1:NyARRotVectorV2=this.__initRot_vec1;
+			var vec2:NyARRotVectorV2=this.__initRot_vec2;
 
 			//向かい合った辺から、２本のベクトルを計算
 			

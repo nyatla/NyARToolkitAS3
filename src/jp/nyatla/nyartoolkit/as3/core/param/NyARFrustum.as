@@ -28,7 +28,7 @@ package jp.nyatla.nyartoolkit.as3.core.param
 		 */
 		public function NyARFrustum(i_perspective_mat:NyARPerspectiveProjectionMatrix,i_width:int,i_height:int,i_near:Number,i_far:Number)
 		{
-			this.setValue(i_perspective_mat, i_width, i_height, i_near, i_far);
+			this.setValue_2(i_perspective_mat, i_width, i_height, i_near, i_far);
 		}
 		/**
 		 * この関数は、視錐台行列をインスタンスにセットします。
@@ -41,7 +41,7 @@ package jp.nyatla.nyartoolkit.as3.core.param
 		 */
 		public function setValue_1(i_projection_mat:NyARDoubleMatrix44,i_width:int,i_height:int):void
 		{
-			this._frustum_rh.setValue(i_projection_mat);
+			this._frustum_rh.setValue_2(i_projection_mat);
 			this._inv_frustum_rh.inverse(this._frustum_rh);
 			this._screen_size.setValue(i_width,i_height);
 		}		
@@ -166,7 +166,7 @@ package jp.nyatla.nyartoolkit.as3.core.param
 		 */
 		public function project_2(i_pos:NyARDoublePoint3d,o_pos2d:NyARDoublePoint2d):void
 		{
-			this.project(i_pos.x,i_pos.y,i_pos.z,o_pos2d);
+			this.project_1(i_pos.x,i_pos.y,i_pos.z,o_pos2d);
 		}
 		/**
 		 * 透視変換行列の参照値を返します。
@@ -198,7 +198,7 @@ package jp.nyatla.nyartoolkit.as3.core.param
 			o_value.top=(mat.m12+1)*near/mat.m11;
 			return o_value;
 		}
-		public function getPerspectiveParam(o_value:NyARFrustum_PerspectiveParam):PerspectiveParam
+		public function getPerspectiveParam(o_value:NyARFrustum_PerspectiveParam):NyARFrustum_PerspectiveParam
 		{
 			var mat:NyARDoubleMatrix44=this._frustum_rh;
 			o_value.far=mat.m23/(mat.m22+1);

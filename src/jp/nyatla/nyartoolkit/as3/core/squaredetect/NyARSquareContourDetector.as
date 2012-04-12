@@ -32,19 +32,9 @@ package jp.nyatla.nyartoolkit.as3.core.squaredetect
 {
 	import jp.nyatla.nyartoolkit.as3.core.raster.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
-	import jp.nyatla.nyartoolkit.as3.*;
+	import jp.nyatla.nyartoolkit.as3.core.*;
 	public class NyARSquareContourDetector
 	{
-		/**
-		 *
-		 * @param i_raster
-		 * @param i_callback
-		 * @throws NyARException
-		 */
-		public function detectMarker_1(i_raster:NyARBinRaster):void
-		{
-			NyARException.trap("detectMarker not implemented.");
-		}
 		/**
 		 * 通知ハンドラです。
 		 * この関数は、detectMarker関数のコールバック関数として機能します。

@@ -62,7 +62,11 @@ package jp.nyatla.nyartoolkit.as3.core.rasterdriver
 //ラスタドライバ
 //
 
-
+import jp.nyatla.nyartoolkit.as3.core.raster.*;
+import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
+import jp.nyatla.nyartoolkit.as3.core.rasterdriver.*;
+import jp.nyatla.nyartoolkit.as3.core.pixeldriver.*;
+import jp.nyatla.nyartoolkit.as3.core.types.*;
 
 
 
@@ -77,7 +81,7 @@ class PerspectiveCopy_ANYRgb extends NyARPerspectiveCopy_Base
 	{
 		this._ref_raster=INyARRgbRaster(i_ref_raster);
 	}
-	protected function onePixel(pk_l:int,pk_t:int,cpara:Vector.<Number>,o_out:INyARRaster):Boolean
+	protected override function onePixel(pk_l:int,pk_t:int,cpara:Vector.<Number>,o_out:INyARRaster):Boolean
 	{
 		var rgb_tmp:Vector.<int> = this.__pickFromRaster_rgb_tmp;
 		var in_w:int=this._ref_raster.getWidth();
@@ -97,23 +101,27 @@ class PerspectiveCopy_ANYRgb extends NyARPerspectiveCopy_Base
 		var cp1_cy_cp2:Number=cp1*pk_t+cpara[2]+cp0*pk_l;
 		var cp4_cy_cp5:Number=cp4*pk_t+cpara[5]+cp3*pk_l;
 		
-		INyARRgbPixelDriver i_in_reader=this._ref_raster.getRgbPixelDriver();
+		var i_in_reader:INyARRgbPixelDriver = this._ref_raster.getRgbPixelDriver();
+		var iy:int, ix:int;
+		var cp7_cy_1_cp6_cx:Number, cp1_cy_cp2_cp0_cx:Number, cp4_cy_cp5_cp3_cx:Number;
+		var d:Number;
+		var x:int,y:int;
 		switch(o_out.getBufferType())
 		{
 		case NyARBufferType.INT1D_X8R8G8B8_32:
-			var pat_data:Vector.<Number>=(Vector.<Number>)o_out.getBuffer();			
+			var pat_data:Vector.<Number>=Vector.<Number>(o_out.getBuffer());
 			var p:int=0;
-			for(var iy:int=out_h-1;iy>=0;iy--){
+			for(iy=out_h-1;iy>=0;iy--){
 				//解像度分の点を取る。
-				var cp7_cy_1_cp6_cx:Number  =cp7_cy_1;
-				var cp1_cy_cp2_cp0_cx:Number=cp1_cy_cp2;
-				var cp4_cy_cp5_cp3_cx:Number=cp4_cy_cp5;
+				cp7_cy_1_cp6_cx=cp7_cy_1;
+				cp1_cy_cp2_cp0_cx=cp1_cy_cp2;
+				cp4_cy_cp5_cp3_cx=cp4_cy_cp5;
 				
-				for(var ix:int=out_w-1;ix>=0;ix--){
+				for(ix=out_w-1;ix>=0;ix--){
 					//1ピクセルを作成
-					var d:Number=1/(cp7_cy_1_cp6_cx);
-					var x:int=int((cp1_cy_cp2_cp0_cx)*d);
-					var y:int=int((cp4_cy_cp5_cp3_cx)*d);
+					d=1/(cp7_cy_1_cp6_cx);
+					x=int((cp1_cy_cp2_cp0_cx)*d);
+					y=int((cp4_cy_cp5_cp3_cx)*d);
 					if(x<0){x=0;}else if(x>=in_w){x=in_w-1;}
 					if(y<0){y=0;}else if(y>=in_h){y=in_h-1;}
 							
@@ -133,17 +141,17 @@ class PerspectiveCopy_ANYRgb extends NyARPerspectiveCopy_Base
 		default:
 			//ANY to RGBx
 			if(o_out is INyARRgbRaster){
-				INyARRgbPixelDriver out_reader=(INyARRgbRaster(o_out)).getRgbPixelDriver();	
-				for(var iy:int=0;iy<out_h;iy++){
+				var out_reader:INyARRgbPixelDriver=(INyARRgbRaster(o_out)).getRgbPixelDriver();	
+				for(iy=0;iy<out_h;iy++){
 					//解像度分の点を取る。
-					double cp7_cy_1_cp6_cx  =cp7_cy_1;
-					double cp1_cy_cp2_cp0_cx=cp1_cy_cp2;
-					double cp4_cy_cp5_cp3_cx=cp4_cy_cp5;
-					for(var ix:int=0;ix<out_w;ix++){
+					cp7_cy_1_cp6_cx  =cp7_cy_1;
+					cp1_cy_cp2_cp0_cx=cp1_cy_cp2;
+					cp4_cy_cp5_cp3_cx=cp4_cy_cp5;
+					for(ix=0;ix<out_w;ix++){
 						//1ピクセルを作成
-						var d:Number=1/(cp7_cy_1_cp6_cx);
-						var x:int=(int)((cp1_cy_cp2_cp0_cx)*d);
-						var y:int=(int)((cp4_cy_cp5_cp3_cx)*d);
+						d=1/(cp7_cy_1_cp6_cx);
+						x=(int)((cp1_cy_cp2_cp0_cx)*d);
+						y=(int)((cp4_cy_cp5_cp3_cx)*d);
 						if(x<0){x=0;}else if(x>=in_w){x=in_w-1;}
 						if(y<0){y=0;}else if(y>=in_h){y=in_h-1;}
 								
@@ -152,7 +160,7 @@ class PerspectiveCopy_ANYRgb extends NyARPerspectiveCopy_Base
 						cp1_cy_cp2_cp0_cx+=cp0;
 						cp4_cy_cp5_cp3_cx+=cp3;
 		
-						out_reader.setPixel(ix,iy,rgb_tmp);
+						out_reader.setPixel_2(ix,iy,rgb_tmp);
 					}
 					cp7_cy_1+=cp7;
 					cp1_cy_cp2+=cp1;
@@ -164,7 +172,7 @@ class PerspectiveCopy_ANYRgb extends NyARPerspectiveCopy_Base
 		}
 		return false;
 	}
-	protected function multiPixel(pk_l:int,pk_t:int,cpara:Vector.<Number>,i_resolution:int,o_out:INyARRaster):Boolean
+	protected override function multiPixel(pk_l:int,pk_t:int,cpara:Vector.<Number>,i_resolution:int,o_out:INyARRaster):Boolean
 	{
 		var res_pix:int=i_resolution*i_resolution;
 
@@ -188,27 +196,33 @@ class PerspectiveCopy_ANYRgb extends NyARPerspectiveCopy_Base
 		switch(o_out.getBufferType())
 		{
 		case NyARBufferType.INT1D_X8R8G8B8_32:
-			var pat_data:Vector.<int>=(Vector.<int>)o_out.getBuffer();
-			var p:int=(out_w*out_h-1);
-			for(var iy:int=out_h-1;iy>=0;iy--){
+			var pat_data:Vector.<int>=Vector.<int>(o_out.getBuffer());
+			var p:int = (out_w * out_h - 1);
+			var r:int, g:int, b:int;
+			var ix:int, iy:int, cx:int, cy:int;
+			var cp7_cy_1_cp6_cx_b:Number, cp1_cy_cp2_cp0_cx_b:Number, cp4_cy_cp5_cp3_cx_b:Number;
+			var i2y:int, i2x:int;
+			var cp7_cy_1_cp6_cx:Number, cp1_cy_cp2_cp0_cx:Number, cp4_cy_cp5_cp3_cx:Number;
+			var d:Number;
+			var x:int, y:int;
+			for(iy=out_h-1;iy>=0;iy--){
 				//解像度分の点を取る。
-				for(var ix:int=out_w-1;ix>=0;ix--){
-					var r:int,g:int,b:int;
+				for(ix=out_w-1;ix>=0;ix--){
 					r=g=b=0;
-					var cy:int=pk_t+iy*i_resolution;
-					var cx:int=pk_l+ix*i_resolution;
-					var cp7_cy_1_cp6_cx_b:Number  =cp7*cy+1.0+cp6*cx;
-					var cp1_cy_cp2_cp0_cx_b:Number=cp1*cy+cp2+cp0*cx;
-					var cp4_cy_cp5_cp3_cx_b:Number=cp4*cy+cp5+cp3*cx;
-					for(var i2y:int=i_resolution-1;i2y>=0;i2y--){
-						var cp7_cy_1_cp6_cx:Number  =cp7_cy_1_cp6_cx_b;
-						var cp1_cy_cp2_cp0_cx:Number=cp1_cy_cp2_cp0_cx_b;
-						var cp4_cy_cp5_cp3_cx:Number=cp4_cy_cp5_cp3_cx_b;
-						for(var i2x:int=i_resolution-1;i2x>=0;i2x--){
+					cy=pk_t+iy*i_resolution;
+					cx=pk_l+ix*i_resolution;
+					cp7_cy_1_cp6_cx_b  =cp7*cy+1.0+cp6*cx;
+					cp1_cy_cp2_cp0_cx_b=cp1*cy+cp2+cp0*cx;
+					cp4_cy_cp5_cp3_cx_b=cp4*cy+cp5+cp3*cx;
+					for(i2y=i_resolution-1;i2y>=0;i2y--){
+						cp7_cy_1_cp6_cx  =cp7_cy_1_cp6_cx_b;
+						cp1_cy_cp2_cp0_cx=cp1_cy_cp2_cp0_cx_b;
+						cp4_cy_cp5_cp3_cx=cp4_cy_cp5_cp3_cx_b;
+						for(i2x=i_resolution-1;i2x>=0;i2x--){
 							//1ピクセルを作成
-							var d:Number=1/(cp7_cy_1_cp6_cx);
-							var x:int=(int)((cp1_cy_cp2_cp0_cx)*d);
-							var y:int=(int)((cp4_cy_cp5_cp3_cx)*d);
+							d=1/(cp7_cy_1_cp6_cx);
+							x=(int)((cp1_cy_cp2_cp0_cx)*d);
+							y=(int)((cp4_cy_cp5_cp3_cx)*d);
 							if(x<0){x=0;}else if(x>=in_w){x=in_w-1;}
 							if(y<0){y=0;}else if(y>=in_h){y=in_h-1;}
 							
@@ -235,26 +249,25 @@ class PerspectiveCopy_ANYRgb extends NyARPerspectiveCopy_Base
 		default:
 			//ANY to RGBx
 			if(o_out is INyARRgbRaster){
-				INyARRgbPixelDriver out_reader=((INyARRgbRaster)o_out).getRgbPixelDriver();
-				for(var iy:int=out_h-1;iy>=0;iy--){
+				var out_reader:INyARRgbPixelDriver=(INyARRgbRaster(o_out)).getRgbPixelDriver();
+				for(iy=out_h-1;iy>=0;iy--){
 					//解像度分の点を取る。
-					for(var ix:int=out_w-1;ix>=0;ix--){
-						var r:int,g:int,b:int;
+					for(ix=out_w-1;ix>=0;ix--){
 						r=g=b=0;
-						var cy:Number=pk_t+iy*i_resolution;
-						var cx:Number=pk_l+ix*i_resolution;
-						var cp7_cy_1_cp6_cx_b:Number  =cp7*cy+1.0+cp6*cx;
-						var cp1_cy_cp2_cp0_cx_b:Number=cp1*cy+cp2+cp0*cx;
-						var cp4_cy_cp5_cp3_cx_b:Number=cp4*cy+cp5+cp3*cx;
-						for(var i2y:int=i_resolution-1;i2y>=0;i2y--){
-							var cp7_cy_1_cp6_cx:Number=cp7_cy_1_cp6_cx_b;
-							var cp1_cy_cp2_cp0_cx:Number=cp1_cy_cp2_cp0_cx_b;
-							var cp4_cy_cp5_cp3_cx:Number=cp4_cy_cp5_cp3_cx_b;
-							for(var i2x:int=i_resolution-1;i2x>=0;i2x--){
+						cy=pk_t+iy*i_resolution;
+						cx=pk_l+ix*i_resolution;
+						cp7_cy_1_cp6_cx_b  =cp7*cy+1.0+cp6*cx;
+						cp1_cy_cp2_cp0_cx_b=cp1*cy+cp2+cp0*cx;
+						cp4_cy_cp5_cp3_cx_b=cp4*cy+cp5+cp3*cx;
+						for(i2y=i_resolution-1;i2y>=0;i2y--){
+							cp7_cy_1_cp6_cx=cp7_cy_1_cp6_cx_b;
+							cp1_cy_cp2_cp0_cx=cp1_cy_cp2_cp0_cx_b;
+							cp4_cy_cp5_cp3_cx=cp4_cy_cp5_cp3_cx_b;
+							for(i2x=i_resolution-1;i2x>=0;i2x--){
 								//1ピクセルを作成
-								var d:Number=1/(cp7_cy_1_cp6_cx);
-								var x:int=(int)((cp1_cy_cp2_cp0_cx)*d);
-								var y:int=(int)((cp4_cy_cp5_cp3_cx)*d);
+								d=1/(cp7_cy_1_cp6_cx);
+								x=(int)((cp1_cy_cp2_cp0_cx)*d);
+								y=(int)((cp4_cy_cp5_cp3_cx)*d);
 								if(x<0){x=0;}else if(x>=in_w){x=in_w-1;}
 								if(y<0){y=0;}else if(y>=in_h){y=in_h-1;}
 								
@@ -270,7 +283,7 @@ class PerspectiveCopy_ANYRgb extends NyARPerspectiveCopy_Base
 							cp1_cy_cp2_cp0_cx_b+=cp1;
 							cp4_cy_cp5_cp3_cx_b+=cp4;
 						}
-						out_reader.setPixel(ix,iy,r/res_pix,g/res_pix,b/res_pix);
+						out_reader.setPixel_1(ix,iy,r/res_pix,g/res_pix,b/res_pix);
 					}
 				}
 				return true;

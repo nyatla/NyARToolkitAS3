@@ -1,7 +1,7 @@
 package jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk
 {
 
-	import jp.nyatla.nyartoolkit.as3.NyARException;
+	import jp.nyatla.nyartoolkit.as3.core.*;
 	import jp.nyatla.nyartoolkit.as3.core.param.NyARPerspectiveProjectionMatrix;
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
 	import jp.nyatla.nyartoolkit.as3.core.utils.*;
@@ -38,7 +38,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk
 				return null;
 			}
 			ret.grab_rate=50;//開始時の捕捉レートは10%
-			ret._ref_tracktarget=(NyARTarget)(tt.refObject());
+			ret._ref_tracktarget=(NyARTarget)(tt.referenceObject());
 			ret._serial=NyARRealityTarget.createSerialId();
 			ret.tag=null;
 			tt.tag=ret;//トラックターゲットのタグに自分の値設定しておく。

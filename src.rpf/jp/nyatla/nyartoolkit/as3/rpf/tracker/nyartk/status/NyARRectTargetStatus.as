@@ -1,7 +1,7 @@
 package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk.status
 {
 
-import jp.nyatla.nyartoolkit.as3.NyARException;
+import jp.nyatla.nyartoolkit.as3.core.*;
 import jp.nyatla.nyartoolkit.as3.core.types.*;
 import jp.nyatla.nyartoolkit.as3.core.utils.NyARMath;
 import jp.nyatla.nyartoolkit.as3.rpf.sampler.lrlabel.*;

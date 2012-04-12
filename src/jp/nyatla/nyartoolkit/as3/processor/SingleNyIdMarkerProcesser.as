@@ -38,12 +38,14 @@ package jp.nyatla.nyartoolkit.as3.processor
 	import jp.nyatla.nyartoolkit.as3.core.raster.*;
 	import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
 	import jp.nyatla.nyartoolkit.as3.core.*;
-	import jp.nyatla.nyartoolkit.as3.core.rasterfilter.rgb2bin.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
 	import jp.nyatla.nyartoolkit.as3.*;
 	import jp.nyatla.nyartoolkit.as3.nyidmarker.data.*;
-	import jp.nyatla.nyartoolkit.as3.core.analyzer.raster.threshold.*;
+	import jp.nyatla.nyartoolkit.as3.core.rasterdriver.*;
+	import jp.nyatla.nyartoolkit.as3.nyidmarker.*;
+	import jp.nyatla.nyartoolkit.as3.core.rasterfilter.rgb2gs.*;
 	import jp.nyatla.as3utils.*;
+	import jp.nyatla.nyartoolkit.as3.core.analyzer.histogram.*;
 	public class SingleNyIdMarkerProcesser
 	{
 		/**
@@ -63,9 +65,11 @@ package jp.nyatla.nyartoolkit.as3.processor
 		private var _is_active:Boolean;
 		private var _current_threshold:int=110;
 		// [AR]検出結果の保存用
-		private var _bin_raster:NyARBinRaster;
-		private var _tobin_filter:NyARRasterFilter_ARToolkitThreshold;
+		private var _gs_raster:NyARGrayscaleRaster ;
 		private var _data_current:INyIdMarkerData;
+		private var _threshold_detect:NyARHistogramAnalyzer_SlidePTile;
+		private var _hist:NyARHistogram=new NyARHistogram(256);
+		private var _histmaker:INyARHistogramFromRaster;
 
 
 		public function SingleNyIdMarkerProcesser()
@@ -78,23 +82,25 @@ package jp.nyatla.nyartoolkit.as3.processor
 			//初期化済？
 			NyAS3Utils.assert(this._initialized==false);
 			
-			var scr_size:NyARIntSize = i_param.getScreenSize();
+			var scr_size:NyARIntSize  = i_param.getScreenSize();
 			// 解析オブジェクトを作る
-			this._square_detect = new RleDetector(i_param,i_encoder);
+			this._square_detect = new RleDetector(
+				i_param,
+				i_encoder,
+				new NyIdMarkerPickup());
 			this._transmat = new NyARTransMat(i_param);
 
 			// ２値画像バッファを作る
-			this._bin_raster = new NyARBinRaster(scr_size.w, scr_size.h);
+			this._gs_raster = new NyARGrayscaleRaster(scr_size.w, scr_size.h);
+			this._histmaker=INyARHistogramFromRaster(this._gs_raster.createInterface(INyARHistogramFromRaster));
 			//ワーク用のデータオブジェクトを２個作る
 			this._data_current=i_encoder.createDataInstance();
-			this._tobin_filter =new NyARRasterFilter_ARToolkitThreshold(110,i_raster_format);
-			this._threshold_detect=new NyARRasterThresholdAnalyzer_SlidePTile(15,i_raster_format,4);
+			this._threshold_detect=new NyARHistogramAnalyzer_SlidePTile(15);
 			this._initialized=true;
 			this._is_active=false;
-			this._offset = new NyARRectOffset();
+			this._offset=new NyARRectOffset();
 			this._offset.setSquare_1(i_marker_width);
 			return;
-			
 		}
 
 		public function setMarkerWidth(i_width:int):void
@@ -113,20 +119,24 @@ package jp.nyatla.nyartoolkit.as3.processor
 			this._is_active=false;
 			return;
 		}
-
+		private var _last_input_raster:INyARRgbRaster;
+		private var _togs_filter:INyARRgb2GsFilter;
 		public function detectMarker(i_raster:INyARRgbRaster):void
 		{
 			// サイズチェック
-			if (!this._bin_raster.getSize().isEqualSize_1(i_raster.getSize().w, i_raster.getSize().h)) {
+			if (!this._gs_raster.getSize().isEqualSize_1(i_raster.getSize().w, i_raster.getSize().h)) {
 				throw new NyARException();
 			}
-			// ラスタを２値イメージに変換する.
-			this._tobin_filter.setThreshold(this._current_threshold);
-			this._tobin_filter.doFilter_1(i_raster, this._bin_raster);
+			// ラスタをGSへ変換する。
+			if(this._last_input_raster!=i_raster){
+				this._togs_filter=INyARRgb2GsFilter(i_raster.createInterface(INyARRgb2GsFilter));
+				this._last_input_raster=i_raster;
+			}
+			this._togs_filter.convert(this._gs_raster);
 
 			// スクエアコードを探す(第二引数に指定したマーカ、もしくは新しいマーカを探す。)
-			this._square_detect.init(i_raster,this._is_active?this._data_current:null);
-			this._square_detect.detectMarker_1(this._bin_raster);
+			this._square_detect.init(this._gs_raster,this._is_active?this._data_current:null);
+			this._square_detect.detectMarker_2(this._gs_raster,this._current_threshold);
 
 			// 認識状態を更新(マーカを発見したなら、current_dataを渡すかんじ)
 			var is_id_found:Boolean=updateStatus(this._square_detect.square,this._square_detect.marker_data);
@@ -137,14 +147,14 @@ package jp.nyatla.nyartoolkit.as3.processor
 				this._current_threshold=(this._current_threshold+this._square_detect.threshold)/2;
 			}else{
 				//マーカがなければ、探索+DualPTailで基準輝度検索
-				var th:int=this._threshold_detect.analyzeRaster_1(i_raster);
+				this._histmaker.createHistogram_2(4,this._hist);
+				var th:int= this._threshold_detect.getThreshold(this._hist);
 				this._current_threshold=(this._current_threshold+th)/2;
 			}		
-			return;
+
 		}
 
 		
-		private var _threshold_detect:NyARRasterThresholdAnalyzer_SlidePTile;
 		private var __NyARSquare_result:NyARTransMatResult = new NyARTransMatResult();
 
 		/**オブジェクトのステータスを更新し、必要に応じてハンドル関数を駆動します。
@@ -215,7 +225,7 @@ import jp.nyatla.nyartoolkit.as3.core.transmat.*;
 import jp.nyatla.nyartoolkit.as3.core.raster.*;
 import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.as3.core.*;
-import jp.nyatla.nyartoolkit.as3.core.rasterfilter.rgb2bin.*;
+import jp.nyatla.nyartoolkit.as3.core.rasterfilter.rgb2gs.*;
 import jp.nyatla.nyartoolkit.as3.core.types.*;
 import jp.nyatla.nyartoolkit.as3.*;
 import jp.nyatla.nyartoolkit.as3.nyidmarker.data.*;
@@ -233,10 +243,10 @@ class RleDetector extends NyARSquareContourDetector_Rle
 
 	
 	//参照
-	private var _ref_raster:INyARRgbRaster;
+	private var _ref_raster:INyARGrayscaleRaster;
 	//所有インスタンス
 	private var _current_data:INyIdMarkerData;
-	private var _id_pickup:NyIdMarkerPickup = new NyIdMarkerPickup();
+	private var _id_pickup:NyIdMarkerPickup;
 	private var _coordline:NyARCoord2Linear;
 	private var _encoder:INyIdMarkerDataEncoder;
 
@@ -244,20 +254,21 @@ class RleDetector extends NyARSquareContourDetector_Rle
 	private var _data_temp:INyIdMarkerData;
 	private var _prev_data:INyIdMarkerData;
 	
-	public function RleDetector(i_param:NyARParam,i_encoder:INyIdMarkerDataEncoder)
+	public function RleDetector(i_param:NyARParam,i_encoder:INyIdMarkerDataEncoder,i_id_pickup:NyIdMarkerPickup)
 	{
 		super(i_param.getScreenSize());
 		this._coordline=new NyARCoord2Linear(i_param.getScreenSize(),i_param.getDistortionFactor());
 		this._data_temp=i_encoder.createDataInstance();
 		this._current_data=i_encoder.createDataInstance();
-		this._encoder=i_encoder;
+		this._encoder = i_encoder;
+		this._id_pickup=i_id_pickup;		
 		return;
 	}
 	private var __ref_tmp_vertex:Vector.<NyARIntPoint2d>=NyARIntPoint2d.createArray(4);
 	/**
 	 * Initialize call back handler.
 	 */
-	public function init(i_raster:INyARRgbRaster,i_prev_data:INyIdMarkerData):void
+	public function init(i_raster:INyARGrayscaleRaster,i_prev_data:INyIdMarkerData):void
 	{
 		this.marker_data=null;
 		this._prev_data=i_prev_data;
@@ -286,7 +297,7 @@ class RleDetector extends NyARSquareContourDetector_Rle
 		var param:NyIdMarkerParam=this._marker_param;
 		var patt_data:NyIdMarkerPattern=this._marker_data;			
 		// 評価基準になるパターンをイメージから切り出す
-		if (!this._id_pickup.pickFromRaster_2(this._ref_raster,vertex, patt_data, param)){
+		if (!this._id_pickup.pickFromRaster_2(this._ref_raster.getGsPixelDriver(),vertex, patt_data, param)){
 			return;
 		}
 		//エンコード

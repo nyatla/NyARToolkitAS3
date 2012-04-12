@@ -70,5 +70,20 @@ package jp.nyatla.nyartoolkit.as3.core.types
 			z=this.z-i_p1.z;
 			return x*x+y*y+z*z;
 		}
+		/**
+		 * この関数は、頂点を移動します。
+		 * @param i_tx
+		 * 移動する距離x
+		 * @param i_ty
+		 * 移動する距離y
+		 * @param i_tz
+		 * 移動する距離z
+		 */
+		public function translate(i_tx:Number,i_ty:Number,i_tz:Number):void
+		{
+			this.x+=i_tx;
+			this.y+=i_ty;
+			this.z+=i_tz;
+		}
 	}
 }

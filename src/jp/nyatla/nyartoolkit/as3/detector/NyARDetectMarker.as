@@ -35,7 +35,7 @@ package jp.nyatla.nyartoolkit.as3.detector
 	import jp.nyatla.nyartoolkit.as3.*;
 	import jp.nyatla.nyartoolkit.as3.core.transmat.*;
 	import jp.nyatla.nyartoolkit.as3.core.squaredetect.*;
-	import jp.nyatla.nyartoolkit.as3.core.rasterfilter.rgb2bin.*;
+	import jp.nyatla.nyartoolkit.as3.core.rasterfilter.rgb2gs.*;
 	import jp.nyatla.nyartoolkit.as3.core.raster.*;
 	import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
@@ -74,15 +74,14 @@ package jp.nyatla.nyartoolkit.as3.detector
 		 */
 		public function NyARDetectMarker(i_param:NyARParam, i_code:Vector.<NyARCode>, i_marker_width:Vector.<Number>, i_number_of_code:int, i_input_raster_type:int)
 		{
-			initInstance(i_param,i_code,i_marker_width,i_number_of_code,i_input_raster_type);
+			initInstance(i_param,i_code,i_marker_width,i_number_of_code);
 			return;
 		}
 		protected function initInstance(
 			i_ref_param:NyARParam,
 			i_ref_code:Vector.<NyARCode>,
 			i_marker_width:Vector.<Number>,
-			i_number_of_code:int,
-			i_input_raster_type:int):void
+			i_number_of_code:int):void
 		{
 
 			var scr_size:NyARIntSize=i_ref_param.getScreenSize();
@@ -92,11 +91,9 @@ package jp.nyatla.nyartoolkit.as3.detector
 
 			//detectMarkerのコールバック関数
 			this._square_detect=new RleDetector(
-				new NyARColorPatt_Perspective_O2(cw, ch,4,25,i_input_raster_type),
+				new NyARColorPatt_Perspective(cw, ch,4,25),
 				i_ref_code,i_number_of_code,i_ref_param);
 			this._transmat = new NyARTransMat(i_ref_param);
-			//NyARToolkitプロファイル
-			this._tobin_filter=new NyARRasterFilter_ARToolkitThreshold(100,i_input_raster_type);
 
 			//実サイズ保存
 			this._offset = NyARRectOffset.createArray(i_number_of_code);
@@ -110,7 +107,9 @@ package jp.nyatla.nyartoolkit.as3.detector
 		
 		private var _bin_raster:NyARBinRaster;
 
-		private var _tobin_filter:INyARRasterFilter_Rgb2Bin;
+		private var _tobin_filter:INyARRgb2GsFilterArtkTh ;
+		private var _last_input_raster:INyARRgbRaster=null;
+
 
 		/**
 		 * i_imageにマーカー検出処理を実行し、結果を記録します。
@@ -128,14 +127,14 @@ package jp.nyatla.nyartoolkit.as3.detector
 			if (!this._bin_raster.getSize().isEqualSize_2(i_raster.getSize())) {
 				throw new NyARException();
 			}
-
-			// ラスタを２値イメージに変換する.
-			(NyARRasterFilter_ARToolkitThreshold(this._tobin_filter)).setThreshold(i_threshold);
-			this._tobin_filter.doFilter_1(i_raster, this._bin_raster);
-
+			if(this._last_input_raster!=i_raster){
+				this._tobin_filter=INyARRgb2GsFilterArtkTh(i_raster.createInterface(INyARRgb2GsFilterArtkTh));
+				this._last_input_raster=i_raster;
+			}
+			this._tobin_filter.doFilter_1(i_threshold,this._bin_raster);
 			//detect
 			this._square_detect.init(i_raster);
-			this._square_detect.detectMarker_1(this._bin_raster);
+			this._square_detect.detectMarker_2(this._bin_raster,0);
 
 			//見付かった数を返す。
 			return this._square_detect.result_stack.getLength();

@@ -34,14 +34,16 @@ package jp.nyatla.nyartoolkit.as3.core.pickup
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
 	import jp.nyatla.nyartoolkit.as3.core.raster.*;
 	import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
-	import jp.nyatla.nyartoolkit.as3.core.rasterreader.*;
+	import jp.nyatla.nyartoolkit.as3.core.rasterdriver.*;
+	import jp.nyatla.nyartoolkit.as3.core.pixeldriver.*;
 	import jp.nyatla.nyartoolkit.as3.core.utils.*;
-	import jp.nyatla.nyartoolkit.as3.*;
+	import jp.nyatla.nyartoolkit.as3.core.*;
+	import jp.nyatla.nyartoolkit.as3.core.match.*;
 	public class NyARColorPatt_Perspective implements INyARColorPatt
 	{
 		private var _edge:NyARIntPoint2d=new NyARIntPoint2d();
 		/** パターン格納用のバッファ*/
-		protected var _patdata=Vector.<int>;
+		protected var _patdata:Vector.<int>;
 		/** サンプリング解像度*/
 		protected var _sample_per_pixel:int;
 		/** このラスタのサイズ*/	
@@ -57,11 +59,8 @@ package jp.nyatla.nyartoolkit.as3.core.pickup
 			this._pixelreader=NyARRgbPixelDriverFactory.createDriver(this);
 			return;
 		}
-		public function NyARColorPatt_Perspective(i_width:int , i_height:int, i_point_per_pix:int)
+		public function NyARColorPatt_Perspective(...args:Array)
 		{
-		public function NyARRgbRaster(...args:Array)
-		{
-			super(NyAS3Const_Inherited);
 			switch(args.length) {
 			case 1:
 				if (args[0] is NyAS3Const_Inherited) {
@@ -94,7 +93,7 @@ package jp.nyatla.nyartoolkit.as3.core.pickup
 		private function NyARColorPatt_Perspective_3iii(i_width:int , i_height:int, i_point_per_pix:int):void
 		{
 			this.initInstance(i_width,i_height,i_point_per_pix);
-			this._edge.setValue(0,0);
+			this._edge.setValue_3(0,0);
 			return;
 		}
 		/**
@@ -113,7 +112,7 @@ package jp.nyatla.nyartoolkit.as3.core.pickup
 		private function NyARColorPatt_Perspective_4iii(i_width:int, i_height:int,i_point_per_pix:int,i_edge_percentage:int):void
 		{
 			this.initInstance(i_width,i_height,i_point_per_pix);
-			this._edge.setValue(i_edge_percentage, i_edge_percentage);
+			this._edge.setValue_3(i_edge_percentage, i_edge_percentage);
 			return;
 		}
 		/**
@@ -127,9 +126,9 @@ package jp.nyatla.nyartoolkit.as3.core.pickup
 		 */
 		public function setEdgeSizeByPercent(i_x_percent:int,i_y_percent:int,i_sample_per_pixel:int):void
 		{
-			assert(i_x_percent>=0);
-			assert(i_y_percent>=0);
-			this._edge.setValue(i_x_percent, i_y_percent);
+			NyAS3Utils.assert(i_x_percent>=0);
+			NyAS3Utils.assert(i_y_percent>=0);
+			this._edge.setValue_3(i_x_percent, i_y_percent);
 			this._sample_per_pixel=i_sample_per_pixel;
 			return;
 		}
@@ -179,7 +178,7 @@ package jp.nyatla.nyartoolkit.as3.core.pickup
 		/**
 		 * この関数は使用不可能です。
 		 */
-		public function wrapBuffer(Object i_ref_buf):void
+		public function wrapBuffer(i_ref_buf:Object):void
 		{
 			NyARException.notImplement();
 		}
@@ -205,11 +204,11 @@ package jp.nyatla.nyartoolkit.as3.core.pickup
 		public function pickFromRaster(image:INyARRgbRaster,i_vertexs:Vector.<NyARIntPoint2d>):Boolean
 		{
 			if(this._last_input_raster!=image){
-				this._raster_driver=(INyARPerspectiveCopy) image.createInterface(INyARPerspectiveCopy.class);
+				this._raster_driver=INyARPerspectiveCopy(image.createInterface(INyARPerspectiveCopy));
 				this._last_input_raster=image;
 			}
 			//遠近法のパラメータを計算
-			return this._raster_driver.copyPatt(i_vertexs,this._edge.x,this._edge.y,this._sample_per_pixel, this);
+			return this._raster_driver.copyPatt_1(i_vertexs,this._edge.x,this._edge.y,this._sample_per_pixel, this);
 		}
 
 		public function createInterface(iIid:Class):Object
@@ -217,8 +216,8 @@ package jp.nyatla.nyartoolkit.as3.core.pickup
 			if(iIid==INyARPerspectiveCopy){
 				return NyARPerspectiveCopyFactory.createDriver(this);
 			}
-			if(iIid==NyARMatchPattDeviationColorData.IRasterDriver){
-				return NyARMatchPattDeviationColorData.RasterDriverFactory.createDriver(this);
+			if(iIid==NyARMatchPattDeviationColorData_IRasterDriver){
+				return NyARMatchPattDeviationColorData_RasterDriverFactory.createDriver(this);
 			}		
 			throw new NyARException();
 		}

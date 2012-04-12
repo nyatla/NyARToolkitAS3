@@ -25,7 +25,7 @@
 package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk
 {
 
-	import jp.nyatla.nyartoolkit.as3.NyARException;
+	import jp.nyatla.nyartoolkit.as3.core.*;
 	import jp.nyatla.nyartoolkit.as3.core.param.NyARCameraDistortionFactor;
 	import jp.nyatla.nyartoolkit.as3.core.raster.NyARGrayscaleRaster;
 	import jp.nyatla.nyartoolkit.as3.core.squaredetect.NyARContourPickup;

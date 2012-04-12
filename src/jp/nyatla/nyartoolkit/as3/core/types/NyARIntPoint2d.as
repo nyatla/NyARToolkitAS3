@@ -103,7 +103,39 @@ package jp.nyatla.nyartoolkit.as3.core.types
 			this.x = i_x ;
 			this.y = i_y ;
 		}
-		
+		public static function shiftCopy_1(i_src:Vector.<NyARDoublePoint2d>,i_dst:Vector.<NyARIntPoint2d>,i_shift:int):void
+		{
+			var l:int=i_src.length;
+			for(var i:int=l-1;i>=0;i--){
+				var n:int=(i+i_shift)%l;
+				i_dst[i].x=int(i_src[n].x);
+				i_dst[i].y=int(i_src[n].y);
+			}		
+		}
+		public static function shiftCopy_2(i_src:Vector.<NyARIntPoint2d>,i_dst:Vector.<NyARIntPoint2d>,i_shift:int):void
+		{
+			var l:int=i_src.length;
+			for(var i:int=l-1;i>=0;i--){
+				var n:int=(i+i_shift)%l;
+				i_dst[i].x=i_src[n].x;
+				i_dst[i].y=i_src[n].y;
+			}		
+		}
+		/**
+		 * この関数は、頂点集合から、中央値(Σp[n]/n)を求めます。
+		 * @param i_points
+		 * 頂点集合を格納した配列です。
+		 * @param i_number_of_data
+		 * 配列中の有効な頂点数です。
+		 * @param o_out
+		 * 中央値を受け取るオブジェクトです。
+		 * @deprecated
+		 * {@link #setCenterPos(NyARIntPoint2d[], int)を使用してください。
+		 */
+		public static function makeCenter(i_points:Vector.<NyARIntPoint2d>,i_number_of_data:int,o_out:NyARIntPoint2d):void
+		{
+			o_out.setCenterPos(i_points,i_number_of_data);
+		}		
 	}
 
 

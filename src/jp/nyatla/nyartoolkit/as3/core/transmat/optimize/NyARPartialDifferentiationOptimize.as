@@ -228,7 +228,7 @@ package jp.nyatla.nyartoolkit.as3.core.transmat.optimize
 			
 			return getMinimumErrorAngleFromParam(L,J, K, M, N, O, i_hint_angle);
 		}
-		private var __angles_in:Vector.<TSinCosValue>=TSinCosValue.createArray(3);
+//		private var __angles_in:Vector.<TSinCosValue>=TSinCosValue.createArray(3);
 		private var __ang:NyARDoublePoint3d=new NyARDoublePoint3d();
 		public function modifyMatrix_1(io_rot:NyARDoubleMatrix33,i_trans:NyARDoublePoint3d,i_vertex3d:Vector.<NyARDoublePoint3d>,i_vertex2d:Vector.<NyARDoublePoint2d>,i_number_of_vertex:int):void
 		{
@@ -324,15 +324,3 @@ package jp.nyatla.nyartoolkit.as3.core.transmat.optimize
 
 }
 
-class TSinCosValue{
-	public var cos_val:Number;
-	public var sin_val:Number;
-	public static function createArray(i_size:int):Vector.<TSinCosValue>
-	{
-		var result:Vector.<TSinCosValue>=new Vector.<TSinCosValue>(i_size);
-		for(var i:int=0;i<i_size;i++){
-			result[i]=new TSinCosValue();
-		}
-		return result;
-	}
-}

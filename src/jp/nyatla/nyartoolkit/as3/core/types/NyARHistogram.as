@@ -137,7 +137,17 @@ package jp.nyatla.nyartoolkit.as3.core.types
 			}
 			return (int)(sum/this.total_of_data);
 		}
-		
+		/**
+		 * この関数は、ヒストグラムを初期化します。
+		 */
+		public function reset():void
+		{
+			var d:Vector.<int>=this.data;
+			for(var i:int=this.length-1;i>=0;i--){
+				d[i]=0;
+			}
+			this.total_of_data=0;
+		}
 	}
 
 

@@ -1,6 +1,6 @@
 package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk
 {
-	import jp.nyatla.nyartoolkit.as3.NyARException;
+	import jp.nyatla.nyartoolkit.as3.core.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.stack.*;
 	import jp.nyatla.nyartoolkit.as3.rpf.sampler.lrlabel.*;
 

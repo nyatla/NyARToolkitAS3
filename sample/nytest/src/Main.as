@@ -7,7 +7,6 @@ package
 	import jp.nyatla.nyartoolkit.as3.core.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
 	import jp.nyatla.nyartoolkit.as3.detector.*;
-	import jp.nyatla.nyartoolkit.as3.core.rasterreader.*;
 	import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
 	import jp.nyatla.nyartoolkit.as3.core.transmat.*;
 	import jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk.*;
@@ -58,14 +57,14 @@ package
 				{
  		            param=new NyARParam();
             		param.loadARParam(data);
-            		param.changeScreenSize(320,240);
+            		param.changeScreenSize_1(320,240);
 				});
 			mf.addTarget(
 				"../../../data/patt.hiro",URLLoaderDataFormat.TEXT,
 				function(data:String):void
 				{
 					code=new NyARCode(16, 16);
-					code.loadARPattFromFile(data);
+					code.loadARPatt(data);
 				}
 			);
 			mf.addTarget(
@@ -246,7 +245,7 @@ class SingleProcessor extends SingleARMarkerProcesser
 	{
 		super();
 		this._parent=i_parent;
-		initInstance(i_cparam,i_raster_format);
+		initInstance(i_cparam);
 	}
 	
 	protected override function onEnterHandler(i_code:int):void

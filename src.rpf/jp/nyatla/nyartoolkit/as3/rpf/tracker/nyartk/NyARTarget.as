@@ -100,7 +100,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk
 		 */
 		public function setSampleArea_2(i_item:LowResolutionLabelingSamplerOut_Item):void
 		{
-			this._sample_area.setValue(i_item.base_area);
+			this._sample_area.setValue_1(i_item.base_area);
 		}
 	}
 }

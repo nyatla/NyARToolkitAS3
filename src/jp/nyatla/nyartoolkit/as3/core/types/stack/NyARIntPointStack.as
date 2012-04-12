@@ -42,7 +42,7 @@ package jp.nyatla.nyartoolkit.as3.core.types.stack
 			super();
 			super.initInstance_1(i_length);
 		}
-		protected function createElement_1():Object
+		protected override function createElement_1():Object
 		{
 			return new  NyARIntPoint2d();
 		}

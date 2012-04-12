@@ -32,7 +32,8 @@ package jp.nyatla.nyartoolkit.as3.core
 {	
 	import jp.nyatla.nyartoolkit.as3.core.analyzer.histogram.*;
 	import jp.nyatla.nyartoolkit.as3.utils.as3.*;
-	import jp.nyatla.nyartoolkit.as3.*;
+	import jp.nyatla.nyartoolkit.as3.core.*;
+	import jp.nyatla.as3utils.*;
 	/**
 	 * ARMat構造体に対応するクラス typedef struct { double *m; int row; int clm; }ARMat;
 	 * 
@@ -43,7 +44,7 @@ package jp.nyatla.nyartoolkit.as3.core
 		 * 配列サイズと行列サイズは必ずしも一致しないことに注意 返された配列のサイズを行列の大きさとして使わないこと！
 		 * 
 		 */
-		protected var m:Vector.<Vector.<Number>>; 
+		protected var _m:Vector.<Vector.<Number>>; 
 		private var __matrixSelfInv_nos:Vector.<Number>;
 
 		private var clm:int;
@@ -51,7 +52,6 @@ package jp.nyatla.nyartoolkit.as3.core
 		
 		public function NyARMat(...args:Array)
 		{
-			super(NyAS3Const_Inherited);
 			switch(args.length) {
 			case 1:
 				if (args[0] is NyAS3Const_Inherited) {
@@ -69,9 +69,9 @@ package jp.nyatla.nyartoolkit.as3.core
 			}			
 		}		
 
-		private function overload_NyARMat_2ii(i_row:int,i_clm:int)
+		private function overload_NyARMat_2ii(i_row:int,i_clm:int):void
 		{
-			this.m = ArrayUtils.create2dNumber(i_row, i_clm);
+			this._m = ArrayUtils.create2dNumber(i_row, i_clm);
 			this.__matrixSelfInv_nos=new Vector.<Number>(i_row);
 			this.clm = i_clm;
 			this.row = i_row;
@@ -89,7 +89,7 @@ package jp.nyatla.nyartoolkit.as3.core
 		 * @param i_is_attached_buffer
 		 * i_mをインスタンスが管理するかを示します。trueの場合、i_mの所有権はインスタンスに移ります。
 		 */
-		private function overload_NyARMat_4iiao(i_row:int,i_clm:int,i_m:Vector.<Vector.<Number>>,i_is_attached_buffer:Boolean)
+		private function overload_NyARMat_4iiao(i_row:int,i_clm:int,i_m:Vector.<Vector.<Number>>,i_is_attached_buffer:Boolean):void
 		{
 			this.clm=i_clm;
 			this.row=i_row;
@@ -113,7 +113,7 @@ package jp.nyatla.nyartoolkit.as3.core
 		}
 		public function getArray():Vector.<Vector.<Number>>
 		{
-			return this.m;
+			return this._m;
 		}
 		/**
 		 * 逆行列を計算して、thisへ格納します。
@@ -121,7 +121,7 @@ package jp.nyatla.nyartoolkit.as3.core
 		 */
 		public function matrixSelfInv():Boolean
 		{
-			var ap:Vector.<Vector.<Number>> = this.m;
+			var ap:Vector.<Vector.<Number>> = this._m;
 			var dimen:int = this.row;
 			var dimen_1:int = dimen - 1;
 			var ap_n:Vector.<Number>, ap_ip:Vector.<Number>, ap_i:Vector.<Number>;// wap;
@@ -228,17 +228,7 @@ package jp.nyatla.nyartoolkit.as3.core
 				}
 			}
 		}
-		/**
-		 * 行列のバッファを返します。
-		 * 返却値の有効期間に注意してください。
-		 * この値の有効時間は、次にこのこのインスタンスの関数を実行するまでの間です。
-		 * @return
-		 * 行列のバッファ
-		 */
-		public function getArray():Vector.<Vector.<Number>>
-		{
-			return _m;
-		}
+
 		/**
 		 * 行列の要素を、全て0にします。
 		 */

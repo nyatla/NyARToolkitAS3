@@ -25,10 +25,10 @@
 package jp.nyatla.nyartoolkit.as3.core.pixeldriver
 {
 
-	import jp.nyatla.nyartoolkit.core.NyARException;
-	import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
-	import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
-	import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
+	import jp.nyatla.nyartoolkit.as3.core.NyARException;
+	import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
+	import jp.nyatla.nyartoolkit.as3.core.types.NyARBufferType;
+	import jp.nyatla.nyartoolkit.as3.core.types.*;
 
 	/**
 	 * この関数は、NyARRgbRasterからコールします。
@@ -45,28 +45,11 @@ package jp.nyatla.nyartoolkit.as3.core.pixeldriver
 		{
 			var ret:INyARRgbPixelDriver;
 			switch(i_raster.getBufferType()){
-			case NyARBufferType.BYTE1D_B8G8R8_24:
-				ret=new NyARRgbPixelDriver_BYTE1D_B8G8R8_24();
-				break;
-			case NyARBufferType.BYTE1D_B8G8R8X8_32:
-				ret=new NyARRgbPixelDriver_BYTE1D_B8G8R8X8_32();
-				break;
-			case NyARBufferType.BYTE1D_R8G8B8_24:
-				ret=new NyARRgbPixelDriver_BYTE1D_R8G8B8_24();
-				break;
-			case NyARBufferType.BYTE1D_X8R8G8B8_32:
-				ret=new NyARRgbPixelDriver_BYTE1D_X8R8G8B8_32();
-			case NyARBufferType.BYTE1D_X8B8G8R8_32:
-				ret=new NyARRgbPixelDriver_BYTE1D_X8B8G8R8_32();
-				break;
 			case NyARBufferType.INT1D_GRAY_8:
 				ret=new NyARRgbPixelDriver_INT1D_GRAY_8();
 				break;
 			case NyARBufferType.INT1D_X8R8G8B8_32:
 				ret= new NyARRgbPixelDriver_INT1D_X8R8G8B8_32();
-				break;
-			case NyARBufferType.BYTE1D_R5G6B5_16BE:
-				ret= new NyARRgbPixelDriver_WORD1D_R5G6B5_16LE();
 				break;
 			default:
 				throw new NyARException();		
@@ -75,148 +58,152 @@ package jp.nyatla.nyartoolkit.as3.core.pixeldriver
 			return ret;
 		}
 	}
-	//--------------------------------------------------------------------------------
-	//ピクセルドライバの定義
-	//--------------------------------------------------------------------------------
+}
+//--------------------------------------------------------------------------------
+//ピクセルドライバの定義
+//--------------------------------------------------------------------------------
+import jp.nyatla.nyartoolkit.as3.core.NyARException;
+import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
+import jp.nyatla.nyartoolkit.as3.core.pixeldriver.*;
+import jp.nyatla.nyartoolkit.as3.core.types.NyARBufferType;
+import jp.nyatla.nyartoolkit.as3.core.types.*;
 
 
+/**
+* このクラスは、{@link NyARBufferType#INT1D_GRAY_8}形式のラスタバッファに対応する、ピクセルリーダです。
+*/
+class NyARRgbPixelDriver_INT1D_GRAY_8 implements INyARRgbPixelDriver
+{
+	/** 参照する外部バッファ */
+	private var _ref_buf:Vector.<int>;
 
-	/**
-	* このクラスは、{@link NyARBufferType#INT1D_GRAY_8}形式のラスタバッファに対応する、ピクセルリーダです。
-	*/
-	final class NyARRgbPixelDriver_INT1D_GRAY_8 implements INyARRgbPixelDriver
+	private var _ref_size:NyARIntSize;
+	public function getSize():NyARIntSize
 	{
-		/** 参照する外部バッファ */
-		private var _ref_buf:Vector.<int>;
-
-		private var _ref_size:NyARIntSize;
-		public function getSize():NyARIntSize
-		{
-			return this._ref_size;
-		}
-		/**
-		 * この関数は、指定した座標の1ピクセル分のRGBデータを、配列に格納して返します。
-		 */
-		public function getPixel(i_x:int,i_y:int,o_rgb:Vector.<int>):void
-		{
-			o_rgb[0] = o_rgb[1] = o_rgb[2] = this._ref_buf[i_x + i_y * this._ref_size.w];
-			return;
-		}
-
-		/**
-		 * この関数は、座標群から、ピクセルごとのRGBデータを、配列に格納して返します。
-		 */
-		public function getPixelSet(i_x:Vector.<int>,i_y:Vector.<int>, i_num:int, o_rgb:Vector.<int>):void
-		{
-			var width:int = this._ref_size.w;
-			var ref_buf:Vector.<int> = this._ref_buf;
-			for (var i:int = i_num - 1; i >= 0; i--) {
-				o_rgb[i * 3 + 0] = o_rgb[i * 3 + 1] = o_rgb[i * 3 + 2] = ref_buf[i_x[i]+ i_y[i] * width];
-			}
-			return;
-		}
-
-		/**
-		 * この関数は、機能しません。
-		 */
-		public function setPixel(i_x:int,i_y:int,i_rgb:Vector.<int>):void
-		{
-			NyARException.notImplement();
-		}
-
-		/**
-		 * この関数は、機能しません。
-		 */
-		public function setPixel(i_x:int,i_y:int,i_r:int,i_g:int,i_b:int):void
-		{
-			NyARException.notImplement();
-		}
-
-		/**
-		 * この関数は、機能しません。
-		 */
-		public function setPixels(i_x:Vector.<int>, i_y:Vector.<int>, i_num:int, i_intrgb:Vector.<int>):void
-		{
-			NyARException.notImplement();
-		}
-
-		public function switchRaster(i_raster:INyARRgbRaster):void
-		{
-			this._ref_buf = (Vector.<int>)(i_raster.getBuffer());
-			this._ref_size = i_raster.getSize();
-		}
+		return this._ref_size;
+	}
+	/**
+	 * この関数は、指定した座標の1ピクセル分のRGBデータを、配列に格納して返します。
+	 */
+	public function getPixel(i_x:int,i_y:int,o_rgb:Vector.<int>):void
+	{
+		o_rgb[0] = o_rgb[1] = o_rgb[2] = this._ref_buf[i_x + i_y * this._ref_size.w];
+		return;
 	}
 
 	/**
-	* このクラスは、{@link NyARBufferType#INT1D_X8R8G8B8_32}形式のラスタバッファに対応する、ピクセルリーダです。
-	*/
-	final class NyARRgbPixelDriver_INT1D_X8R8G8B8_32 implements INyARRgbPixelDriver
+	 * この関数は、座標群から、ピクセルごとのRGBデータを、配列に格納して返します。
+	 */
+	public function getPixelSet(i_x:Vector.<int>,i_y:Vector.<int>, i_num:int, o_rgb:Vector.<int>):void
 	{
-		/** 参照する外部バッファ */
-		private var _ref_buf:Vector.<int>;
+		var width:int = this._ref_size.w;
+		var ref_buf:Vector.<int> = this._ref_buf;
+		for (var i:int = i_num - 1; i >= 0; i--) {
+			o_rgb[i * 3 + 0] = o_rgb[i * 3 + 1] = o_rgb[i * 3 + 2] = ref_buf[i_x[i]+ i_y[i] * width];
+		}
+		return;
+	}
 
-		private var _ref_size:NyARIntSize;
-		public function getSize():NyARIntSize
-		{
-			return this._ref_size;
-		}
-		/**
-		 * この関数は、指定した座標の1ピクセル分のRGBデータを、配列に格納して返します。
-		 */
-		public function getPixel(i_x:int, int i_y:int, o_rgb:Vector.<int>):void
-		{
-			var rgb:int = this._ref_buf[i_x + i_y * this._ref_size.w];
-			o_rgb[0] = (rgb >> 16) & 0xff;// R
-			o_rgb[1] = (rgb >> 8) & 0xff;// G
-			o_rgb[2] = rgb & 0xff;// B
-			return;
-		}
+	/**
+	 * この関数は、機能しません。
+	 */
+	public function setPixel_2(i_x:int,i_y:int,i_rgb:Vector.<int>):void
+	{
+		NyARException.notImplement();
+	}
 
-		/**
-		 * この関数は、座標群から、ピクセルごとのRGBデータを、配列に格納して返します。
-		 */
-		public void getPixelSet(i_x:Vector.<int>, i_y:Vector.<int>, i_num:int, o_rgb:Vector.<int>)
-		{
-			var width:int = this._ref_size.w;
-			var ref_buf:Vector.<int> = this._ref_buf;
-			for (var i:int = i_num - 1; i >= 0; i--) {
-				var rgb:int = ref_buf[i_x[i] + i_y[i] * width];
-				o_rgb[i * 3 + 0] = (rgb >> 16) & 0xff;// R
-				o_rgb[i * 3 + 1] = (rgb >> 8) & 0xff;// G
-				o_rgb[i * 3 + 2] = rgb & 0xff;// B
-			}
-			return;
-		}
+	/**
+	 * この関数は、機能しません。
+	 */
+	public function setPixel_1(i_x:int,i_y:int,i_r:int,i_g:int,i_b:int):void
+	{
+		NyARException.notImplement();
+	}
 
-		/**
-		 * この関数は、RGBデータを指定した座標のピクセルにセットします。
-		 */
-		public function setPixel(i_x:int,i_y:int,i_rgb:Vector.<int>):void
-		{
-			this._ref_buf[i_x + i_y * this._ref_size.w] = (i_rgb[0] << 16)
-					| (i_rgb[1] << 8) | (i_rgb[2]);
-		}
+	/**
+	 * この関数は、機能しません。
+	 */
+	public function setPixels(i_x:Vector.<int>, i_y:Vector.<int>, i_num:int, i_intrgb:Vector.<int>):void
+	{
+		NyARException.notImplement();
+	}
 
-		/**
-		 * この関数は、RGBデータを指定した座標のピクセルにセットします。
-		 */
-		public function setPixel(i_x:int, i_y:int, i_r:int, i_g:int, i_b:int):void
-		{
-			this._ref_buf[i_x + i_y * this._ref_size.w] = (i_r << 16) | (i_g << 8) | (i_b);
-		}
+	public function switchRaster(i_raster:INyARRgbRaster):void
+	{
+		this._ref_buf = (Vector.<int>)(i_raster.getBuffer());
+		this._ref_size = i_raster.getSize();
+	}
+}
 
-		/**
-		 * この関数は、機能しません。
-		 */
-		public function setPixels(i_x:Vector.<int>, i_y:Vector.<int>, i_num:int, i_intrgb:Vector.<int>):void
-		{
-			NyARException.notImplement();
-		}
+/**
+* このクラスは、{@link NyARBufferType#INT1D_X8R8G8B8_32}形式のラスタバッファに対応する、ピクセルリーダです。
+*/
+class NyARRgbPixelDriver_INT1D_X8R8G8B8_32 implements INyARRgbPixelDriver
+{
+	/** 参照する外部バッファ */
+	private var _ref_buf:Vector.<int>;
 
-		public function switchRaster(i_raster:INyARRgbRaster):void
-		{
-			this._ref_buf = Vector.<int>(i_raster.getBuffer());
-			this._ref_size = i_raster.getSize();
+	private var _ref_size:NyARIntSize;
+	public function getSize():NyARIntSize
+	{
+		return this._ref_size;
+	}
+	/**
+	 * この関数は、指定した座標の1ピクセル分のRGBデータを、配列に格納して返します。
+	 */
+	public function getPixel(i_x:int,i_y:int, o_rgb:Vector.<int>):void
+	{
+		var rgb:int = this._ref_buf[i_x + i_y * this._ref_size.w];
+		o_rgb[0] = (rgb >> 16) & 0xff;// R
+		o_rgb[1] = (rgb >> 8) & 0xff;// G
+		o_rgb[2] = rgb & 0xff;// B
+		return;
+	}
+
+	/**
+	 * この関数は、座標群から、ピクセルごとのRGBデータを、配列に格納して返します。
+	 */
+	public function getPixelSet(i_x:Vector.<int>, i_y:Vector.<int>, i_num:int, o_rgb:Vector.<int>):void
+	{
+		var width:int = this._ref_size.w;
+		var ref_buf:Vector.<int> = this._ref_buf;
+		for (var i:int = i_num - 1; i >= 0; i--) {
+			var rgb:int = ref_buf[i_x[i] + i_y[i] * width];
+			o_rgb[i * 3 + 0] = (rgb >> 16) & 0xff;// R
+			o_rgb[i * 3 + 1] = (rgb >> 8) & 0xff;// G
+			o_rgb[i * 3 + 2] = rgb & 0xff;// B
 		}
+		return;
+	}
+
+	/**
+	 * この関数は、RGBデータを指定した座標のピクセルにセットします。
+	 */
+	public function setPixel_2(i_x:int,i_y:int,i_rgb:Vector.<int>):void
+	{
+		this._ref_buf[i_x + i_y * this._ref_size.w] = (i_rgb[0] << 16)
+				| (i_rgb[1] << 8) | (i_rgb[2]);
+	}
+
+	/**
+	 * この関数は、RGBデータを指定した座標のピクセルにセットします。
+	 */
+	public function setPixel_1(i_x:int, i_y:int, i_r:int, i_g:int, i_b:int):void
+	{
+		this._ref_buf[i_x + i_y * this._ref_size.w] = (i_r << 16) | (i_g << 8) | (i_b);
+	}
+
+	/**
+	 * この関数は、機能しません。
+	 */
+	public function setPixels(i_x:Vector.<int>, i_y:Vector.<int>, i_num:int, i_intrgb:Vector.<int>):void
+	{
+		NyARException.notImplement();
+	}
+
+	public function switchRaster(i_raster:INyARRgbRaster):void
+	{
+		this._ref_buf = Vector.<int>(i_raster.getBuffer());
+		this._ref_size = i_raster.getSize();
 	}
 }

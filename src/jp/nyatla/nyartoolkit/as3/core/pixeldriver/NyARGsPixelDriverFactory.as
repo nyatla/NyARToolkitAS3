@@ -25,12 +25,11 @@
 package jp.nyatla.nyartoolkit.as3.core.pixeldriver
 {
 
-	import jp.nyatla.nyartoolkit.core.NyARException;
-	import jp.nyatla.nyartoolkit.core.raster.INyARGrayscaleRaster;
-	import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
-	import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
-	import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
-	import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
+	import jp.nyatla.nyartoolkit.as3.core.raster.*;
+
+	import jp.nyatla.nyartoolkit.as3.core.*;
+	import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
+	import jp.nyatla.nyartoolkit.as3.core.types.*;
 
 	/**
 	 * このクラスは、INyARGsPixelDriverインタフェイスを持つオブジェクトを構築する手段を提供します。
@@ -43,7 +42,7 @@ package jp.nyatla.nyartoolkit.as3.core.pixeldriver
 		 * @return
 		 * @throws NyARException
 		 */
-		public static function createDriver( i_ref_raster:INyARGrayscaleRaster):INyARGsPixelDriver
+		public static function createDriver_1( i_ref_raster:INyARGrayscaleRaster):INyARGsPixelDriver
 		{
 			var ret:INyARGsPixelDriver;
 			switch(i_ref_raster.getBufferType()){
@@ -53,8 +52,8 @@ package jp.nyatla.nyartoolkit.as3.core.pixeldriver
 				break;
 			default:
 				//RGBRasterインタフェイスがある場合
-				if(i_ref_raster instanceof INyARRgbRaster){
-					ret=new NyARGsPixelDriver_RGBX((INyARRgbRaster)i_ref_raster);
+				if(i_ref_raster is INyARRgbRaster){
+					ret=new NyARGsPixelDriver_RGBX(INyARRgbRaster(i_ref_raster));
 					break;
 				}
 				throw new NyARException();
@@ -62,7 +61,7 @@ package jp.nyatla.nyartoolkit.as3.core.pixeldriver
 			ret.switchRaster(i_ref_raster);
 			return ret;
 		}
-		public static function createDriver(i_ref_raster:INyARRgbRaster):INyARGsPixelDriver
+		public static function createDriver_2(i_ref_raster:INyARRgbRaster):INyARGsPixelDriver
 		{
 			//RGBRasterインタフェイスがある場合
 			return new NyARGsPixelDriver_RGBX(i_ref_raster);
@@ -73,7 +72,12 @@ package jp.nyatla.nyartoolkit.as3.core.pixeldriver
 //	ピクセルドライバの定義
 //
 
-
+import jp.nyatla.nyartoolkit.as3.core.*;
+import jp.nyatla.nyartoolkit.as3.core.raster.*;
+import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
+import jp.nyatla.nyartoolkit.as3.core.rasterdriver.*;
+import jp.nyatla.nyartoolkit.as3.core.pixeldriver.*;
+import jp.nyatla.nyartoolkit.as3.core.types.*;
 
 /**
  * INT1D_GRAY_8のドライバです。
@@ -155,16 +159,16 @@ class NyARGsPixelDriver_RGBX implements INyARGsPixelDriver
 		this._rgbd.getPixel(i_x,i_y,tmp);
 		return (tmp[0]+tmp[1]+tmp[2])/3;
 	}
-	public function setPixel(int i_x, int i_y, int i_gs):void
+	public function setPixel(i_x:int,i_y:int,i_gs:int):void
 	{
-		this._rgbd.setPixel(i_x, i_y, i_gs,i_gs,i_gs);
+		this._rgbd.setPixel_1(i_x, i_y, i_gs,i_gs,i_gs);
 	}
 	public function setPixels(i_x:Vector.<int>,i_y:Vector.<int>,i_num:int,i_intgs:Vector.<int>):void
 	{
 		var r:INyARRgbPixelDriver=this._rgbd;
 		for (var i:int = i_num - 1; i >= 0; i--){
 			var gs:int=i_intgs[i];
-			r.setPixel(i_x[i], i_y[i],gs,gs,gs);
+			r.setPixel_1(i_x[i], i_y[i],gs,gs,gs);
 		}
 	}
 	public function switchRaster(i_ref_raster:INyARRaster ):void
@@ -172,7 +176,7 @@ class NyARGsPixelDriver_RGBX implements INyARGsPixelDriver
 		if(!(i_ref_raster is INyARRgbRaster)){
 			throw new NyARException();
 		}
-		this._rgbd=((INyARRgbRaster)i_ref_raster).getRgbPixelDriver();
+		this._rgbd=(INyARRgbRaster(i_ref_raster)).getRgbPixelDriver();
 	}
 	public function isCompatibleRaster(i_raster:INyARRaster):Boolean
 	{

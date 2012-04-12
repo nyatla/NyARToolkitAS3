@@ -120,14 +120,14 @@ package jp.nyatla.nyartoolkit.as3.rpf.mklib
 		 * @return
 		 * @throws NyARException
 		 */
-		public function addMarkerFromARPattFile(i_filename:String,i_id:int,i_name:String,i_width:Number,i_height:Number):Boolean
+		public function addMarkerFromARPattFile(i_stream:String,i_id:int,i_name:String,i_width:Number,i_height:Number):Boolean
 		{
 			var d:SerialTableRow=SerialTableRow(this._table.prePush());
 			if(d==null){
 				return false;
 			}
 			var c:NyARCode=new NyARCode(this._resolution_width,this._resolution_height);
-			c.loadARPattFromFile(i_filename);
+			c.loadARPatt(i_stream);
 			d.setValue(c,i_id,i_name,i_width,i_height);
 			return true;
 		}	
@@ -151,13 +151,13 @@ package jp.nyatla.nyartoolkit.as3.rpf.mklib
 		{
 			//パターン抽出
 			var tmp_patt_result:NyARMatchPattResult=this.__tmp_patt_result;
-			var r:NyARPerspectiveRasterReader=i_rtsorce.refPerspectiveRasterReader();
-			r.read4Point_1(i_rtsorce.refRgbSource(),i_target.refTargetVertex(),this._edge_x,this._edge_y,this._sample_per_pix,this._tmp_raster);
+			var r:INyARPerspectiveCopy=i_rtsorce.refPerspectiveRasterReader();
+			r.copyPatt(i_target.refTargetVertex(),this._edge_x,this._edge_y,this._sample_per_pix,this._tmp_raster);
 			//比較パターン生成
 			this._deviation_data.setRaster_1(this._tmp_raster);
 			var ret:int=-1;
 			var dir:int=-1;
-			var cf:Number=Number.MIN_VALUE;
+			var cf:Number=0;
 			for(var i:int=this._table.getLength()-1;i>=0;i--){
 				this._match_patt.setARCode(this._table.getItem(i).code);
 				this._match_patt.evaluate(this._deviation_data, tmp_patt_result);

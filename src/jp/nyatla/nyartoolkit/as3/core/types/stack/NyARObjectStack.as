@@ -31,7 +31,7 @@
 package jp.nyatla.nyartoolkit.as3.core.types.stack
 {	
 	import jp.nyatla.as3utils.*;
-	import jp.nyatla.nyartoolkit.as3.*;
+	import jp.nyatla.nyartoolkit.as3.core.*;
 	/**
 	 * スタック型の可変長配列。
 	 * 配列には実体を格納します。

@@ -39,12 +39,12 @@ package jp.nyatla.nyartoolkit.as3.core.rasterfilter.rgb2gs
 		 * @param i_raster
 		 * @throws NyARException
 		 */
-		public function convertRect(l:int,t:int,w:int,h:int,i_raster:INyARGrayscaleRaster):void;
+		function convertRect(l:int,t:int,w:int,h:int,i_raster:INyARGrayscaleRaster):void;
 		/**
 		 * 同一サイズの画像にグレースケール画像を生成します。
 		 * @param i_raster
 		 * @throws NyARException
 		 */
-		public function convert(i_raster:INyARGrayscaleRaster):void;
+		function convert(i_raster:INyARGrayscaleRaster):void;
 	}
 }

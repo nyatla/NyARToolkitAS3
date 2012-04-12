@@ -30,12 +30,47 @@
  */
 package jp.nyatla.nyartoolkit.as3.core.types 
 {
+	import jp.nyatla.nyartoolkit.as3.core.*;
 	/**
 	 * 基点x,yと、幅、高さで矩形を定義します。
 	 *
 	 */
 	public class NyARIntRect
 	{
+		public function NyARIntRect(...args:Array)
+		{
+			switch(args.length) {
+			case 0:
+				{	//public function NyARIntRect()
+					return;
+				}
+			case 4:
+				{	//public function NyARIntSize(i_ref_object:NyARIntSize)
+					override_NyARIntRect_4iiii(int(args[0]), int(args[1]), int(args[2]), int(args[3]));
+					return;
+				}
+				break;
+			default:
+				break;
+			}
+			throw new NyARException();
+		}
+		/**
+		 * コンストラクタです。初期値を指定してインスタンスを生成します。
+		 * @param i_x
+		 * {@link #x}の値
+		 * @param i_y
+		 * {@link #y}の値
+		 * @param i_w
+		 * {@link #w}の値
+		 * @param i_h
+		 * {@link #h}の値
+		 */
+		public function override_NyARIntRect_4iiii(i_x:int,i_y:int,i_w:int,i_h:int):void
+		{
+			this.setValue_2(i_x, i_y, i_w, i_h);
+		}
+		
 		public var x:int;
 		public var y:int;
 		public var w:int;
@@ -195,13 +230,30 @@ package jp.nyatla.nyartoolkit.as3.core.types
 			return lh * lh + lw * lw ;
 		}
 		
-		public function setValue( i_source:NyARIntRect ):void
+		public function setValue_1( i_source:NyARIntRect ):void
 		{ 
 			this.x = i_source.x ;
 			this.y = i_source.y ;
 			this.h = i_source.h ;
 			this.w = i_source.w ;
 		}
-		
+		/**
+		 * この関数は、インスタンスに値をセットします。
+		 * @param i_x
+		 * 新しい{@link #x}の値
+		 * @param i_y
+		 * 新しい{@link #y}の値
+		 * @param i_w
+		 * 新しい{@link #w}の値
+		 * @param i_h
+		 * 新しい{@link #h}の値
+		 */
+		public function setValue_2(i_x:int,i_y:int,i_w:int,i_h:int):void
+		{
+			this.x=i_x;
+			this.y=i_y;
+			this.h=i_h;
+			this.w=i_w;
+		}		
 	}
 }

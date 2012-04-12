@@ -73,7 +73,7 @@ package jp.nyatla.nyartoolkit.as3.core
 			}
 			return;
 		}
-		public function loadARPattFromFile(i_stream:String):void
+		public function loadARPatt(i_stream:String):void
 		{
 			NyARCodeFileReader.loadFromARToolKitFormFile(i_stream,this);
 			return;
@@ -117,7 +117,6 @@ import jp.nyatla.nyartoolkit.as3.core.*;
 import jp.nyatla.nyartoolkit.as3.*;
 import jp.nyatla.nyartoolkit.as3.core.raster.*;
 import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
-import jp.nyatla.nyartoolkit.as3.core.rasterreader.*;
 import jp.nyatla.nyartoolkit.as3.core.types.*;
 	
 class NyARCodeFileReader

@@ -70,6 +70,8 @@ package jp.nyatla.nyartoolkit.as3.core.types
 		 * byte[]で、X8R8G8B8の32ビットで画素が格納されている。
 		 */
 		public static const BYTE1D_X8R8G8B8_32:int = T_BYTE1D|0x0102;
+	
+		public static const BYTE1D_X8B8G8R8_32:int = T_BYTE1D|0x0103;
 
 		/**
 		 * byte[]で、RGB565の16ビット(little/big endian)で画素が格納されている。
@@ -129,6 +131,11 @@ package jp.nyatla.nyartoolkit.as3.core.types
 		public static const OBJECT_Java:int= T_OBJECT|0x0100;
 		public static const OBJECT_CS:int  = T_OBJECT|0x0200;
 		public static const OBJECT_AS3:int = T_OBJECT|0x0300;
+		/**
+		 * RGB形式。バッファは、C#のBitmap型オブジェクト
+		 */
+		public static const OBJECT_CS_Bitmap:int = OBJECT_CS | 0x01;
+		public static const OBJECT_CS_Unity:int = OBJECT_CS | 0x11;    
 		
 		/**
 		 * JavaのBufferedImageを格納するラスタ

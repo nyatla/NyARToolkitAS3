@@ -28,7 +28,7 @@
  *	<airmail(at)ebony.plala.or.jp> or <nyatla(at)nyatla.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.as3 
+package jp.nyatla.nyartoolkit.as3.core 
 {
 	/**
 	 * NyARToolkitライブラリが生成するExceptionオブジェクトです。

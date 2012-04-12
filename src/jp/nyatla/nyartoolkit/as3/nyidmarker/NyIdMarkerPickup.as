@@ -33,8 +33,9 @@ package jp.nyatla.nyartoolkit.as3.nyidmarker
 	import jp.nyatla.nyartoolkit.as3.core.squaredetect.*;
 	import jp.nyatla.nyartoolkit.as3.core.raster.*;
 	import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
-	import jp.nyatla.nyartoolkit.as3.core.rasterreader.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
+	import jp.nyatla.nyartoolkit.as3.core.rasterdriver.*;
+	import jp.nyatla.nyartoolkit.as3.core.pixeldriver.*;
 
 	/**
 	 * ラスタ画像の任意矩形から、NyARIdMarkerDataを抽出します。
@@ -52,13 +53,13 @@ package jp.nyatla.nyartoolkit.as3.nyidmarker
 			this._perspective_reader=new PerspectivePixelReader();
 			return;
 		}
-		public function pickFromRaster_1(image:INyARRgbRaster,i_vertex:Vector.<NyARDoublePoint2d>,o_data:NyIdMarkerPattern,o_param:NyIdMarkerParam):Boolean
+		public function pickFromRaster_1(i_pix_drv:INyARGsPixelDriver,i_vertex:Vector.<NyARDoublePoint2d>,o_data:NyIdMarkerPattern,o_param:NyIdMarkerParam):Boolean
 		{
 			//遠近法のパラメータを計算
 			if(!this._perspective_reader.setSourceSquare_2(i_vertex)){
 				return false;
 			}
-			return this._pickFromRaster(image,o_data,o_param);
+			return this._pickFromRaster(i_pix_drv,o_data,o_param);
 		}
 		/**
 		 * imageの4頂点で囲まれた矩形からidマーカを読みだします。
@@ -69,12 +70,12 @@ package jp.nyatla.nyartoolkit.as3.nyidmarker
 		 * @return
 		 * @throws NyARException
 		 */
-		public function pickFromRaster_2(image:INyARRgbRaster,i_vertex:Vector.<NyARIntPoint2d>,o_data:NyIdMarkerPattern,o_param:NyIdMarkerParam):Boolean
+		public function pickFromRaster_2(i_pix_drv:INyARGsPixelDriver,i_vertex:Vector.<NyARIntPoint2d>,o_data:NyIdMarkerPattern,o_param:NyIdMarkerParam):Boolean
 		{
 			if(!this._perspective_reader.setSourceSquare_1(i_vertex)){
 				return false;
 			}
-			return this._pickFromRaster(image,o_data,o_param);
+			return this._pickFromRaster(i_pix_drv,o_data,o_param);
 		}
 		
 		/**
@@ -87,17 +88,15 @@ package jp.nyatla.nyartoolkit.as3.nyidmarker
 		 * @return
 		 * @throws NyARException
 		 */
-		private function _pickFromRaster(image:INyARRgbRaster, o_data:NyIdMarkerPattern , o_param:NyIdMarkerParam):Boolean
+		private function _pickFromRaster(i_pix_drv:INyARGsPixelDriver, o_data:NyIdMarkerPattern , o_param:NyIdMarkerParam):Boolean
 		{
-			var reader:INyARRgbPixelReader=image.getRgbPixelReader();
-			var raster_size:NyARIntSize=image.getSize();
 
 			var th:TThreshold=this.__pickFromRaster_th;
 			var encoder:MarkerPattEncoder=this.__pickFromRaster_encoder;
 			//マーカパラメータを取得
-			this._perspective_reader.detectThresholdValue(reader,raster_size,th);
+			this._perspective_reader.detectThresholdValue(i_pix_drv,th);
 
-			if(!this._perspective_reader.readDataBits(reader,raster_size,th, encoder)){
+			if(!this._perspective_reader.readDataBits(i_pix_drv,i_pix_drv.getSize(),th, encoder)){
 				return false;
 			}
 			var d:int=encoder.encode(o_data);
@@ -114,7 +113,7 @@ package jp.nyatla.nyartoolkit.as3.nyidmarker
 
 import jp.nyatla.as3utils.*;
 import jp.nyatla.nyartoolkit.as3.core.utils.*;
-import jp.nyatla.nyartoolkit.as3.core.rasterreader.*;
+import jp.nyatla.nyartoolkit.as3.core.pixeldriver.*;
 import jp.nyatla.nyartoolkit.as3.core.types.*;
 import jp.nyatla.nyartoolkit.as3.nyidmarker.*;
 import jp.nyatla.nyartoolkit.as3.nyidmarker.data.*;
@@ -156,7 +155,7 @@ class PerspectivePixelReader
 	 * @param o_pixel
 	 * @throws NyARException
 	 */
-	private function rectPixels(i_reader:INyARRgbPixelReader,i_raster_size:NyARIntSize,i_lt_x:int,i_lt_y:int,i_step_x:int,i_step_y:int,i_width:int,i_height:int,i_out_st:int,o_pixel:Vector.<int>):Boolean
+	private function rectPixels(i_reader:INyARGsPixelDriver,i_raster_size:NyARIntSize,i_lt_x:int,i_lt_y:int,i_step_x:int,i_step_y:int,i_width:int,i_height:int,i_out_st:int,o_pixel:Vector.<int>):Boolean
 	{
 		var cpara:Vector.<Number>=this._cparam;
 		var ref_x:Vector.<int>=this._ref_x;
@@ -192,14 +191,9 @@ class PerspectivePixelReader
 				ref_y[pt]=y;
 				pt++;
 			}
-			//1行分のピクセルを取得(場合によっては専用アクセサを書いた方がいい)
-			i_reader.getPixelSet(ref_x,ref_y,i_width,pixcel_temp);
-			//グレースケールにしながら、line→mapへの転写
-			for(i2=0;i2<i_width;i2++){
-				var index:int=i2*3;
-				o_pixel[out_index]=(pixcel_temp[index+0]+pixcel_temp[index+1]+pixcel_temp[index+2])/3;
-				out_index++;
-			}			
+			//GS値を配列に取得
+			i_reader.getPixelSet(ref_x,ref_y,i_width,o_pixel,out_index);
+			out_index += i_width;
 		}
 		return true;
 	}
@@ -290,7 +284,7 @@ class PerspectivePixelReader
 	 * @return
 	 * @throws NyARException
 	 */
-	public function getRowFrequency(i_reader:INyARRgbPixelReader,i_raster_size:NyARIntSize,i_y1:int,i_th_h:int,i_th_l:int,o_edge_index:Vector.<int>):int
+	public function getRowFrequency(i_reader:INyARGsPixelDriver,i_raster_size:NyARIntSize,i_y1:int,i_th_h:int,i_th_l:int,o_edge_index:Vector.<int>):int
 	{
 		var i:int;
 		//3,4,5,6,7,8,9,10
@@ -341,7 +335,7 @@ class PerspectivePixelReader
 			}
 			
 			//ピクセルを取得(入力画像を多様化するならここから先を調整すること)
-			i_reader.getPixelSet(ref_x,ref_y,FRQ_POINTS,pixcel_temp);
+			i_reader.getPixelSet(ref_x,ref_y,FRQ_POINTS,pixcel_temp,0);
 
 			//o_edge_indexを一時的に破壊して調査する
 			var freq_t:int=getFreqInfo(pixcel_temp,i_th_h,i_th_l,o_edge_index);			
@@ -364,7 +358,7 @@ class PerspectivePixelReader
 		return getMaxFreq(freq_count_table,freq_table,o_edge_index);
 	}
 	
-	public function getColFrequency(i_reader:INyARRgbPixelReader,i_raster_size:NyARIntSize,i_x1:int,i_th_h:int,i_th_l:int,o_edge_index:Vector.<int>):int
+	public function getColFrequency(i_reader:INyARGsPixelDriver,i_raster_size:NyARIntSize,i_x1:int,i_th_h:int,i_th_l:int,o_edge_index:Vector.<int>):int
 	{
 		var i:int;
 		var cpara:Vector.<Number>=this._cparam;
@@ -416,7 +410,7 @@ class PerspectivePixelReader
 			}		
 		
 			//ピクセルを取得(入力画像を多様化するならここを調整すること)
-			i_reader.getPixelSet(ref_x,ref_y,FRQ_POINTS,pixcel_temp);
+			i_reader.getPixelSet(ref_x,ref_y,FRQ_POINTS,pixcel_temp,0);
 			
 			var freq_t:int=getFreqInfo(pixcel_temp,i_th_h,i_th_l,o_edge_index);
 			//周期は3-10であること
@@ -445,19 +439,16 @@ class PerspectivePixelReader
 	 * @param o_edge_index
 	 * @return
 	 */
-	private static function getFreqInfo(i_pixcels:Vector.<int>,i_th_h:int,i_th_l:int,o_edge_index:Vector.<int>):int
+	private static function getFreqInfo(i_gs_pixels:Vector.<int>,i_th_h:int,i_th_l:int,o_edge_index:Vector.<int>):int
 	{
 		//トークンを解析して、周波数を計算
 		var i:int=0;
 		var frq_l2h:int=0;
 		var frq_h2l:int = 0;
-		var index:int,pix:int;
 		while(i<FRQ_POINTS){
 			//L->Hトークンを検出する
 			while(i<FRQ_POINTS){
-				index=i*3;
-				pix=(i_pixcels[index+0]+i_pixcels[index+1]+i_pixcels[index+2])/3;
-				if(pix>i_th_h){
+				if(i_gs_pixels[i]>i_th_h){
 					//トークン発見
 					o_edge_index[frq_l2h+frq_h2l]=i;
 					frq_l2h++;
@@ -468,9 +459,7 @@ class PerspectivePixelReader
 			i++;
 			//L->Hトークンを検出する
 			while(i<FRQ_POINTS){
-				index=i*3;
-				pix=(i_pixcels[index+0]+i_pixcels[index+1]+i_pixcels[index+2])/3;
-				if(pix<=i_th_l){
+				if(i_gs_pixels[i]<=i_th_l){
 					//トークン発見
 					o_edge_index[frq_l2h+frq_h2l]=i;
 					frq_h2l++;
@@ -564,21 +553,21 @@ class PerspectivePixelReader
 	 * @return
 	 * @throws NyARException
 	 */
-	public function detectThresholdValue(i_reader:INyARRgbPixelReader,i_raster_size:NyARIntSize,o_threshold:TThreshold):void
+	public function detectThresholdValue(i_reader:INyARGsPixelDriver,o_threshold:TThreshold):void
 	{
 		var th_pixels:Vector.<int>=this._th_pixels;
-
+		var size:NyARIntSize = i_reader.getSize();
 		//左上のピックアップ領域からピクセルを得る(00-24)
-		rectPixels(i_reader,i_raster_size,THRESHOLD_SAMPLE_LT,THRESHOLD_SAMPLE_LT,THRESHOLD_STEP,THRESHOLD_STEP,THRESHOLD_PIXEL,THRESHOLD_PIXEL,0,th_pixels);
+		rectPixels(i_reader,size,THRESHOLD_SAMPLE_LT,THRESHOLD_SAMPLE_LT,THRESHOLD_STEP,THRESHOLD_STEP,THRESHOLD_PIXEL,THRESHOLD_PIXEL,0,th_pixels);
 		
 		//左下のピックアップ領域からピクセルを得る(25-49)
-		rectPixels(i_reader,i_raster_size,THRESHOLD_SAMPLE_LT,THRESHOLD_SAMPLE_RB,THRESHOLD_STEP,THRESHOLD_STEP,THRESHOLD_PIXEL,THRESHOLD_PIXEL,THRESHOLD_SAMPLE,th_pixels);
+		rectPixels(i_reader,size,THRESHOLD_SAMPLE_LT,THRESHOLD_SAMPLE_RB,THRESHOLD_STEP,THRESHOLD_STEP,THRESHOLD_PIXEL,THRESHOLD_PIXEL,THRESHOLD_SAMPLE,th_pixels);
 		
 		//右上のピックアップ領域からピクセルを得る(50-74)
-		rectPixels(i_reader,i_raster_size,THRESHOLD_SAMPLE_RB,THRESHOLD_SAMPLE_LT,THRESHOLD_STEP,THRESHOLD_STEP,THRESHOLD_PIXEL,THRESHOLD_PIXEL,THRESHOLD_SAMPLE*2,th_pixels);
+		rectPixels(i_reader,size,THRESHOLD_SAMPLE_RB,THRESHOLD_SAMPLE_LT,THRESHOLD_STEP,THRESHOLD_STEP,THRESHOLD_PIXEL,THRESHOLD_PIXEL,THRESHOLD_SAMPLE*2,th_pixels);
 
 		//右下のピックアップ領域からピクセルを得る(75-99)
-		rectPixels(i_reader,i_raster_size,THRESHOLD_SAMPLE_RB,THRESHOLD_SAMPLE_RB,THRESHOLD_STEP,THRESHOLD_STEP,THRESHOLD_PIXEL,THRESHOLD_PIXEL,THRESHOLD_SAMPLE*3,th_pixels);
+		rectPixels(i_reader,size,THRESHOLD_SAMPLE_RB,THRESHOLD_SAMPLE_RB,THRESHOLD_STEP,THRESHOLD_STEP,THRESHOLD_PIXEL,THRESHOLD_PIXEL,THRESHOLD_SAMPLE*3,th_pixels);
 
 		var hl:THighAndLow=this.__detectThresholdValue_hl;
 		//Ptailで求めたピクセル平均
@@ -665,7 +654,7 @@ class PerspectivePixelReader
 	}
 	private var __detectDataBitsIndex_freq_index1:Vector.<int>=new Vector.<int>(FRQ_POINTS);
 	private var __detectDataBitsIndex_freq_index2:Vector.<int>=new Vector.<int>(FRQ_POINTS);
-	private function detectDataBitsIndex(i_reader:INyARRgbPixelReader,i_raster_size:NyARIntSize,i_th:TThreshold,o_index_row:Vector.<Number>,o_index_col:Vector.<Number>):int
+	private function detectDataBitsIndex(i_reader:INyARGsPixelDriver,i_raster_size:NyARIntSize,i_th:TThreshold,o_index_row:Vector.<Number>,o_index_col:Vector.<Number>):int
 	{
 		var i:int;
 		//周波数を測定
@@ -729,7 +718,7 @@ class PerspectivePixelReader
 	private var __readDataBits_index_bit_x:Vector.<Number>=new Vector.<Number>(MAX_DATA_BITS*2);
 	private var __readDataBits_index_bit_y:Vector.<Number>=new Vector.<Number>(MAX_DATA_BITS*2);
 	
-	public function readDataBits(i_reader:INyARRgbPixelReader, i_raster_size:NyARIntSize, i_th:TThreshold, o_bitbuffer:MarkerPattEncoder):Boolean
+	public function readDataBits(i_reader:INyARGsPixelDriver, i_raster_size:NyARIntSize, i_th:TThreshold, o_bitbuffer:MarkerPattEncoder):Boolean
 	{
 		var raster_width:int=i_raster_size.w;
 		var raster_height:int=i_raster_size.h;
@@ -830,32 +819,20 @@ class PerspectivePixelReader
 				pt++;
 			}
 			//1行分のピクセルを取得(場合によっては専用アクセサを書いた方がいい)
-			i_reader.getPixelSet(ref_x,ref_y,resolution*4,pixcel_temp);
+			i_reader.getPixelSet(ref_x,ref_y,resolution*4,pixcel_temp,0);
 			//グレースケールにしながら、line→mapへの転写
 			for(i2=0;i2<resolution;i2++){
-				var index:int=i2*3*4;
-				var pixel:int=(	pixcel_temp[index+0]+pixcel_temp[index+1]+pixcel_temp[index+2]+
-							pixcel_temp[index+3]+pixcel_temp[index+4]+pixcel_temp[index+5]+
-							pixcel_temp[index+6]+pixcel_temp[index+7]+pixcel_temp[index+8]+
-							pixcel_temp[index+9]+pixcel_temp[index+10]+pixcel_temp[index+11])/(4*3);
+				var index:int=i2*4;
+				var pixel:int=(	pixcel_temp[index+0]+pixcel_temp[index+1]+pixcel_temp[index+2]+pixcel_temp[index+3])/4;
+//				+pixcel_temp[index+4]+pixcel_temp[index+5]+
+//							pixcel_temp[index+6]+pixcel_temp[index+7]+pixcel_temp[index+8]+
+//							pixcel_temp[index+9]+pixcel_temp[index+10]+pixcel_temp[index+11])/(4*3);
 				//暗点を1、明点を0で表現します。
-				o_bitbuffer.setBitByBitIndex(p,pixel>th?0:1);
+				o_bitbuffer.setBitByBitIndex(p, pixel > th?0:1);
 				p++;
 			}
 		}
-/*		
-		for(int i=0;i<225*4;i++){
-			this.vertex_x[i]=0;
-			this.vertex_y[i]=0;
-		}
-		for(int i=0;i<(resolution)*2;i++){
-			for(int i2=0;i2<(resolution)*2;i2++){
-				this.vertex_x[i*(resolution)*2+i2]=(int)index_x[i2];
-				this.vertex_y[i*(resolution)*2+i2]=(int)index_y[i];
-				
-			}
-		}
-*/		return true;
+		return true;
 	}
 	public function setSquare(i_vertex:Vector.<NyARIntPoint2d>):Boolean
 	{
@@ -866,6 +843,7 @@ class PerspectivePixelReader
 	}
 
 }
+
 class MarkerPattDecoder
 {
 	public function decode(model:int,domain:int,mask:int):void

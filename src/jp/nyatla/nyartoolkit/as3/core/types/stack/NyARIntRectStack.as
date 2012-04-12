@@ -38,7 +38,7 @@ package jp.nyatla.nyartoolkit.as3.core.types.stack
 			super();
 			this.initInstance_1(i_length);
 		}
-		protected function createElement_1():Object
+		protected override function createElement_1():Object
 		{
 			return new  NyARIntRect();
 		}		

@@ -183,6 +183,16 @@ package jp.nyatla.nyartoolkit.as3.core.types.matrix
 			return;
 		}
 		/**
+		 * この関数は、インスタンスに単位行列をロードします。
+		 */
+		public function loadIdentity():void
+		{
+			this.m00=this.m11=this.m22=1;
+			this.m01=this.m02=
+			this.m10=this.m12=
+			this.m20=this.m21=0;
+		}
+		/**
 		 * 回転行列を適応して座標変換します。
 		 * @param i_angle
 		 * @param o_out

@@ -1,7 +1,7 @@
 package jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk
 {
 
-	import jp.nyatla.nyartoolkit.as3.NyARException;
+	import jp.nyatla.nyartoolkit.as3.core.*;
 	import jp.nyatla.nyartoolkit.as3.core.param.NyARCameraDistortionFactor;
 	import jp.nyatla.nyartoolkit.as3.core.param.NyARFrustum;
 	import jp.nyatla.nyartoolkit.as3.core.param.NyARParam;
@@ -609,7 +609,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk
 		 */
 		public function getRgbPatt2d_1(i_src:NyARRealitySource,i_vertex:Vector.<NyARIntPoint2d>,i_resolution:int,o_raster:INyARRgbRaster):Boolean
 		{
-			return i_src.refPerspectiveRasterReader().read4Point_2(i_src.refRgbSource(),i_vertex,0,0,i_resolution, o_raster);
+			return i_src.refPerspectiveRasterReader().copyPatt_1(i_vertex,0,0,i_resolution, o_raster);
 		}
 		/**
 		 * 画面座標系の4頂点でかこまれる領域から、RGB画像をo_rasterに取得します。
@@ -622,7 +622,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk
 		 */
 		public function getRgbPatt2d_2(i_src:NyARRealitySource,i_vertex:Vector.<NyARDoublePoint2d>,i_resolution:int,o_raster:INyARRgbRaster):Boolean
 		{
-			return i_src.refPerspectiveRasterReader().read4Point_1(i_src.refRgbSource(),i_vertex,0,0,i_resolution, o_raster);
+			return i_src.refPerspectiveRasterReader().copyPatt_2(i_vertex,0,0,i_resolution, o_raster);
 		}	
 		/**
 		 * カメラ座標系の4頂点でかこまれる領域から、RGB画像をo_rasterに取得します。
@@ -653,7 +653,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk
 				}
 			}
 			//パターンの取得
-			return i_src.refPerspectiveRasterReader().read4Point_1(i_src.refRgbSource(),vx,0,0,i_resolution, o_raster);
+			return i_src.refPerspectiveRasterReader().copyPatt_2(vx,0,0,i_resolution, o_raster);
 		}
 	}
 }

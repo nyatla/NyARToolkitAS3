@@ -101,6 +101,14 @@ package jp.nyatla.nyartoolkit.as3.core.types.stack
 			return this._length;
 		}
 		/**
+		 * この関数は、配列の最大サイズを返します。
+		 * @return
+		 */
+		public function getArraySize():int
+		{
+			return this._items.length;
+		}
+		/**
 		 * 指定した要素を削除します。
 		 * 削除した要素は前方詰めで詰められます。
 		 */

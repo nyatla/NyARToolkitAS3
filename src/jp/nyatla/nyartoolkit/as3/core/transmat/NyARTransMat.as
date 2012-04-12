@@ -32,7 +32,7 @@ package jp.nyatla.nyartoolkit.as3.core.transmat
 {
 	import jp.nyatla.as3utils.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
-	import jp.nyatla.nyartoolkit.as3.*;
+	import jp.nyatla.nyartoolkit.as3.core.*;
 	import jp.nyatla.nyartoolkit.as3.core.squaredetect.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.matrix.*;
 	import jp.nyatla.nyartoolkit.as3.core.param.*;
@@ -126,7 +126,7 @@ package jp.nyatla.nyartoolkit.as3.core.transmat
 		 * @return
 		 * @throws NyARException
 		 */
-		public function transMat(i_square:NyARSquare,i_offset:NyARRectOffset,o_result:NyARTransMatResult):void
+		public function transMat(i_square:NyARSquare,i_offset:NyARRectOffset,o_result:NyARTransMatResult):Boolean
 		{
 			var trans:NyARDoublePoint3d=this.__transMat_trans;
 			var err_threshold:Number=makeErrThreshold(i_square.sqvertex);
@@ -153,20 +153,19 @@ package jp.nyatla.nyartoolkit.as3.core.transmat
 			
 			//計算結果の最適化(平行移動量と回転行列の最適化)
 			this.optimize(this._rotmatrix, trans, this._transsolver,i_offset.vertex, vertex_2d,err_threshold,o_result);
-			return;
+			return true;
 		}
 
 		/*
 		 * (non-Javadoc)
 		 * @see jp.nyatla.nyartoolkit.core.transmat.INyARTransMat#transMatContinue(jp.nyatla.nyartoolkit.core.NyARSquare, int, double, jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult)
 		 */
-		public function transMatContinue(i_square:NyARSquare,i_offset:NyARRectOffset,i_prev_result:NyARTransMatResult,o_result:NyARTransMatResult):void
+		public function transMatContinue(i_square:NyARSquare,i_offset:NyARRectOffset,i_prev_result:NyARTransMatResult,o_result:NyARTransMatResult):Boolean
 		{
 			var trans:NyARDoublePoint3d=this.__transMat_trans;
 			// io_result_convが初期値なら、transMatで計算する。
 			if (!i_prev_result.has_value) {
-				this.transMat(i_square,i_offset, o_result);
-				return;
+				return this.transMat(i_square,i_offset, o_result);
 			}
 			//過去のエラーレートを記録(ここれやるのは、i_prev_resultとo_resultに同じインスタンスを指定できるようにするため)
 			var last_error:Number=i_prev_result.last_error;
@@ -227,7 +226,7 @@ package jp.nyatla.nyartoolkit.as3.core.transmat
 				//計算結果の最適化(平行移動量と回転行列の最適化)
 				this.optimize(rot,trans, this._transsolver,i_offset.vertex, vertex_2d,err_threshold,o_result);
 			}
-			return;
+			return true;
 		}
 		private var __rot:NyARDoubleMatrix33=new NyARDoubleMatrix33();
 		private function optimize(iw_rotmat:NyARRotMatrix,iw_transvec:NyARDoublePoint3d,i_solver:INyARTransportVectorSolver,i_offset_3d:Vector.<NyARDoublePoint3d>,i_2d_vertex:Vector.<NyARDoublePoint2d>,i_err_threshold:Number,o_result:NyARTransMatResult):void

@@ -1,6 +1,6 @@
 package jp.nyatla.nyartoolkit.as3.core.utils 
 {
-	import jp.nyatla.nyartoolkit.as3.*;
+	import jp.nyatla.nyartoolkit.as3.core.*;
 	/**
 	 * 参照カウンタ付きのobjectPoolです。NyARManagedObjectから派生したオブジェクトを管理します。
 	 * このクラスは、参照カウンタ付きのオブジェクト型Tのオブジェクトプールを実現します。

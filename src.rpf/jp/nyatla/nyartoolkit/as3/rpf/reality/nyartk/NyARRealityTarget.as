@@ -1,7 +1,7 @@
 package jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk
 {
 
-	import jp.nyatla.nyartoolkit.as3.NyARException;
+	import jp.nyatla.nyartoolkit.as3.core.*;
 	import jp.nyatla.nyartoolkit.as3.core.INyARDisposable;
 	import jp.nyatla.nyartoolkit.as3.core.raster.rgb.INyARRgbRaster;
 	import jp.nyatla.nyartoolkit.as3.core.squaredetect.NyARSquare;
@@ -256,7 +256,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk
 				}
 			}
 			//パターンの取得
-			return i_src.refPerspectiveRasterReader().read4Point_1(i_src.refRgbSource(),da4,0,0,i_resolution, o_raster);
+			return i_src.refPerspectiveRasterReader().copyPatt_2(da4,0,0,i_resolution, o_raster);
 		}
 		/**
 		 * ターゲットと同じ平面に定義した矩形から、パターンを取得します。

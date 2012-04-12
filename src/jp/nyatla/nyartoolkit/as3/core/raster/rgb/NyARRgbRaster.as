@@ -1,8 +1,11 @@
 package jp.nyatla.nyartoolkit.as3.core.raster.rgb 
 {
-	import jp.nyatla.nyartoolkit.as3.core.rasterreader.*;
+	import jp.nyatla.nyartoolkit.as3.core.pixeldriver.*;
+	import jp.nyatla.nyartoolkit.as3.core.rasterdriver.*;
+	import jp.nyatla.nyartoolkit.as3.core.rasterfilter.rgb2gs.*;
+	import jp.nyatla.nyartoolkit.as3.core.match.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
-	import jp.nyatla.nyartoolkit.as3.*;
+	import jp.nyatla.nyartoolkit.as3.core.*;
 	import jp.nyatla.as3utils.*;
 	
 	public class NyARRgbRaster extends NyARRgbRaster_BasicClass
@@ -19,7 +22,7 @@ package jp.nyatla.nyartoolkit.as3.core.raster.rgb
 		public function NyARRgbRaster(...args:Array)
 		{
 			super(NyAS3Const_Inherited);
-			switch(args.length) {
+			switch(args.length){
 			case 1:
 				if (args[0] is NyAS3Const_Inherited) {
 					//blank
@@ -47,7 +50,7 @@ package jp.nyatla.nyartoolkit.as3.core.raster.rgb
 		 * ラスタのサイズ
 		 * @throws NyARException
 		 */
-		public function overload_NyARRgbRaster_2ii(i_width:int,i_height:int):void
+		protected function overload_NyARRgbRaster_2ii(i_width:int,i_height:int):void
 		{
 			super.overload_NyARRgbRaster_BasicClass(i_width,i_height,NyARBufferType.INT1D_X8R8G8B8_32);
 			if(!initInstance(this._size,NyARBufferType.INT1D_X8R8G8B8_32,true)){
@@ -112,7 +115,7 @@ package jp.nyatla.nyartoolkit.as3.core.raster.rgb
 		}
 		public override function getRgbPixelDriver():INyARRgbPixelDriver
 		{
-			return this._reader;
+			return this._rgb_pixel_driver;
 		}
 		public override function getBuffer():Object
 		{
@@ -129,23 +132,23 @@ package jp.nyatla.nyartoolkit.as3.core.raster.rgb
 			//ピクセルリーダーの参照バッファを切り替える。
 			this._rgb_pixel_driver.switchRaster(this);
 		}
-		public function createInterface(iIid:Class):Object
+		public override function createInterface(iIid:Class):Object
 		{
 			if(iIid==INyARPerspectiveCopy){
 				return NyARPerspectiveCopyFactory.createDriver(this);
 			}
-			if(iIid==NyARMatchPattDeviationColorData.IRasterDriver){
-				return NyARMatchPattDeviationColorData.RasterDriverFactory.createDriver(this);
+			if(iIid==NyARMatchPattDeviationColorData_IRasterDriver){
+				return NyARMatchPattDeviationColorData_RasterDriverFactory.createDriver(this);
 			}
 			if(iIid==INyARRgb2GsFilter){
 				//デフォルトのインタフェイス
 				return NyARRgb2GsFilterFactory.createRgbAveDriver(this);
 			}else if(iIid==INyARRgb2GsFilterRgbAve){
 				return NyARRgb2GsFilterFactory.createRgbAveDriver(this);
-			}else if(iIid==INyARRgb2GsFilterRgbCube){
-				return NyARRgb2GsFilterFactory.createRgbCubeDriver(this);
-			}else if(iIid==INyARRgb2GsFilterYCbCr){
-				return NyARRgb2GsFilterFactory.createYCbCrDriver(this);
+//			}else if(iIid==INyARRgb2GsFilterRgbCube){
+//				return NyARRgb2GsFilterFactory.createRgbCubeDriver(this);
+//			}else if(iIid==INyARRgb2GsFilterYCbCr){
+//				return NyARRgb2GsFilterFactory.createYCbCrDriver(this);
 			}
 			if(iIid==INyARRgb2GsFilterArtkTh){
 				return NyARRgb2GsFilterArtkThFactory.createDriver(this);

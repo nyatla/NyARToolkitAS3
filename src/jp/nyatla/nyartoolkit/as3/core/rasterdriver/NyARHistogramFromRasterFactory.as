@@ -25,9 +25,10 @@
 package jp.nyatla.nyartoolkit.as3.core.rasterdriver 
 {
 
-	import jp.nyatla.nyartoolkit.core.NyARException;
+	import jp.nyatla.nyartoolkit.as3.core.*;
 	import jp.nyatla.nyartoolkit.as3.core.pixeldriver.*;
 	import jp.nyatla.nyartoolkit.as3.core.raster.*;
+	import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
 
 	/**
@@ -41,7 +42,7 @@ package jp.nyatla.nyartoolkit.as3.core.rasterdriver
 	 */
 	public class NyARHistogramFromRasterFactory
 	{
-		public static function createInstance(i_raster:INyARGrayscaleRaster):INyARHistogramFromRaster
+		public static function createInstance_1(i_raster:INyARGrayscaleRaster):INyARHistogramFromRaster
 		{
 			switch(i_raster.getBufferType()){
 			case NyARBufferType.INT1D_GRAY_8:
@@ -49,19 +50,19 @@ package jp.nyatla.nyartoolkit.as3.core.rasterdriver
 				return new NyARHistogramFromRaster_INTGS8(i_raster);
 			default:
 				if(i_raster is INyARGrayscaleRaster){
-					return new NyARHistogramFromRaster_AnyGs((INyARGrayscaleRaster)i_raster);
+					return new NyARHistogramFromRaster_AnyGs(INyARGrayscaleRaster(i_raster));
 				}
 				if(i_raster is INyARRgbRaster){
-					return new NyARHistogramFromRaster_AnyRgb((INyARRgbRaster)i_raster);
+					return new NyARHistogramFromRaster_AnyRgb(INyARRgbRaster(i_raster));
 				}
 				break;
 			}
 			throw new NyARException();
 		}
-		public static function createInstance(INyARRgbRaster i_raster):INyARHistogramFromRaster
+		public static function createInstance_2(i_raster:INyARRgbRaster):INyARHistogramFromRaster
 		{
 			if(i_raster is INyARRgbRaster){
-				return new NyARHistogramFromRaster_AnyRgb((INyARRgbRaster)i_raster);
+				return new NyARHistogramFromRaster_AnyRgb(INyARRgbRaster(i_raster));
 			}
 			throw new NyARException();
 		}
@@ -69,9 +70,11 @@ package jp.nyatla.nyartoolkit.as3.core.rasterdriver
 	}
 }
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.as3.core.*;
 import jp.nyatla.nyartoolkit.as3.core.pixeldriver.*;
+import jp.nyatla.nyartoolkit.as3.core.rasterdriver.*;
 import jp.nyatla.nyartoolkit.as3.core.raster.*;
+import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.as3.core.types.*;
 
 //ラスタドライバ
@@ -83,16 +86,16 @@ class NyARHistogramFromRaster_AnyGs implements INyARHistogramFromRaster
 	{
 		this._gsr=i_raster;
 	}
-	public function createHistogram(i_skip:int,o_histogram:NyARHistogram):void
+	public function createHistogram_2(i_skip:int,o_histogram:NyARHistogram):void
 	{
 		var s:NyARIntSize=this._gsr.getSize();
-		this.createHistogram(0,0,s.w,s.h,i_skip,o_histogram);
+		this.createHistogram_1(0,0,s.w,s.h,i_skip,o_histogram);
 	}
-	public function createHistogram(i_l:int,i_t:int,i_w:int,i_h:int,i_skip:int,o_histogram:NyARHistogram):void
+	public function createHistogram_1(i_l:int,i_t:int,i_w:int,i_h:int,i_skip:int,o_histogram:NyARHistogram):void
 	{
 		o_histogram.reset();
 		var data_ptr:Vector.<int>=o_histogram.data;
-		INyARGsPixelDriver drv=this._gsr.getGsPixelDriver();
+		var drv:INyARGsPixelDriver=this._gsr.getGsPixelDriver();
 		var pix_count:int=i_w;
 		var pix_mod_part:int=pix_count-(pix_count%8);
 		//左上から1行づつ走査していく
@@ -113,13 +116,13 @@ class NyARHistogramFromRaster_AnyRgb implements INyARHistogramFromRaster
 	{
 		this._gsr=i_raster;
 	}
-	public function createHistogram(i_skip:int,o_histogram:NyARHistogram):void
+	public function createHistogram_2(i_skip:int,o_histogram:NyARHistogram):void
 	{
 		var s:NyARIntSize=this._gsr.getSize();
-		this.createHistogram(0,0,s.w,s.h,i_skip,o_histogram);
+		this.createHistogram_1(0,0,s.w,s.h,i_skip,o_histogram);
 	}
 	private var tmp:Vector.<int>=new Vector.<int>[3];
-	public void createHistogram(i_l:int, i_t:int, i_w:int, i_h:int, i_skip:int, o_histogram:NyARHistogram):void
+	public function createHistogram_1(i_l:int, i_t:int, i_w:int, i_h:int, i_skip:int, o_histogram:NyARHistogram):void
 	{
 		o_histogram.reset();
 		var data_ptr:Vector.<int>=o_histogram.data;
@@ -127,8 +130,8 @@ class NyARHistogramFromRaster_AnyRgb implements INyARHistogramFromRaster
 		var pix_count:int=i_w;
 		var pix_mod_part:int=pix_count-(pix_count%8);			
 		//左上から1行づつ走査していく
-		for (int y = i_h-1; y >=0 ; y-=i_skip){
-			for (int x = pix_count-1; x >=pix_mod_part; x--){
+		for (var y:int = i_h-1; y >=0 ; y-=i_skip){
+			for (var x:int = pix_count-1; x >=pix_mod_part; x--){
 				drv.getPixel(x,y,tmp);
 				data_ptr[(tmp[0]+tmp[1]+tmp[2])/3]++;
 			}
@@ -142,19 +145,19 @@ class NyARHistogramFromRaster_AnyRgb implements INyARHistogramFromRaster
 class NyARHistogramFromRaster_INTGS8 implements INyARHistogramFromRaster
 {
 	private var _gsr:INyARRaster;
-	public NyARHistogramFromRaster_INTGS8(i_raster:INyARRaster)
+	public function NyARHistogramFromRaster_INTGS8(i_raster:INyARRaster)
 	{
 		this._gsr=i_raster;
 	}
-	public function createHistogram(i_skip:int,o_histogram:NyARHistogram):void
+	public function createHistogram_2(i_skip:int,o_histogram:NyARHistogram):void
 	{
 		var s:NyARIntSize=this._gsr.getSize();
-		this.createHistogram(0,0,s.w,s.h,i_skip,o_histogram);
+		this.createHistogram_1(0,0,s.w,s.h,i_skip,o_histogram);
 	}
-	public void createHistogram(int i_l,int i_t,i_w:int,i_h:int,i_skip:int,o_histogram:NyARHistogram)
+	public function createHistogram_1(i_l:int,i_t:int,i_w:int,i_h:int,i_skip:int,o_histogram:NyARHistogram):void
 	{
 		o_histogram.reset();
-		var input:Vector.<int>=(Vector.<int>)this._gsr.getBuffer();
+		var input:Vector.<int>=Vector.<int>(this._gsr.getBuffer());
 		var s:NyARIntSize=this._gsr.getSize();
 		var skip:int=(i_skip*s.w-i_w);
 		var pix_count:int=i_w;
@@ -162,7 +165,7 @@ class NyARHistogramFromRaster_INTGS8 implements INyARHistogramFromRaster
 		//左上から1行づつ走査していく
 		var pt:int=(i_t*s.w+i_l);
 		var data:Vector.<int>=o_histogram.data;
-		for (y:int= i_h-1; y >=0 ; y-=i_skip){
+		for (var y:int= i_h-1; y >=0 ; y-=i_skip){
 			var x:int;
 			for (x = pix_count-1; x >=pix_mod_part; x--){
 				data[input[pt++]]++;

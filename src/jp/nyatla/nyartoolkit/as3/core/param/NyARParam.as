@@ -17,7 +17,7 @@ package jp.nyatla.nyartoolkit.as3.core.param
 		private var _projection_matrix:NyARPerspectiveProjectionMatrix =new NyARPerspectiveProjectionMatrix();
 		public function loadDefaultParameter():void
 		{
-			var tmp:Vector.<Number>={[318.5,263.5,26.2,1.0127565206658486]};
+			var tmp:Vector.<Number>=new Vector.<Number>([318.5,263.5,26.2,1.0127565206658486]);
 			this._screen_size.setValue(640,480);
 			this._dist.setValue(tmp);
 			this._projection_matrix.m00=700.9514702992245;
@@ -89,7 +89,7 @@ package jp.nyatla.nyartoolkit.as3.core.param
 		 */
 		public function changeScreenSize_2(i_s:NyARIntSize):void
 		{
-			this.changeScreenSize(i_s.w,i_s.h);
+			this.changeScreenSize_1(i_s.w,i_s.h);
 		}
 		/**
 		 * 右手系の視錐台を作ります。

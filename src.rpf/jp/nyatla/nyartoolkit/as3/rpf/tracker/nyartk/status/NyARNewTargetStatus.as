@@ -1,7 +1,7 @@
 package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk.status
 {
 
-import jp.nyatla.nyartoolkit.as3.NyARException;
+import jp.nyatla.nyartoolkit.as3.core.*;
 import jp.nyatla.nyartoolkit.as3.rpf.sampler.lrlabel.*;
 import jp.nyatla.nyartoolkit.as3.core.utils.*;
 
@@ -39,7 +39,7 @@ public class NyARNewTargetStatus extends NyARTargetStatus
 			this.current_sampleout.releaseObject();
 		}
 		if(i_src!=null){
-			this.current_sampleout=LowResolutionLabelingSamplerOut_Item(i_src.refObject());
+			this.current_sampleout=LowResolutionLabelingSamplerOut_Item(i_src.referenceObject());
 		}else{
 			this.current_sampleout=null;
 		}

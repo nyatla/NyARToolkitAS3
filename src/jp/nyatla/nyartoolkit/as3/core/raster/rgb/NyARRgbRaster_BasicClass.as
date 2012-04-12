@@ -1,6 +1,8 @@
-package jp.nyatla.nyartoolkit.as3.core.raster.rgb {
+package jp.nyatla.nyartoolkit.as3.core.raster.rgb 
+{
+	import jp.nyatla.nyartoolkit.as3.core.NyARException;
 	import jp.nyatla.nyartoolkit.as3.core.raster.*;
-	import jp.nyatla.nyartoolkit.as3.core.rasterreader.*;
+	import jp.nyatla.nyartoolkit.as3.core.pixeldriver.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
 	import jp.nyatla.nyartoolkit.as3.*;
 	import jp.nyatla.as3utils.*;
@@ -76,11 +78,11 @@ package jp.nyatla.nyartoolkit.as3.core.raster.rgb {
 			for(var i:int=height-1;i>=0;i--){
 				for(var i2:int=width-1;i2>=0;i2--){
 					inr.getPixel(i2,i,rgb);
-					outr.setPixel_1(i2,i,rgb);
+					outr.setPixel_2(i2,i,rgb);
 				}
 			}
 		}		
-		public function getRgbPixelReader():INyARRgbPixelReader
+		public function getRgbPixelReader():INyARRgbPixelDriver
 		{
 			throw new NyARException();
 		}
@@ -97,11 +99,14 @@ package jp.nyatla.nyartoolkit.as3.core.raster.rgb {
 			throw new NyARException();
 		}
 		// abstract functions
-		public function hasBuffer():Boolean{};
-		public function getRgbPixelDriver():INyARRgbPixelDriver{};
-		public function wrapBuffer(i_ref_buf:Object):void{};
-		public function createInterface(i_iid:Class):Object{};
-		public function getBuffer():Object{};
+		public function getRgbPixelDriver():INyARRgbPixelDriver
+		{
+			throw new NyARException("Should be override!");
+		};
+		public function createInterface(i_iid:Class):Object
+		{
+			throw new NyARException("Should be override!");
+		};
 		
 	}
 }

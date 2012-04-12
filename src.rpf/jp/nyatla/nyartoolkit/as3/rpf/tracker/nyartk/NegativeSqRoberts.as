@@ -25,9 +25,9 @@
 package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk
 {
 
-	import jp.nyatla.nyartoolkit.as3.NyARException;
+	import jp.nyatla.nyartoolkit.as3.core.*;
 	import jp.nyatla.nyartoolkit.as3.core.raster.*;
-	import jp.nyatla.nyartoolkit.as3.core.rasterfilter.*;
+	import jp.nyatla.nyartoolkit.as3.core.rasterfilter.rgb2gs.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
 
 	/**
@@ -38,7 +38,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk
 	 *   | 0, 1|    |1, 0|
 	 * V=sqrt(X^2+Y+2)/2
 	 */
-	public class NegativeSqRoberts implements INyARRasterFilter
+	public class NegativeSqRoberts
 	{
 		private var _do_filter_impl:IdoFilterImpl; 
 		public function NegativeSqRoberts(i_raster_type:int)

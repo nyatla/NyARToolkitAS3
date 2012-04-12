@@ -1,12 +1,12 @@
 package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk
 {
 
-	import jp.nyatla.nyartoolkit.as3.NyARException;
+	import jp.nyatla.nyartoolkit.as3.core.*;
 	import jp.nyatla.nyartoolkit.as3.core.param.NyARCameraDistortionFactor;
 	import jp.nyatla.nyartoolkit.as3.core.raster.NyARGrayscaleRaster;
 	import jp.nyatla.nyartoolkit.as3.core.types.NyARBufferType;
-	import jp.nyatla.nyartoolkit.as3.rpf.sampler.lrlabel.LowResolutionLabelingSampler;
-	import jp.nyatla.nyartoolkit.as3.rpf.sampler.lrlabel.LowResolutionLabelingSamplerOut;
+	import jp.nyatla.nyartoolkit.as3.rpf.sampler.lrlabel.*;
+	import jp.nyatla.nyartoolkit.as3.rpf.utils.*;
 
 	/**
 	 * NyARTrackerSourceのリファレンス実装です。
@@ -19,7 +19,8 @@ package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk
 		 */
 		private var _sampler:LowResolutionLabelingSampler;
 		private var _rb_source:NyARGrayscaleRaster;
-		private var _rfilter:NegativeSqRoberts=new NegativeSqRoberts(NyARBufferType.INT1D_GRAY_8);
+		private var _rfilter:NegativeSqRoberts = new NegativeSqRoberts(NyARBufferType.INT1D_GRAY_8);
+		private var _gs_graphics:INyARGsRasterGraphics;
 		/**
 		 * @param i_number_of_sample
 		 * サンプラが検出する最大数。
@@ -45,6 +46,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk
 			var div:int=this._rob_resolution;
 			//主GSラスタ
 			this._base_raster=new NyARGrayscaleRaster(i_width,i_height,NyARBufferType.INT1D_GRAY_8,i_is_alloc);
+			this._gs_graphics=NyARGsRasterGraphicsFactory.createDriver(this._base_raster);
 			//Roberts変換ラスタ
 			this._rb_source=new NyARGrayscaleRaster(i_width/div,i_height/div,NyARBufferType.INT1D_GRAY_8, true);
 			//Robertsラスタは最も解像度の低いラスタと同じ
@@ -70,7 +72,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk
 		public override function syncResource():void
 		{
 			//内部状態の同期
-			this._base_raster.copyTo(0,0,this._rob_resolution,this._rb_source);
+			this._gs_graphics.copyTo(0,0,this._rob_resolution,this._rb_source);
 			this._rfilter.doFilter(this._rb_source,this._rbraster);
 		}
 		/**

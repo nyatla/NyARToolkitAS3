@@ -34,7 +34,7 @@ package jp.nyatla.nyartoolkit.as3.core.utils
 		 * このオブジェクトに対する、新しい参照オブジェクトを返します。
 		 * @return
 		 */
-		public function refObject():NyARManagedObject
+		public function referenceObject():NyARManagedObject
 		{
 			//assert(this._count>0);
 			this._count++;

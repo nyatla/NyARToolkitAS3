@@ -76,6 +76,15 @@ package jp.nyatla.nyartoolkit.as3.core.types.matrix
 			this.m11=a11*det;
 			return true;
 		}	
+		/**
+		 * この関数は、インスタンスに単位行列をロードします。
+		 */
+		public function loadIdentity():void
+		{
+			this.m00=this.m11=1;
+			this.m01=
+			this.m10=0;
+		}
 	}
 
 

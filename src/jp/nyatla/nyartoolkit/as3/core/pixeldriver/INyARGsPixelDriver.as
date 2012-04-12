@@ -64,6 +64,6 @@ package jp.nyatla.nyartoolkit.as3.core.pixeldriver
 		 * 設定するピクセル値の数
 		 * @throws NyARException
 		 */
-		function setPixels(i_x:Vector.<int>, i_y:Vector.<int>, i_num:int, i_intgs:Vector.<int>);
+		function setPixels(i_x:Vector.<int>, i_y:Vector.<int>, i_num:int, i_intgs:Vector.<int>):void;
 	}
 }
