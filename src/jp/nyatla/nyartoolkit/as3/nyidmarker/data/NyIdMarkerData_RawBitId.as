@@ -39,7 +39,7 @@ package jp.nyatla.nyartoolkit.as3.nyidmarker.data
 		 * この関数は、i_targetのマーカデータとインスタンスのデータを比較します。
 		 * 引数には、{@link NyIdMarkerData_RawBitId}型のオブジェクトを指定してください。
 		 */
-		public override function isEqual(i_target:INyIdMarkerData):Boolean
+		public function isEqual(i_target:INyIdMarkerData):Boolean
 		{
 			var s:NyIdMarkerData_RawBitId=NyIdMarkerData_RawBitId(i_target);
 			return s.marker_id==this.marker_id;
@@ -48,9 +48,9 @@ package jp.nyatla.nyartoolkit.as3.nyidmarker.data
 		 * この関数は、i_sourceからインスタンスにマーカデータをコピーします。
 		 * 引数には、{@link NyIdMarkerData_RawBit}型のオブジェクトを指定してください。
 		 */	
-		public override function copyFrom(i_source:INyIdMarkerData):void
+		public function copyFrom(i_source:INyIdMarkerData):void
 		{
-			var s:NyIdMarkerData_RawBitId=(NyIdMarkerData_RawBitId)=i_source;
+			var s:NyIdMarkerData_RawBitId=NyIdMarkerData_RawBitId(i_source);
 			this.marker_id=s.marker_id;
 			return;
 		}

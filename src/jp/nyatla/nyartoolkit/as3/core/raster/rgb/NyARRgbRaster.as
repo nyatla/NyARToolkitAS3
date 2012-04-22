@@ -103,7 +103,7 @@ package jp.nyatla.nyartoolkit.as3.core.raster.rgb
 			switch(i_raster_type)
 			{
 				case NyARBufferType.INT1D_X8R8G8B8_32:
-					this._buf=i_is_alloc?new int[i_size.w*i_size.h]:null;
+					this._buf=i_is_alloc?new Vector.<int>(i_size.w*i_size.h):null;
 					break;
 				default:
 					return false;

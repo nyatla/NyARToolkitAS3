@@ -48,7 +48,8 @@ package jp.nyatla.nyartoolkit.as3.utils.as3
 			}
 			return r;
 		}
-		public static function copyInt(src:Vector.<int>, srcPos:int, dest:Vector.<int>, destPos:int, length:int):void {
+		public static function copyInt(src:Vector.<int>, srcPos:int, dest:Vector.<int>, destPos:int, length:int):void
+		{
 			for (var i:int = 0; i < length; i++) {
 				dest[destPos + i] = src[srcPos + i]; 
 			}

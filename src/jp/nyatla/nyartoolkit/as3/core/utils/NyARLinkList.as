@@ -24,7 +24,7 @@
  */
 package jp.nyatla.nyartoolkit.as3.core.utils
 {
-	import jp.nyatla.nyartoolkit.as3.NyARException;
+	import jp.nyatla.nyartoolkit.as3.core.*;
 
 
 
@@ -59,7 +59,7 @@ package jp.nyatla.nyartoolkit.as3.core.utils
 				this._head_item=this.createElement();
 				var ptr:NyARLinkList_Item=this._head_item;
 				for(var i:int=1;i<i_num_of_item;i++){
-					T n=this.createElement();
+					var n:NyARLinkList_Item=this.createElement();
 					ptr.next=n;
 					n.prev=ptr;
 					ptr=n;
@@ -76,7 +76,7 @@ package jp.nyatla.nyartoolkit.as3.core.utils
 		public function append():void
 		{
 			var new_element:NyARLinkList_Item=this.createElement();
-			var tail=NyARLinkList_Item(this._head_item.prev);
+			var tail:NyARLinkList_Item=NyARLinkList_Item(this._head_item.prev);
 			tail.next=new_element;
 			new_element.next=this._head_item;
 			new_element.prev=tail;
@@ -109,8 +109,8 @@ package jp.nyatla.nyartoolkit.as3.core.utils
 			//先頭の場合
 			if(ptr==i_item){
 				//リストを後方にシフトする。
-				ptr=(T) ptr.prev;
-				this._head_item=(T)ptr;
+				ptr=ptr.prev;
+				this._head_item=ptr;
 				return this._head_item;
 			}
 			//最後尾なら、そのまま返す

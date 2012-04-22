@@ -45,9 +45,9 @@ class NyARContourPickup_Base implements NyARContourPickup_IRasterDriver
 	//巡回参照できるように、テーブルを二重化
 	//                                           0  1  2  3  4  5  6  7   0  1  2  3  4  5  6
 	/** 8方位探索の座標マップ*/
-	protected static var _getContour_xdir:Vector.<int> = new Vector.<int>([0, 1, 1, 1, 0,-1,-1,-1 , 0, 1, 1, 1, 0,-1,-1]);
+	protected static var _getContour_xdir:Vector.<int> = Vector.<int>([0, 1, 1, 1, 0,-1,-1,-1 , 0, 1, 1, 1, 0,-1,-1]);
 	/** 8方位探索の座標マップ*/
-	protected static var _getContour_ydir:Vector.<int> = new Vector.<int>([-1,-1, 0, 1, 1, 1, 0,-1 ,-1,-1, 0, 1, 1, 1, 0]);
+	protected static var _getContour_ydir:Vector.<int> = Vector.<int>([-1,-1, 0, 1, 1, 1, 0,-1 ,-1,-1, 0, 1, 1, 1, 0]);
 	public function getContour(i_l:int, i_t:int, i_r:int, i_b:int, i_entry_x:int, i_entry_y:int, i_th:int, o_coord:NyARIntCoordinates):Boolean 
 	{
 		throw new NyARException();

@@ -1,6 +1,8 @@
 package jp.nyatla.nyartoolkit.as3.core.param 
 {
+	import jp.nyatla.as3utils.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
+	import jp.nyatla.nyartoolkit.as3.core.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.matrix.*;
 	/**
 	 * 視錐台と、これを使った演算関数を定義します。
@@ -13,7 +15,7 @@ package jp.nyatla.nyartoolkit.as3.core.param
 		protected var _frustum_rh:NyARDoubleMatrix44=new NyARDoubleMatrix44();
 		/** frastum逆行列*/
 		protected var _inv_frustum_rh:NyARDoubleMatrix44=new NyARDoubleMatrix44();	
-		protected var _screen_size:NyARIntSize=new NyARIntSize();
+		protected var _screen_size:NyARIntSize = new NyARIntSize();
 		/**
 		 * コンストラクタです。ARToolkitの射影変換行列から、インスタンスを作ります。
 		 * @param i_projection
@@ -26,7 +28,27 @@ package jp.nyatla.nyartoolkit.as3.core.param
 		 * @param i_far
 		 * 遠平面までの距離です。単位はmm
 		 */
-		public function NyARFrustum(i_perspective_mat:NyARPerspectiveProjectionMatrix,i_width:int,i_height:int,i_near:Number,i_far:Number)
+		public function NyARFrustum(...args:Array)
+		{
+			switch(args.length) {
+			case 0:
+				break;
+			case 1:
+				if (args[0] is NyAS3Const_Inherited) {
+					//blank
+				}
+				break;
+			case 5:
+				override_NyARFrustum_5oiinn(NyARPerspectiveProjectionMatrix(args[0]), int(args[1]),int(args[2]),Number(args[3]),Number(args[4]));
+				break;
+			default:
+				throw new NyARException();
+			}			
+		}		
+		 
+		 
+		 
+		private function override_NyARFrustum_5oiinn(i_perspective_mat:NyARPerspectiveProjectionMatrix,i_width:int,i_height:int,i_near:Number,i_far:Number):void
 		{
 			this.setValue_2(i_perspective_mat, i_width, i_height, i_near, i_far);
 		}

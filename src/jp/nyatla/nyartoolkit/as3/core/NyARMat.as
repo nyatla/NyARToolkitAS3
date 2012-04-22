@@ -115,11 +115,32 @@ package jp.nyatla.nyartoolkit.as3.core
 		{
 			return this._m;
 		}
+		public function mul(i_mat_a:NyARMat,i_mat_b:NyARMat):void
+		{
+			NyAS3Utils.assert(i_mat_a.clm == i_mat_b.row && this.row==i_mat_a.row && this.clm==i_mat_b.clm);
+
+			var w:Number;
+			var r:int, c:int, i:int;
+			var am:Vector.<Vector.<Number>> = i_mat_a._m;
+			var bm:Vector.<Vector.<Number>>  = i_mat_b._m;
+			var dm:Vector.<Vector.<Number>> = this._m;
+			// For順変更禁止
+			for (r = 0; r < this.row; r++) {
+				for (c = 0; c < this.clm; c++) {
+					w = 0.0;
+					for (i = 0; i < i_mat_a.clm; i++) {
+						w += am[r][i] * bm[i][c];
+					}
+					dm[r][c] = w;
+				}
+			}
+			return;
+		}		
 		/**
 		 * 逆行列を計算して、thisへ格納します。
 		 * @throws NyARException
 		 */
-		public function matrixSelfInv():Boolean
+		public function inverse():Boolean
 		{
 			var ap:Vector.<Vector.<Number>> = this._m;
 			var dimen:int = this.row;

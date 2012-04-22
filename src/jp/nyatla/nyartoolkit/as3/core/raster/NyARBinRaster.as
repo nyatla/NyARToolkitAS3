@@ -72,7 +72,7 @@ package jp.nyatla.nyartoolkit.as3.core.raster
 			switch(i_buf_type)
 			{
 				case NyARBufferType.INT1D_BIN_8:
-					this._buf = i_is_alloc?new int[i_size.w*i_size.h]:null;
+					this._buf = i_is_alloc?new Vector.<int>(i_size.w*i_size.h):null;
 					break;
 				default:
 					super.initInstance(i_size, i_buf_type, i_is_alloc);

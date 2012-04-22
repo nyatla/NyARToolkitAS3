@@ -8,10 +8,6 @@ package jp.nyatla.nyartoolkit.as3.core.utils
 	{
 		public var next:NyARLinkList_Item;
 		public var prev:NyARLinkList_Item;		
-		public function NyARLinkList_Item() 
-		{
-
-		};
 	}
 
 }

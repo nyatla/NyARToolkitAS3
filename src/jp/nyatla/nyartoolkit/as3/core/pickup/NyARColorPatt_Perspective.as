@@ -55,7 +55,7 @@ package jp.nyatla.nyartoolkit.as3.core.pickup
 			NyAS3Utils.assert(i_width>2 && i_height>2);
 			this._sample_per_pixel=i_point_per_pix;	
 			this._size=new NyARIntSize(i_width,i_height);
-			this._patdata = new int[i_height*i_width];
+			this._patdata = new Vector.<int>(i_height*i_width);
 			this._pixelreader=NyARRgbPixelDriverFactory.createDriver(this);
 			return;
 		}
