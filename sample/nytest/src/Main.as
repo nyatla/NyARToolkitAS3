@@ -11,6 +11,8 @@ package
 	import jp.nyatla.nyartoolkit.as3.core.transmat.*;
 	import jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk.*;
 	import jp.nyatla.nyartoolkit.as3.rpf.realitysource.nyartk.*;
+	import jp.nyatla.nyartoolkit.as3.markersystem.*;
+	import jp.nyatla.nyartoolkit.as3.pro.markersystem.*;
 	import flash.net.*;
 	import flash.text.*;
     import flash.display.*; 
@@ -101,7 +103,7 @@ package
 		{
 			var mat:NyARTransMatResult=new NyARTransMatResult();
 			var ang:NyARDoublePoint3d = new NyARDoublePoint3d();
-			var d:NyARSingleDetectMarker=new NyARSingleDetectMarker(this.param, this.code, 80.0, NyARBufferType.INT1D_X8R8G8B8_32);
+			var d:NyARSingleDetectMarker=NyARSingleDetectMarker.createInstance_2(this.param, this.code, 80.0);
 			d.detectMarkerLite(raster_bgra,100);
 			msg("cf=" + d.getConfidence());
 			{
@@ -195,6 +197,36 @@ package
 			msg(rt[0]._transform_matrix.m20+","+rt[0]._transform_matrix.m21+","+rt[0]._transform_matrix.m22+","+rt[0]._transform_matrix.m23);
 			msg(rt[0]._transform_matrix.m30+","+rt[0]._transform_matrix.m31+","+rt[0]._transform_matrix.m32+","+rt[0]._transform_matrix.m33);
 		}
+		private function testNymarkerSystem():void
+		{
+			var ss:NyARSensor = new NyARSensor(new NyARIntSize(320, 240));
+			var cf:NyARMarkerSystemConfig = new NyARMarkerSystemConfig(320, 240);
+			var cf2:NyARProMarkerSystemConfig = new NyARProMarkerSystemConfig(320,240);
+			var ms:NyARMarkerSystem = new NyARMarkerSystem(cf);
+/*
+			msg("cf=" + d.getConfidence());
+			{
+				d.getTransmationMatrix(mat);
+				msg("getTransmationMatrix");
+				msg(mat.m00 + "," + mat.m01 + "," + mat.m02 + "," + mat.m03);
+				msg(mat.m10 + "," + mat.m11 + "," + mat.m12 + "," + mat.m13);
+				msg(mat.m20 + "," + mat.m21 + "," + mat.m22 + "," + mat.m23);
+				msg("getZXYAngle");
+				mat.getZXYAngle(ang);
+				msg(ang.x + "," + ang.y + "," + ang.z);
+			}
+			msg("#benchmark");
+			{
+				var date : Date = new Date();
+				for(var i2:int=0;i2<100;i2++){
+					d.detectMarkerLite(raster_bgra,100);
+					d.getTransmationMatrix(mat);
+				}
+				var date2 : Date = new Date();
+				msg(((date2.valueOf() - date.valueOf()).toString())+"[ms] par 100 frame");
+			}*/
+			return;
+		}		
 		private function main(e:Event):void
 		{
 			var mat:NyARTransMatResult=new NyARTransMatResult();
