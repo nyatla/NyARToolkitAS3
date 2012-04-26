@@ -99,13 +99,13 @@ package jp.nyatla.nyartoolkit.as3.processor
 			this._initialized=true;
 			this._is_active=false;
 			this._offset=new NyARRectOffset();
-			this._offset.setSquare_1(i_marker_width);
+			this._offset.setSquare(i_marker_width);
 			return;
 		}
 
 		public function setMarkerWidth(i_width:int):void
 		{
-			this._offset.setSquare_1(i_width);
+			this._offset.setSquare(i_width);
 			return;
 		}
 
@@ -124,7 +124,7 @@ package jp.nyatla.nyartoolkit.as3.processor
 		public function detectMarker(i_raster:INyARRgbRaster):void
 		{
 			// サイズチェック
-			if (!this._gs_raster.getSize().isEqualSize_1(i_raster.getSize().w, i_raster.getSize().h)) {
+			if (!this._gs_raster.getSize().isEqualSize(i_raster.getSize().w, i_raster.getSize().h)) {
 				throw new NyARException();
 			}
 			// ラスタをGSへ変換する。
@@ -326,7 +326,7 @@ class RleDetector extends NyARSquareContourDetector_Rle
 		}
 		for (i= 0; i < 4; i++) {
 			//直線同士の交点計算
-			if(!sq.line[i].crossPos_1(sq.line[(i + 3) % 4],sq.sqvertex[i])){
+			if(!sq.line[i].crossPos(sq.line[(i + 3) % 4],sq.sqvertex[i])){
 				throw new NyARException();//ここのエラー復帰するならダブルバッファにすればOK
 			}
 		}

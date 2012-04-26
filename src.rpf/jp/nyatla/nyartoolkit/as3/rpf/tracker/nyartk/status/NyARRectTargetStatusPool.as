@@ -27,9 +27,9 @@ public class NyARRectTargetStatusPool extends NyARManagedObjectPool
 	 */
 	public function NyARRectTargetStatusPool(i_size:int)
 	{
-		super.initInstance_1(i_size);
+		super.initInstance(i_size);
 	}
-	protected override function createElement_1():NyARManagedObject
+	protected override function createElement():NyARManagedObject
 	{
 		return new NyARRectTargetStatus(this);
 	}
@@ -50,7 +50,7 @@ public class NyARRectTargetStatusPool extends NyARManagedObjectPool
 		var all:int = 0;
 		var i:int;
 		for(i=3;i>=0;i--){
-			sq_tbl[i]=(int)(i_point1[i].sqDist_1(i_point2[i]));
+			sq_tbl[i]=(int)(i_point1[i].sqDist(i_point2[i]));
 			all+=sq_tbl[i];
 		}
 		//移動距離の2乗の平均値

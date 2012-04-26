@@ -38,7 +38,7 @@ package jp.nyatla.nyartoolkit.as3.nyidmarker.data
 		/**
 		 * この関数は、{@link NyIdMarkerData_RawBitId}型のオブジェクトを生成して返します。
 		 */
-		public function createDataInstance_1():INyIdMarkerData
+		public function createDataInstance():INyIdMarkerData
 		{
 			return new NyIdMarkerData_RawBitId();
 		}			

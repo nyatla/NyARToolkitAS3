@@ -46,7 +46,7 @@ package jp.nyatla.nyartoolkit.as3.core.utils
 		 * @param i_element_type
 		 * @throws NyARException
 		 */
-		protected function initInstance_1(i_length:int):void
+		protected function initInstance(i_length:int):void
 		{
 			var pool:Operator=this._op_interface;
 			//領域確保
@@ -57,7 +57,7 @@ package jp.nyatla.nyartoolkit.as3.core.utils
 			//オブジェクトを作成
 			for(var i:int=pool._pool.length-1;i>=0;i--)
 			{
-				pool._buffer[i]=pool._pool[i]=createElement_1();
+				pool._buffer[i]=pool._pool[i]=createElement();
 			}
 			return;		
 		}
@@ -83,7 +83,7 @@ package jp.nyatla.nyartoolkit.as3.core.utils
 		 * @return
 		 * @throws NyARException
 		 */
-		protected function createElement_1():NyARManagedObject
+		protected function createElement():NyARManagedObject
 		{
 			throw new NyARException();
 		}

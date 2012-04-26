@@ -17,11 +17,11 @@ package jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk
 		
 		public function NyARRealityTargetPool(i_size:int, i_ref_prj_mat:NyARPerspectiveProjectionMatrix)
 		{
-			this.initInstance_1(i_size);
+			this.initInstance(i_size);
 			this._ref_prj_mat=i_ref_prj_mat;
 			return;
 		}
-		protected override function createElement_1():NyARManagedObject
+		protected override function createElement():NyARManagedObject
 		{
 			return new NyARRealityTarget(this);
 		}

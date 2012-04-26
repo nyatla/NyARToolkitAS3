@@ -86,12 +86,12 @@ package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk
 		private var  _cpickup:NyARContourPickup;
 		protected const _MARGE_ANG_TH:Number = NyARMath.COS_DEG_10;
 
-		public function traceConture_1(i_th:int,
+		public function traceConture(i_th:int,
 				i_entry:NyARIntPoint2d,o_coord:VecLinearCoordinates):Boolean
 		{
 			var coord:NyARIntCoordinates = this._coord_buf;
 			// Robertsラスタから輪郭抽出
-			if (!this._cpickup.getContour_1(this._ref_rob_raster, i_th, i_entry.x, i_entry.y,coord)) {
+			if (!this._cpickup.getContour(this._ref_rob_raster, i_th, i_entry.x, i_entry.y,coord)) {
 				// 輪郭線MAXならなにもできないね。
 				return false;
 
@@ -118,7 +118,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk
 		 * @return
 		 * @throws NyARException
 		 */
-		public function traceLine_1(i_pos1:NyARIntPoint2d,i_pos2:NyARIntPoint2d,i_edge:int ,o_coord:VecLinearCoordinates):Boolean
+		public function traceLine(i_pos1:NyARIntPoint2d,i_pos2:NyARIntPoint2d,i_edge:int ,o_coord:VecLinearCoordinates):Boolean
 		{
 			var coord:NyARIntCoordinates = this._coord_buf;
 			var base_s:NyARIntSize=this._ref_base_raster.getSize();
@@ -164,7 +164,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk
 			// 移動量
 
 			// 点間距離を計算
-			var dist:int = (int)(Math.sqrt(i_pos1.sqDist_1(i_pos2)));
+			var dist:int = (int)(Math.sqrt(i_pos1.sqDist(i_pos2)));
 			// 最低AREA*2以上の大きさが無いなら、ラインのトレースは不可能。
 			if (dist < 4) {
 				return false;
@@ -392,7 +392,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk
 			if (!this.__temp_l.makeLinearWithNormalize_2(i_pos1, i_pos2)) {
 				return false;
 			}
-			if (!this.__temp_l.makeSegmentLine_1(s.w,s.h,pt)) {
+			if (!this.__temp_l.makeSegmentLine(s.w,s.h,pt)) {
 				return false;
 			}
 			if (is_p1_inside_area != is_p2_inside_area) {
@@ -410,11 +410,11 @@ package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk
 				if (!this.__temp_l.makeLinearWithNormalize_2(i_pos1, i_pos2)) {
 					return false;
 				}
-				if (!this.__temp_l.makeSegmentLine_1(s.w,s.h, pt)) {
+				if (!this.__temp_l.makeSegmentLine(s.w,s.h, pt)) {
 					return false;
 				}
 			}
-			if (!this.traceLine_1(pt[0], pt[1], i_edge, o_coord)) {
+			if (!this.traceLine(pt[0], pt[1], i_edge, o_coord)) {
 				return false;
 			}
 

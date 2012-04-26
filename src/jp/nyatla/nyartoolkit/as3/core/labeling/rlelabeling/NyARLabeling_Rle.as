@@ -108,7 +108,7 @@ package jp.nyatla.nyartoolkit.as3.core.labeling.rlelabeling
 		 * 敷居値を指定します。2値画像の場合は、0を指定してください。
 		 * @throws NyARException
 		 */
-		public function labeling_1(i_raster:INyARGrayscaleRaster,i_th:int):void
+		public function labeling(i_raster:INyARGrayscaleRaster,i_th:int):void
 		{
 			var size:NyARIntSize=i_raster.getSize();
 			this.imple_labeling(i_raster,i_th,0,0,size.w,size.h);
@@ -354,10 +354,10 @@ final class RleInfoStack extends NyARObjectStack
 	public function RleInfoStack(i_length:int)
 	{
 		super();
-		super.initInstance_1(i_length);
+		super.initInstance(i_length);
 		return;
 	}
-	protected override function createElement_1():Object
+	protected override function createElement():Object
 	{
 		return new NyARRleLabelFragmentInfo();
 	}

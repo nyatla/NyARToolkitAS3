@@ -94,7 +94,7 @@ package jp.nyatla.nyartoolkit.as3.core.types
 		 * @param i_p2
 		 * @return
 		 */	
-		public function sqDist_1( i_p1:NyARDoublePoint2d):Number
+		public function sqDist( i_p1:NyARDoublePoint2d):Number
 		{
 			var x:Number,y:Number;
 			x=this.x-i_p1.x;
@@ -108,7 +108,7 @@ package jp.nyatla.nyartoolkit.as3.core.types
 			y=this.y-i_p1.y;
 			return x*x+y*y;
 		}
-		public static function crossProduct3Point_1( p1:NyARDoublePoint2d , p2:NyARDoublePoint2d , p3:NyARDoublePoint2d ):Number
+		public static function crossProduct3Point( p1:NyARDoublePoint2d , p2:NyARDoublePoint2d , p3:NyARDoublePoint2d ):Number
 		{
 			return ( p2.x - p1.x ) * ( p3.y - p2.y ) - ( p2.y - p1.y ) * ( p3.x - p2.x ) ;
 		}
@@ -118,7 +118,7 @@ package jp.nyatla.nyartoolkit.as3.core.types
 			return ( p2.x - p1.x ) * ( p3_y - p2.y ) - ( p2.y - p1.y ) * ( p3_x - p2.x ) ;
 		}
 	
-		public static function makeCenter_1( i_points:Vector.<NyARDoublePoint2d> , i_number_of_data:int , o_out:NyARDoublePoint2d ):void
+		public static function makeCenter( i_points:Vector.<NyARDoublePoint2d> , i_number_of_data:int , o_out:NyARDoublePoint2d ):void
 		{
 			var x:Number , y:Number ;
 			x = y = 0 ;
@@ -143,7 +143,7 @@ package jp.nyatla.nyartoolkit.as3.core.types
 		}
 	
 	
-		public function setValue_1(i_src:NyARDoublePoint2d):void
+		public function setValue(i_src:NyARDoublePoint2d):void
 		{
 			this.x=i_src.x;
 			this.y=i_src.y;

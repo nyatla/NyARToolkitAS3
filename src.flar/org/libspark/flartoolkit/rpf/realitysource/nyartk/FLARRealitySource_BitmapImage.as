@@ -39,8 +39,8 @@ package org.libspark.flartoolkit.rpf.realitysource.nyartk
 		public function FLARRealitySource_BitmapImage(i_width:int,i_height:int,i_ref_raster_distortion:NyARCameraDistortionFactor,i_depth:int,i_number_of_sample:int,i_attach_bitmap:BitmapData)
 		{
 			this._rgb_source = i_attach_bitmap == null
-				?new FLARRgbRaster_BitmapData(i_width, i_height, false)
-				:new FLARRgbRaster_BitmapData(i_attach_bitmap);
+				?new FLARRgbRaster(i_width, i_height, false)
+				:new FLARRgbRaster(i_attach_bitmap);
 			this._filter=INyARRgb2GsFilter(this._rgb_source.createInterface(INyARRgb2GsFilter));			
 			this._source_perspective_reader =INyARPerspectiveCopy(this._rgb_source.createInterface(INyARPerspectiveCopy));
 			this._tracksource=new FLARTrackerSource_Reference(i_number_of_sample,i_ref_raster_distortion,this._rgb_source.getWidth(),this._rgb_source.getHeight(),i_depth,true);
@@ -75,7 +75,7 @@ package org.libspark.flartoolkit.rpf.realitysource.nyartk
 		 */
 		public function setImage(i_buffer:BitmapData):void
 		{
-			(FLARRgbRaster_BitmapData(this._rgb_source)).wrapBuffer(i_buffer);
+			(FLARRgbRaster(this._rgb_source)).wrapBuffer(i_buffer);
 		}
 	}	
 

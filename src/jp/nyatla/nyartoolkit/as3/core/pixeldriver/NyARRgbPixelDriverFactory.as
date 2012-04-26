@@ -115,7 +115,7 @@ class NyARRgbPixelDriver_INT1D_GRAY_8 implements INyARRgbPixelDriver
 	/**
 	 * この関数は、機能しません。
 	 */
-	public function setPixel_1(i_x:int,i_y:int,i_r:int,i_g:int,i_b:int):void
+	public function setPixel(i_x:int,i_y:int,i_r:int,i_g:int,i_b:int):void
 	{
 		NyARException.notImplement();
 	}
@@ -188,7 +188,7 @@ class NyARRgbPixelDriver_INT1D_X8R8G8B8_32 implements INyARRgbPixelDriver
 	/**
 	 * この関数は、RGBデータを指定した座標のピクセルにセットします。
 	 */
-	public function setPixel_1(i_x:int, i_y:int, i_r:int, i_g:int, i_b:int):void
+	public function setPixel(i_x:int, i_y:int, i_r:int, i_g:int, i_b:int):void
 	{
 		this._ref_buf[i_x + i_y * this._ref_size.w] = (i_r << 16) | (i_g << 8) | (i_b);
 	}

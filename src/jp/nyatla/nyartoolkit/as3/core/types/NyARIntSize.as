@@ -85,7 +85,7 @@ package jp.nyatla.nyartoolkit.as3.core.types
 		 * @return
 		 * @throws NyARException
 		 */
-		public function isEqualSize_1(i_width:int,i_height:int):Boolean
+		public function isEqualSize(i_width:int,i_height:int):Boolean
 		{
 			if (i_width == this.w && i_height == this.h) {
 				return true;
@@ -108,7 +108,7 @@ package jp.nyatla.nyartoolkit.as3.core.types
 			}
 			return false;
 		}
-		public function isInnerSize_1( i_x:int , i_y:int ):Boolean
+		public function isInnerSize( i_x:int , i_y:int ):Boolean
 		{ 
 			return ( i_x <= this.w && i_y <= this.h ) ;
 		}
@@ -123,7 +123,7 @@ package jp.nyatla.nyartoolkit.as3.core.types
 			return ( i_point.x < this.w && i_point.y < this.h && 0 <= i_point.x && 0 <= i_point.y ) ;
 		}
 		
-		public function isInnerPoint_1( i_x:int , i_y:int ):Boolean
+		public function isInnerPoint( i_x:int , i_y:int ):Boolean
 		{ 
 			return ( i_x < this.w && i_y < this.h && 0 <= i_x && 0 <= i_y ) ;
 		}
@@ -138,7 +138,7 @@ package jp.nyatla.nyartoolkit.as3.core.types
 			return ( i_pos.x < this.w && i_pos.y < this.h && 0 <= i_pos.x && 0 <= i_pos.y ) ;
 		}
 		
-		public function setAreaRect_1( i_vertex:Vector.<NyARDoublePoint2d>, i_num_of_vertex:int ):void
+		public function setAreaRect( i_vertex:Vector.<NyARDoublePoint2d>, i_num_of_vertex:int ):void
 		{ 
 			var xmax:int , xmin:int , ymax:int , ymin:int ;
 			xmin = xmax = int(i_vertex[i_num_of_vertex - 1].x) ;

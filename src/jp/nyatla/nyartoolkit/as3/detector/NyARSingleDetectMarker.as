@@ -142,7 +142,7 @@ package jp.nyatla.nyartoolkit.as3.detector
 				this._last_input_raster=i_raster;
 			}
 			//ラスタを２値イメージに変換する.
-			this._bin_filter.doFilter_1(i_th,this._bin_raster);
+			this._bin_filter.doFilter(i_th,this._bin_raster);
 
 			//コールバックハンドラの準備
 			this._confidence=0;
@@ -201,7 +201,7 @@ package jp.nyatla.nyartoolkit.as3.detector
 				return;
 			}
 			//取得パターンをカラー差分データに変換して評価する。
-			this._deviation_data.setRaster_1(this._inst_patt);
+			this._deviation_data.setRaster(this._inst_patt);
 			if(!this._match_patt.evaluate(this._deviation_data,mr)){
 				return;
 			}
@@ -221,7 +221,7 @@ package jp.nyatla.nyartoolkit.as3.detector
 			//ちょっと、ひっくり返してみようか。
 			for (i = 0; i < 4; i++) {
 				//直線同士の交点計算
-				if(!sq.line[i].crossPos_1(sq.line[(i + 3) % 4],sq.sqvertex[i])){
+				if(!sq.line[i].crossPos(sq.line[(i + 3) % 4],sq.sqvertex[i])){
 					throw new NyARException();//ここのエラー復帰するならダブルバッファにすればOK
 				}
 			}
@@ -247,7 +247,7 @@ package jp.nyatla.nyartoolkit.as3.detector
 			this._deviation_data=new NyARMatchPattDeviationColorData(i_ref_code.getWidth(),i_ref_code.getHeight());
 			this._match_patt=new NyARMatchPatt_Color_WITHOUT_PCA(i_ref_code);		
 			this._offset=new NyARRectOffset();
-			this._offset.setSquare_1(i_marker_width);
+			this._offset.setSquare(i_marker_width);
 			this._coordline=new NyARCoord2Linear(i_ref_param.getScreenSize(),i_ref_param.getDistortionFactor());
 			//２値画像バッファを作る		
 			var s:NyARIntSize=i_ref_param.getScreenSize();
@@ -287,7 +287,7 @@ package jp.nyatla.nyartoolkit.as3.detector
 		 * @throws NyARException 
 		 * @throws NyARException
 		 */	
-		public static function createInstance_1(i_param:NyARParam, i_code:NyARCode,i_marker_width:Number,i_profile_id:int):NyARSingleDetectMarker
+		public static function createInstance(i_param:NyARParam, i_code:NyARCode,i_marker_width:Number,i_profile_id:int):NyARSingleDetectMarker
 		{
 			switch(i_profile_id){
 			case PF_NYARTOOLKIT://default
@@ -298,7 +298,7 @@ package jp.nyatla.nyartoolkit.as3.detector
 		}
 		public static function createInstance_2(i_param:NyARParam, i_code:NyARCode, i_marker_width:Number):NyARSingleDetectMarker
 		{
-			return createInstance_1(i_param,i_code,i_marker_width,PF_NYARTOOLKIT);
+			return createInstance(i_param,i_code,i_marker_width,PF_NYARTOOLKIT);
 		}
 	}
 }

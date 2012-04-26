@@ -98,7 +98,7 @@ package jp.nyatla.nyartoolkit.as3.detector
 			//実サイズ保存
 			this._offset = NyARRectOffset.createArray(i_number_of_code);
 			for(var i:int=0;i<i_number_of_code;i++){
-				this._offset[i].setSquare_1(i_marker_width[i]);
+				this._offset[i].setSquare(i_marker_width[i]);
 			}
 			//２値画像バッファを作る
 			this._bin_raster=new NyARBinRaster(scr_size.w,scr_size.h);
@@ -131,7 +131,7 @@ package jp.nyatla.nyartoolkit.as3.detector
 				this._tobin_filter=INyARRgb2GsFilterArtkTh(i_raster.createInterface(INyARRgb2GsFilterArtkTh));
 				this._last_input_raster=i_raster;
 			}
-			this._tobin_filter.doFilter_1(i_threshold,this._bin_raster);
+			this._tobin_filter.doFilter(i_threshold,this._bin_raster);
 			//detect
 			this._square_detect.init(i_raster);
 			this._square_detect.detectMarker_2(this._bin_raster,0);
@@ -270,7 +270,7 @@ class RleDetector extends NyARSquareContourDetector_Rle
 			return;
 		}
 		//取得パターンをカラー差分データに変換して評価する。
-		this._deviation_data.setRaster_1(this._inst_patt);
+		this._deviation_data.setRaster(this._inst_patt);
 
 		//最も一致するパターンを割り当てる。
 		var square_index:int,direction:int;
@@ -304,7 +304,7 @@ class RleDetector extends NyARSquareContourDetector_Rle
 		}
 		for (i = 0; i < 4; i++) {
 			//直線同士の交点計算
-			if(!sq.line[i].crossPos_1(sq.line[(i + 3) % 4],sq.sqvertex[i])){
+			if(!sq.line[i].crossPos(sq.line[(i + 3) % 4],sq.sqvertex[i])){
 				throw new NyARException();//ここのエラー復帰するならダブルバッファにすればOK
 			}
 		}
@@ -332,9 +332,9 @@ class NyARDetectMarkerResultStack extends NyARObjectStack
 	public function NyARDetectMarkerResultStack(i_length:int)
 	{
 		super();
-		this.initInstance_1(i_length);
+		this.initInstance(i_length);
 	}
-	protected override function createElement_1():Object
+	protected override function createElement():Object
 	{
 		return new NyARDetectMarkerResult();
 	}

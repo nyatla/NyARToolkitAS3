@@ -48,7 +48,7 @@ package jp.nyatla.nyartoolkit.as3.core.param
 			{
 				for(var i2:int=i_screen_size.w-1;i2>=0;i2--)
 				{
-					i_distfactor.observ2Ideal_1(i2,i, opoint);
+					i_distfactor.observ2Ideal(i2,i, opoint);
 					this._mapx[ptr]=opoint.x;
 					this._mapy[ptr]=opoint.y;
 					ptr--;

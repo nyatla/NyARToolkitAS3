@@ -48,8 +48,8 @@ package{
         private var textbox:TextField = new TextField();
 		private var param:FLARParam;
 		private var code:FLARCode;
-		private var raster_bgra:FLARRgbRaster_BitmapData;
-		private var id_bgra:FLARRgbRaster_BitmapData;
+		private var raster_bgra:FLARRgbRaster;
+		private var id_bgra:FLARRgbRaster;
 		public function msg(i_str:String):void
 		{
 			this.textbox.text = this.textbox.text + "\n" + i_str;
@@ -94,14 +94,14 @@ package{
 				function(data:String):void
 				{
 					code=new FLARCode(16, 16);
-					code.loadARPattFromFile(data);
+					code.loadARPatt(data);
 				}
 			);
 			mf.addTarget(
 				"../../../data/320x240ABGR.raw",URLLoaderDataFormat.BINARY,
 				function(data:ByteArray):void
 				{
-					var r:FLARRgbRaster_BitmapData = new FLARRgbRaster_BitmapData(320,240,true);
+					var r:FLARRgbRaster = new FLARRgbRaster(320,240,true);
 					var b:BitmapData =	r.getBitmapData();
 					data.endian = Endian.LITTLE_ENDIAN;
 					for (var i:int = 0; i < 320 * 240; i++) {
@@ -114,13 +114,13 @@ package{
 				"../../../data/320x240NyId.raw",URLLoaderDataFormat.BINARY,
 				function(data:ByteArray):void
 				{
-					var r:FLARRgbRaster_BitmapData = new FLARRgbRaster_BitmapData(320, 240,true);
+					var r:FLARRgbRaster = new FLARRgbRaster(320, 240,true);
 					var b:BitmapData =	r.getBitmapData();
 					data.endian = Endian.LITTLE_ENDIAN;
 					for (var i:int = 0; i < 320 * 240; i++) {
 						b.setPixel(i%320,i/320,data.readInt());
 					}
-            		id_bgra=r;
+            		id_bgra = r;
 				});
             //終了後mainに遷移するよ―に設定
 			mf.addEventListener(Event.COMPLETE,main);
@@ -215,7 +215,7 @@ package{
 			msg(reality.getNumberOfDead().toString());
 			var rt:Vector.<NyARRealityTarget>=new Vector.<NyARRealityTarget>(10);
 			reality.selectUnKnownTargets(rt);
-			reality.changeTargetToKnown_1(rt[1],2,80);
+			reality.changeTargetToKnown(rt[1],2,80);
 			msg(rt[1]._transform_matrix.m00+","+rt[1]._transform_matrix.m01+","+rt[1]._transform_matrix.m02+","+rt[1]._transform_matrix.m03);
 			msg(rt[1]._transform_matrix.m10+","+rt[1]._transform_matrix.m11+","+rt[1]._transform_matrix.m12+","+rt[1]._transform_matrix.m13);
 			msg(rt[1]._transform_matrix.m20+","+rt[1]._transform_matrix.m21+","+rt[1]._transform_matrix.m22+","+rt[1]._transform_matrix.m23);

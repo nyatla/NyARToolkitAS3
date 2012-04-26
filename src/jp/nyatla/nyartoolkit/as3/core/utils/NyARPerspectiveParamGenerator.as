@@ -18,7 +18,7 @@ package jp.nyatla.nyartoolkit.as3.core.utils
 			this._local_y = i_local_y ;
 			return;
 		}
-		public function getParam_1( i_size:NyARIntSize , i_vertex:Vector.<NyARIntPoint2d> , o_param:Vector.<Number>):Boolean
+		public function getParam( i_size:NyARIntSize , i_vertex:Vector.<NyARIntPoint2d> , o_param:Vector.<Number>):Boolean
 		{
 			//assert( ! (( i_vertex.length == 4 ) ));
 			return this.getParam_5(i_size.w , i_size.h , i_vertex[0].x , i_vertex[0].y , i_vertex[1].x , i_vertex[1].y , i_vertex[2].x , i_vertex[2].y , i_vertex[3].x , i_vertex[3].y , o_param);

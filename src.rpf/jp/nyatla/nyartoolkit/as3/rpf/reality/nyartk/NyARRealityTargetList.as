@@ -8,7 +8,7 @@ public class NyARRealityTargetList extends NyARPointerStack
 {
 	public function NyARRealityTargetList(i_max_target:int)
 	{
-		super.initInstance_1(i_max_target);
+		super.initInstance(i_max_target);
 	}
 	/**
 	 * RealityTargetのシリアル番号をキーに、ターゲットを探索します。

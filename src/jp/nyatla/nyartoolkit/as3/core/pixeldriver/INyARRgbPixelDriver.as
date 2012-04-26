@@ -92,7 +92,7 @@ package jp.nyatla.nyartoolkit.as3.core.pixeldriver
 		 *            B成分のピクセル値。
 		 * @throws NyARException
 		 */
-		function setPixel_1(i_x:int,i_y:int,i_r:int,i_g:int,i_b:int):void;
+		function setPixel(i_x:int,i_y:int,i_r:int,i_g:int,i_b:int):void;
 
 		/**
 		 * この関数は、RGBデータを指定した座標のピクセルにセットします。 実装クラスでは、バッファにRGB値を書込む処理を実装してください。

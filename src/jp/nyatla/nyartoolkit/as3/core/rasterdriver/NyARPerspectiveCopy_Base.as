@@ -47,7 +47,7 @@ package jp.nyatla.nyartoolkit.as3.core.rasterdriver
 		{
 			return this.copyPatt_3(i_vertex[0].x,i_vertex[0].y,i_vertex[1].x,i_vertex[1].y,i_vertex[2].x,i_vertex[2].y,i_vertex[3].x,i_vertex[3].y, i_edge_x, i_edge_y, i_resolution, i_out);
 		}
-		public function copyPatt_1(i_vertex:Vector.<NyARIntPoint2d>,i_edge_x:int,i_edge_y:int,i_resolution:int,i_out:INyARRgbRaster):Boolean
+		public function copyPatt(i_vertex:Vector.<NyARIntPoint2d>,i_edge_x:int,i_edge_y:int,i_resolution:int,i_out:INyARRgbRaster):Boolean
 		{
 			return this.copyPatt_3(i_vertex[0].x,i_vertex[0].y,i_vertex[1].x,i_vertex[1].y,i_vertex[2].x,i_vertex[2].y,i_vertex[3].x,i_vertex[3].y, i_edge_x, i_edge_y, i_resolution, i_out);
 		}

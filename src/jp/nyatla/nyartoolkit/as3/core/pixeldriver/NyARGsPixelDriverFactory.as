@@ -42,7 +42,7 @@ package jp.nyatla.nyartoolkit.as3.core.pixeldriver
 		 * @return
 		 * @throws NyARException
 		 */
-		public static function createDriver_1( i_ref_raster:INyARGrayscaleRaster):INyARGsPixelDriver
+		public static function createDriver( i_ref_raster:INyARGrayscaleRaster):INyARGsPixelDriver
 		{
 			var ret:INyARGsPixelDriver;
 			switch(i_ref_raster.getBufferType()){
@@ -161,14 +161,14 @@ class NyARGsPixelDriver_RGBX implements INyARGsPixelDriver
 	}
 	public function setPixel(i_x:int,i_y:int,i_gs:int):void
 	{
-		this._rgbd.setPixel_1(i_x, i_y, i_gs,i_gs,i_gs);
+		this._rgbd.setPixel(i_x, i_y, i_gs,i_gs,i_gs);
 	}
 	public function setPixels(i_x:Vector.<int>,i_y:Vector.<int>,i_num:int,i_intgs:Vector.<int>):void
 	{
 		var r:INyARRgbPixelDriver=this._rgbd;
 		for (var i:int = i_num - 1; i >= 0; i--){
 			var gs:int=i_intgs[i];
-			r.setPixel_1(i_x[i], i_y[i],gs,gs,gs);
+			r.setPixel(i_x[i], i_y[i],gs,gs,gs);
 		}
 	}
 	public function switchRaster(i_ref_raster:INyARRaster ):void

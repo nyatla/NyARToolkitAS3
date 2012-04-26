@@ -91,7 +91,7 @@ package jp.nyatla.nyartoolkit.as3.core.param
 		 * @param i_in
 		 * @param o_out
 		 */
-		public function ideal2Observ_1(i_in:NyARDoublePoint2d,o_out:NyARDoublePoint2d):void
+		public function ideal2Observ(i_in:NyARDoublePoint2d,o_out:NyARDoublePoint2d):void
 		{
 			var x:Number = (i_in.x - this._f0) * this._f3;
 			var y:Number = (i_in.y - this._f1) * this._f3;
@@ -145,7 +145,7 @@ package jp.nyatla.nyartoolkit.as3.core.param
 		 * @param o_out
 		 * @param i_size
 		 */
-		public function ideal2ObservBatch_1(i_in:Vector.<NyARDoublePoint2d>,o_out:Vector.<NyARDoublePoint2d>,i_size:int):void
+		public function ideal2ObservBatch(i_in:Vector.<NyARDoublePoint2d>,o_out:Vector.<NyARDoublePoint2d>,i_size:int):void
 		{
 			var x:Number,y:Number;
 			var d0:Number = this._f0;
@@ -202,7 +202,7 @@ package jp.nyatla.nyartoolkit.as3.core.param
 		 * @param iy
 		 * @param o_point
 		 */
-		public function observ2Ideal_1(ix:Number,iy:Number,o_point:NyARDoublePoint2d):void 
+		public function observ2Ideal(ix:Number,iy:Number,o_point:NyARDoublePoint2d):void 
 		{
 			var z02:Number, z0:Number, p:Number, q:Number, z:Number, px:Number, py:Number, opttmp_1:Number;
 			var d0:Number = this._f0;

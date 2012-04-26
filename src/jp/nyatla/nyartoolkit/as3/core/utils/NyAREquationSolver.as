@@ -218,7 +218,7 @@ package jp.nyatla.nyartoolkit.as3.core.utils
 				//それ以外
 				//最適化ポイント:
 				//u^3  + (2*p)*u^2  +((- 4*r)+(p^2))*u -q^2= 0
-				var u:Number=solve3Equation_1((2*p),(- 4*r)+(p*p),-q*q);
+				var u:Number=solve3Equation((2*p),(- 4*r)+(p*p),-q*q);
 				if(u<0){
 					//全て虚数解
 					return 0;
@@ -269,7 +269,7 @@ package jp.nyatla.nyartoolkit.as3.core.utils
 		 * @param o_result
 		 * @return
 		 */
-		private static function solve3Equation_1(i_b:Number,i_c:Number, i_d:Number):Number
+		private static function solve3Equation(i_b:Number,i_c:Number, i_d:Number):Number
 		{
 			var tmp:Number,b:Number,   p:Number, q:Number;
 			b = i_b/(3);

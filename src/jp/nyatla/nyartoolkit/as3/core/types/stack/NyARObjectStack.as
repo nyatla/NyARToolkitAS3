@@ -51,12 +51,12 @@ package jp.nyatla.nyartoolkit.as3.core.types.stack
 		 * @param i_param
 		 * @throws NyARException
 		 */
-		protected override function initInstance_1(i_length:int):void
+		protected override function initInstance(i_length:int):void
 		{
 			//領域確保
-			super.initInstance_1(i_length);
+			super.initInstance(i_length);
 			for (var i:int=0; i < i_length; i++){
-				this._items[i] =createElement_1();
+				this._items[i] =createElement();
 			}
 			return;
 		}
@@ -71,13 +71,13 @@ package jp.nyatla.nyartoolkit.as3.core.types.stack
 		protected function initInstance_2(i_length:int,i_param:Object):void
 		{
 			//領域確保
-			super.initInstance_1(i_length);
+			super.initInstance(i_length);
 			for (var i:int =0; i < i_length; i++){
 				this._items[i] =createElement_2(i_param);
 			}
 			return;
 		}
-		protected function createElement_1():Object
+		protected function createElement():Object
 		{
 			throw new NyARException();
 		}

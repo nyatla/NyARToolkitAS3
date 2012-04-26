@@ -32,10 +32,10 @@ package jp.nyatla.nyartoolkit.as3.core.raster.rgb
 				overload_NyARRgbRaster_2ii(int(args[0]), int(args[1]));
 				break;
 			case 3:
-				overload_NyARRgbRaster3(int(args[0]), int(args[1]),int(args[2]));
+				overload_NyARRgbRaster_3iii(int(args[0]), int(args[1]),int(args[2]));
 				break;
 			case 4:
-				overload_NyARRgbRaster4(int(args[0]), int(args[1]),int(args[2]),Boolean(args[3]));
+				overload_NyARRgbRaster_4iiib(int(args[0]), int(args[1]),int(args[2]),Boolean(args[3]));
 				break;
 			default:
 				throw new NyARException();
@@ -66,7 +66,7 @@ package jp.nyatla.nyartoolkit.as3.core.raster.rgb
 		 * @param i_is_alloc
 		 * @throws NyARException
 		 */
-		protected function overload_NyARRgbRaster4(i_width:int,i_height:int,i_raster_type:int,i_is_alloc:Boolean):void
+		protected function overload_NyARRgbRaster_4iiib(i_width:int,i_height:int,i_raster_type:int,i_is_alloc:Boolean):void
 		{
 			super.overload_NyARRgbRaster_BasicClass(i_width,i_height,i_raster_type);
 			if(!initInstance(this._size,i_raster_type,i_is_alloc)){
@@ -81,7 +81,7 @@ package jp.nyatla.nyartoolkit.as3.core.raster.rgb
 		 * NyARBufferTypeに定義された定数値を指定してください。
 		 * @throws NyARException
 		 */
-		protected function overload_NyARRgbRaster3(i_width:int, i_height:int, i_raster_type:int):void
+		protected function overload_NyARRgbRaster_3iii(i_width:int, i_height:int, i_raster_type:int):void
 		{
 			super.overload_NyARRgbRaster_BasicClass(i_width,i_height,i_raster_type);
 			if(!initInstance(this._size,i_raster_type,true)){

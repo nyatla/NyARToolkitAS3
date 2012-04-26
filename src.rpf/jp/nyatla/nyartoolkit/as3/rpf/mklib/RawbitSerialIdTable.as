@@ -109,7 +109,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.mklib
 		 * @return
 		 * @throws NyARException
 		 */
-		public function identifyId_1(i_vertex:Vector.<NyARDoublePoint2d>,i_raster:INyARRgbRaster,o_result:RawbitSerialIdTable_IdentifyIdResult):Boolean
+		public function identifyId(i_vertex:Vector.<NyARDoublePoint2d>,i_raster:INyARRgbRaster,o_result:RawbitSerialIdTable_IdentifyIdResult):Boolean
 		{
 			if(this._last_laster!=i_raster){
 				this._gs_pix_reader=NyARGsPixelDriverFactory.createDriver(i_raster);
@@ -176,7 +176,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.mklib
 		public function identifyId_2(i_target:NyARRealityTarget,i_rtsorce:NyARRealitySource,o_result:RawbitSerialIdTable_IdentifyIdResult):Boolean
 		{
 			//NyARDoublePoint2d[] i_vertex,NyARRgbRaster i_raster,SelectResult o_result
-			return this.identifyId_1(
+			return this.identifyId(
 				((NyARRectTargetStatus)(i_target._ref_tracktarget._ref_status)).vertex,
 				i_rtsorce.refRgbSource(),
 				o_result);
@@ -207,9 +207,9 @@ class SerialTable extends NyARObjectStack
 	public function SerialTable(i_length:int)
 	{
 		super();
-		super.initInstance_1(i_length);
+		super.initInstance(i_length);
 	}
-	protected override function createElement_1():Object
+	protected override function createElement():Object
 	{
 		return new SerialTableRow();
 	}

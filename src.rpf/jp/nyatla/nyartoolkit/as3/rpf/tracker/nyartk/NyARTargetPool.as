@@ -11,9 +11,9 @@ package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk
 	{
 		public function NyARTargetPool(i_size:int)
 		{
-			this.initInstance_1(i_size);
+			this.initInstance(i_size);
 		}
-		protected override function createElement_1():NyARManagedObject
+		protected override function createElement():NyARManagedObject
 		{
 			return new NyARTarget(this._op_interface);
 		}

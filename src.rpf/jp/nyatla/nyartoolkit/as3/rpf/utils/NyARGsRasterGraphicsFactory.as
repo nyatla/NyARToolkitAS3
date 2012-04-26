@@ -82,7 +82,7 @@ class NyARGsRasterGraphics_GS_INT8 implements INyARGsRasterGraphics
 	}
 	public function copyTo(i_left:int,i_top:int,i_skip:int ,o_output:INyARGrayscaleRaster):void
 	{
-		NyAS3Utils.assert (this._raster.getSize().isInnerSize_1(i_left + o_output.getWidth() * i_skip, i_top+ o_output.getHeight() * i_skip));		
+		NyAS3Utils.assert (this._raster.getSize().isInnerSize(i_left + o_output.getWidth() * i_skip, i_top+ o_output.getHeight() * i_skip));		
 		var input:Vector.<int> = Vector.<int>(this._raster.getBuffer());
 		switch(o_output.getBufferType())
 		{

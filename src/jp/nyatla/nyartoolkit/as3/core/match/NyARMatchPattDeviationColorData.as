@@ -68,7 +68,7 @@ package jp.nyatla.nyartoolkit.as3.core.match
 		 * @param i_buffer
 		 * @throws NyARException 
 		 */
-		public function setRaster_1(i_raster:INyARRgbRaster):void
+		public function setRaster(i_raster:INyARRgbRaster):void
 		{
 			//ドライバの生成
 			if(this._last_input_raster!=i_raster){

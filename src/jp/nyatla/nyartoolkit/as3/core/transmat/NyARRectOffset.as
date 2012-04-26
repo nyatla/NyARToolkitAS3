@@ -50,7 +50,7 @@ package jp.nyatla.nyartoolkit.as3.core.transmat
 		 * 中心位置と辺長から、オフセット情報を作成して設定する。
 		 * @param i_width
 		 */
-		public function setSquare_1(i_width:Number):void
+		public function setSquare(i_width:Number):void
 		{
 			var w_2:Number = i_width / 2.0;
 			

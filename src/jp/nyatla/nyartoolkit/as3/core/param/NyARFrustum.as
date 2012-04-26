@@ -61,7 +61,7 @@ package jp.nyatla.nyartoolkit.as3.core.param
 		 * @param i_height
 		 * スクリーンサイズです。
 		 */
-		public function setValue_1(i_projection_mat:NyARDoubleMatrix44,i_width:int,i_height:int):void
+		public function setValue(i_projection_mat:NyARDoubleMatrix44,i_width:int,i_height:int):void
 		{
 			this._frustum_rh.setValue_2(i_projection_mat);
 			this._inv_frustum_rh.inverse(this._frustum_rh);
@@ -169,7 +169,7 @@ package jp.nyatla.nyartoolkit.as3.core.param
 		 * @param i_z
 		 * @param o_pos2d
 		 */
-		public function project_1(i_x:Number,i_y:Number,i_z:Number,o_pos2d:NyARDoublePoint2d):void
+		public function project(i_x:Number,i_y:Number,i_z:Number,o_pos2d:NyARDoublePoint2d):void
 		{
 			var m:NyARDoubleMatrix44=this._frustum_rh;
 			var v3_1:Number=1/i_z*m.m32;
@@ -188,7 +188,7 @@ package jp.nyatla.nyartoolkit.as3.core.param
 		 */
 		public function project_2(i_pos:NyARDoublePoint3d,o_pos2d:NyARDoublePoint2d):void
 		{
-			this.project_1(i_pos.x,i_pos.y,i_pos.z,o_pos2d);
+			this.project(i_pos.x,i_pos.y,i_pos.z,o_pos2d);
 		}
 		/**
 		 * 透視変換行列の参照値を返します。

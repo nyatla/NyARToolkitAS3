@@ -283,7 +283,7 @@ class PerspectiveCopy_ANYRgb extends NyARPerspectiveCopy_Base
 							cp1_cy_cp2_cp0_cx_b+=cp1;
 							cp4_cy_cp5_cp3_cx_b+=cp4;
 						}
-						out_reader.setPixel_1(ix,iy,r/res_pix,g/res_pix,b/res_pix);
+						out_reader.setPixel(ix,iy,r/res_pix,g/res_pix,b/res_pix);
 					}
 				}
 				return true;

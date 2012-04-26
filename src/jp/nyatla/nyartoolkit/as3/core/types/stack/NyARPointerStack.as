@@ -18,7 +18,7 @@ package jp.nyatla.nyartoolkit.as3.core.types.stack
 		 * @param i_length
 		 * @throws NyARException
 		 */
-		protected function initInstance_1(i_length:int):void
+		protected function initInstance(i_length:int):void
 		{
 			//領域確保
 			this._items = new Vector.<Object>(i_length);

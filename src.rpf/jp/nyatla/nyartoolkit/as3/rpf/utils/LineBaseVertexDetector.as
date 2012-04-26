@@ -82,13 +82,13 @@ package jp.nyatla.nyartoolkit.as3.rpf.utils
 			case  0:
 				//逆回転で検出した場合
 				for(i=0;i<4;i++){
-					o_point[i].setValue_1(v[target_order[3-i]]);
+					o_point[i].setValue(v[target_order[3-i]]);
 				}
 				break;
 			case  4:
 				//正回転で検出した場合
 				for(i=0;i<4;i++){
-					o_point[i].setValue_1(v[target_order[i]]);
+					o_point[i].setValue(v[target_order[i]]);
 				}
 				break;
 			default:
@@ -107,7 +107,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.utils
 		{
 			var ret:int=0;
 			for(var i:int=0;i<4;i++){
-				if(0<NyARDoublePoint2d.crossProduct3Point_1(p[order[i+0]],p[order[(i+1)%4]],p[order[(i+2)%4]])){
+				if(0<NyARDoublePoint2d.crossProduct3Point(p[order[i+0]],p[order[(i+1)%4]],p[order[(i+2)%4]])){
 					ret++;
 				}
 			}

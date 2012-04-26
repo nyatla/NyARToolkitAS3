@@ -45,9 +45,9 @@ package org.libspark.flartoolkit.core.raster.rgb
     /**
      * bitmapと互換性のあるラスタです。
      */
-    public class FLARRgbRaster_BitmapData extends NyARRgbRaster
+    public class FLARRgbRaster extends NyARRgbRaster
     {
-		public function FLARRgbRaster_BitmapData(...args:Array)
+		public function FLARRgbRaster(...args:Array)
 		{
 			super(NyAS3Const_Inherited);
 			switch(args.length) {
@@ -211,8 +211,8 @@ package org.libspark.flartoolkit.core.raster.rgb
 
     class NyARRgb2GsFilterRgbAve_AsBitmap implements INyARRgb2GsFilterRgbAve
     {
-        private var _ref_raster:FLARRgbRaster_BitmapData;
-        public function NyARRgb2GsFilterRgbAve_AsBitmap(i_ref_raster:FLARRgbRaster_BitmapData)
+        private var _ref_raster:FLARRgbRaster;
+        public function NyARRgb2GsFilterRgbAve_AsBitmap(i_ref_raster:FLARRgbRaster)
         {
             NyAS3Utils.assert(i_ref_raster.isEqualBufferType(NyARBufferType.OBJECT_AS3_BitmapData));
             this._ref_raster = i_ref_raster;
@@ -273,8 +273,8 @@ package org.libspark.flartoolkit.core.raster.rgb
 			1/3,1/3,1/3, 0,
 			0, 0, 0, 1, 0
 		]);		
-        private var _ref_raster:FLARRgbRaster_BitmapData;
-        public function NyARRgb2GsFilterArtkTh_AsBitmap(i_ref_raster:FLARRgbRaster_BitmapData)
+        private var _ref_raster:FLARRgbRaster;
+        public function NyARRgb2GsFilterArtkTh_AsBitmap(i_ref_raster:FLARRgbRaster)
         {
             NyAS3Utils.assert(i_ref_raster.isEqualBufferType(NyARBufferType.OBJECT_AS3_BitmapData));
             this._ref_raster = i_ref_raster;
@@ -313,7 +313,7 @@ package org.libspark.flartoolkit.core.raster.rgb
     class NyARRgbPixelDriver_AsBitmap implements INyARRgbPixelDriver
     {
         /** 参照する外部バッファ */
-        private var _ref_raster:FLARRgbRaster_BitmapData;
+        private var _ref_raster:FLARRgbRaster;
         private var _ref_size:NyARIntSize;
         public function getSize():NyARIntSize
         {
@@ -368,15 +368,15 @@ package org.libspark.flartoolkit.core.raster.rgb
 
         public function switchRaster( i_raster:INyARRgbRaster):void
         {
-            this._ref_raster = FLARRgbRaster_BitmapData(i_raster);
+            this._ref_raster = FLARRgbRaster(i_raster);
             this._ref_size = i_raster.getSize();
         }
 
     }
     class PerspectiveCopy_AsBitmap extends NyARPerspectiveCopy_Base
     {
-        private var _ref_raster:FLARRgbRaster_BitmapData;
-        public function PerspectiveCopy_AsBitmap(i_ref_raster:FLARRgbRaster_BitmapData)
+        private var _ref_raster:FLARRgbRaster;
+        public function PerspectiveCopy_AsBitmap(i_ref_raster:FLARRgbRaster)
         {
             NyAS3Utils.assert(i_ref_raster.isEqualBufferType(NyARBufferType.OBJECT_AS3_BitmapData));
             this._ref_raster = i_ref_raster;
@@ -443,9 +443,9 @@ package org.libspark.flartoolkit.core.raster.rgb
                     }
                     return true;
                 default:
-                    if (o_out is FLARRgbRaster_BitmapData)
+                    if (o_out is FLARRgbRaster)
                     {
-                        var bmr:FLARRgbRaster_BitmapData = FLARRgbRaster_BitmapData(o_out);
+                        var bmr:FLARRgbRaster = FLARRgbRaster(o_out);
                         var bm:BitmapData = bmr.getBitmapData();
                         p = 0;
                         for (iy = 0; iy < out_h; iy++)
@@ -539,9 +539,9 @@ package org.libspark.flartoolkit.core.raster.rgb
 			var x:int, y:int;
 			var i2x:int, i2y:int;
 			var cp7_cy_1_cp6_cx_b:Number, cp1_cy_cp2_cp0_cx_b:Number, cp4_cy_cp5_cp3_cx_b:Number, cp7_cy_1_cp6_cx:Number, cp1_cy_cp2_cp0_cx:Number, cp4_cy_cp5_cp3_cx:Number;
-            if (o_out is FLARRgbRaster_BitmapData)
+            if (o_out is FLARRgbRaster)
             {
-                var bmr:FLARRgbRaster_BitmapData=FLARRgbRaster_BitmapData(o_out);
+                var bmr:FLARRgbRaster=FLARRgbRaster(o_out);
                 var bm:BitmapData = bmr.getBitmapData();
                 for (iy = out_h - 1; iy >= 0; iy--)
                 {

@@ -86,7 +86,7 @@ package jp.nyatla.nyartoolkit.as3.core.types
 			this.y = cy / i_number_of_vertex ;
 		}
 		
-		public function setValue_1( i_source:NyARIntPoint2d ):void
+		public function setValue( i_source:NyARIntPoint2d ):void
 		{ 
 			this.x = i_source.x ;
 			this.y = i_source.y ;
@@ -103,7 +103,7 @@ package jp.nyatla.nyartoolkit.as3.core.types
 			this.x = i_x ;
 			this.y = i_y ;
 		}
-		public static function shiftCopy_1(i_src:Vector.<NyARDoublePoint2d>,i_dst:Vector.<NyARIntPoint2d>,i_shift:int):void
+		public static function shiftCopy(i_src:Vector.<NyARDoublePoint2d>,i_dst:Vector.<NyARIntPoint2d>,i_shift:int):void
 		{
 			var l:int=i_src.length;
 			for(var i:int=l-1;i>=0;i--){

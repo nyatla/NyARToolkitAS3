@@ -29,7 +29,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk
 		function getAreaVector33(ix:int,iy:int,iw:int,ih:int,o_posvec:NyARVecLinear2d):int;
 		function getAreaVector22(ix:int,iy:int,iw:int,ih:int,o_posvec:NyARVecLinear2d):int;
 
-		function traceConture_1(i_th:int,i_entry:NyARIntPoint2d,o_coord:VecLinearCoordinates):Boolean;
+		function traceConture(i_th:int,i_entry:NyARIntPoint2d,o_coord:VecLinearCoordinates):Boolean;
 
 		/**
 		 * 点1と点2の間に線分を定義して、その線分上のベクトルを得ます。点は、画像の内側でなければなりません。 320*240の場合、(x>=0 &&
@@ -46,7 +46,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk
 		 * @return
 		 * @throws NyARException
 		 */
-		function traceLine_1(i_pos1:NyARIntPoint2d,i_pos2:NyARIntPoint2d,i_edge:int,o_coord:VecLinearCoordinates):Boolean;
+		function traceLine(i_pos1:NyARIntPoint2d,i_pos2:NyARIntPoint2d,i_edge:int,o_coord:VecLinearCoordinates):Boolean;
 
 		function traceLine_2(i_pos1:NyARDoublePoint2d,i_pos2:NyARDoublePoint2d,i_edge:int,o_coord:VecLinearCoordinates):Boolean;
 

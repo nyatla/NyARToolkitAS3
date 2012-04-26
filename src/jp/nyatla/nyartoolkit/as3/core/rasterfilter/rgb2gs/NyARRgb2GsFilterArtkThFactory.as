@@ -55,7 +55,7 @@ import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
 class NyARRgb2GsFilterArtkTh_Base implements INyARRgb2GsFilterArtkTh
 {
 	protected var _raster:INyARRgbRaster;
-	public function doFilter_1(i_h:int,i_gsraster:INyARGrayscaleRaster):void
+	public function doFilter(i_h:int,i_gsraster:INyARGrayscaleRaster):void
 	{
 		var s:NyARIntSize=this._raster.getSize();
 		this.doFilter_2(0,0,s.w,s.h,i_h,i_gsraster);

@@ -132,7 +132,7 @@ package jp.nyatla.nyartoolkit.as3.core.raster
 		 * ラスタのサイズ
 		 * @throws NyARException
 		 */
-		public function overload_NyARGrayscaleRaster_2ii(i_width:int,i_height:int):void
+		protected function overload_NyARGrayscaleRaster_2ii(i_width:int,i_height:int):void
 		{
 			this._size= new NyARIntSize(i_width,i_height);
 			this._buffer_type=NyARBufferType.INT1D_GRAY_8;		
@@ -152,7 +152,7 @@ package jp.nyatla.nyartoolkit.as3.core.raster
 		 * falseの場合、初期のバッファはnullになります。インスタンスを生成したのちに、{@link #wrapBuffer}を使って割り当ててください。
 		 * @throws NyARException
 		 */
-		public function overload_NyARGrayscaleRaster_3iib(i_width:int,i_height:int,i_is_alloc:Boolean):void
+		protected function overload_NyARGrayscaleRaster_3iib(i_width:int,i_height:int,i_is_alloc:Boolean):void
 		{
 			this._size= new NyARIntSize(i_width,i_height);
 			this._buffer_type=NyARBufferType.INT1D_GRAY_8;		
@@ -178,7 +178,7 @@ package jp.nyatla.nyartoolkit.as3.core.raster
 		 * falseの場合、初期のバッファはnullになります。インスタンスを生成したのちに、{@link #wrapBuffer}を使って割り当ててください。
 		 * @throws NyARException
 		 */
-		public function overload_NyARGrayscaleRaster_4iiib(i_width:int,i_height:int,i_raster_type:int,i_is_alloc:Boolean):void
+		protected function overload_NyARGrayscaleRaster_4iiib(i_width:int,i_height:int,i_raster_type:int,i_is_alloc:Boolean):void
 		{
 			this._size= new NyARIntSize(i_width,i_height);
 			this._buffer_type=i_raster_type;
@@ -206,7 +206,7 @@ package jp.nyatla.nyartoolkit.as3.core.raster
 			}
 			this._is_attached_buffer = i_is_alloc;
 			//ピクセルドライバの生成
-			this._pixdrv=NyARGsPixelDriverFactory.createDriver_1(this);
+			this._pixdrv=NyARGsPixelDriverFactory.createDriver(this);
 		}
 		public function createInterface(i_iid:Class):Object
 		{
@@ -217,7 +217,7 @@ package jp.nyatla.nyartoolkit.as3.core.raster
 				return NyARContourPickup_ImageDriverFactory.createDriver(this);
 			}
 			if(i_iid==INyARHistogramFromRaster){
-				return NyARHistogramFromRasterFactory.createInstance_1(this);
+				return NyARHistogramFromRasterFactory.createInstance(this);
 			}
 			throw new NyARException();
 		}	

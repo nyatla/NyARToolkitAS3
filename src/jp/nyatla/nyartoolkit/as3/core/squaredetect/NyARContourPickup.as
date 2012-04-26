@@ -61,7 +61,7 @@ package jp.nyatla.nyartoolkit.as3.core.squaredetect
 		 * 輪郭の抽出に成功するとtrueを返します。輪郭抽出に十分なバッファが無いと、falseになります。
 		 * @throws NyARException
 		 */
-		public function getContour_1(i_raster:INyARGrayscaleRaster,i_th:int,i_entry_x:int,i_entry_y:int,o_coord:NyARIntCoordinates):Boolean
+		public function getContour(i_raster:INyARGrayscaleRaster,i_th:int,i_entry_x:int,i_entry_y:int,o_coord:NyARIntCoordinates):Boolean
 		{
 			var s:NyARIntSize=i_raster.getSize();
 			//ラスタドライバの切り替え

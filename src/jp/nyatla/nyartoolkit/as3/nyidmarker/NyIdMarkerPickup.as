@@ -53,7 +53,7 @@ package jp.nyatla.nyartoolkit.as3.nyidmarker
 			this._perspective_reader=new PerspectivePixelReader();
 			return;
 		}
-		public function pickFromRaster_1(i_pix_drv:INyARGsPixelDriver,i_vertex:Vector.<NyARDoublePoint2d>,o_data:NyIdMarkerPattern,o_param:NyIdMarkerParam):Boolean
+		public function pickFromRaster(i_pix_drv:INyARGsPixelDriver,i_vertex:Vector.<NyARDoublePoint2d>,o_data:NyIdMarkerPattern,o_param:NyIdMarkerParam):Boolean
 		{
 			//遠近法のパラメータを計算
 			if(!this._perspective_reader.setSourceSquare_2(i_vertex)){
@@ -72,7 +72,7 @@ package jp.nyatla.nyartoolkit.as3.nyidmarker
 		 */
 		public function pickFromRaster_2(i_pix_drv:INyARGsPixelDriver,i_vertex:Vector.<NyARIntPoint2d>,o_data:NyIdMarkerPattern,o_param:NyIdMarkerParam):Boolean
 		{
-			if(!this._perspective_reader.setSourceSquare_1(i_vertex)){
+			if(!this._perspective_reader.setSourceSquare(i_vertex)){
 				return false;
 			}
 			return this._pickFromRaster(i_pix_drv,o_data,o_param);
@@ -134,7 +134,7 @@ class PerspectivePixelReader
 		return;
 	}
 
-	public function setSourceSquare_1(i_vertex:Vector.<NyARIntPoint2d>):Boolean
+	public function setSourceSquare(i_vertex:Vector.<NyARIntPoint2d>):Boolean
 	{
 		return this._param_gen.getParam_4(READ_RESOLUTION,READ_RESOLUTION,i_vertex, this._cparam);
 	}

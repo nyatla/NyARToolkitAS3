@@ -57,7 +57,7 @@ package jp.nyatla.nyartoolkit.as3.core.transmat
 		 * @param i_rot
 		 * @param i_trans
 		 */
-		public function setValue(i_rot:NyARDoubleMatrix33,i_trans:NyARDoublePoint3d ,i_error:Number):void
+		public function setValue_3(i_rot:NyARDoubleMatrix33,i_trans:NyARDoublePoint3d ,i_error:Number):void
 		{
 			this.m00=i_rot.m00;
 			this.m01=i_rot.m01;

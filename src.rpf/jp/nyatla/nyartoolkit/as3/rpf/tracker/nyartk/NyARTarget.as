@@ -88,9 +88,9 @@ package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk
 		 * 頂点情報を元に、sampleAreaにRECTを設定します。
 		 * @param i_vertex
 		 */
-		public function setSampleArea_1(i_vertex:Vector.<NyARDoublePoint2d>):void
+		public function setSampleArea(i_vertex:Vector.<NyARDoublePoint2d>):void
 		{
-			this._sample_area.setAreaRect_1(i_vertex,4);
+			this._sample_area.setAreaRect(i_vertex,4);
 		}	
 
 		/**
@@ -100,7 +100,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk
 		 */
 		public function setSampleArea_2(i_item:LowResolutionLabelingSamplerOut_Item):void
 		{
-			this._sample_area.setValue_1(i_item.base_area);
+			this._sample_area.setValue(i_item.base_area);
 		}
 	}
 }

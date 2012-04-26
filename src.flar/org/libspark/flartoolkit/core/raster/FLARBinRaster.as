@@ -64,7 +64,7 @@ package org.libspark.flartoolkit.core.raster
 		public override function createInterface(i_iid:Class):Object
 		{
 			if(i_iid==NyARContourPickup_IRasterDriver){
-				return new FLARContourPickup_GsReader(this);
+				return FLARContourPickupFactory.createDriver(this);
 			}
 			return super.createInterface(i_iid);
 		}	

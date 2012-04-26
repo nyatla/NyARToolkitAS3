@@ -60,7 +60,7 @@ package jp.nyatla.nyartoolkit.as3.core.param
 		public function setValue(i_factor:Vector.<Number>,i_projection:Vector.<Number>):void
 		{
 			this._dist.setValue(i_factor);
-			this._projection_matrix.setValue_1(i_projection);
+			this._projection_matrix.setValue(i_projection);
 			return;
 		}
 		/**
@@ -72,7 +72,7 @@ package jp.nyatla.nyartoolkit.as3.core.param
 		 * @return
 		 * 
 		 */
-		public function changeScreenSize_1(i_xsize:int,i_ysize:int):void
+		public function changeScreenSize(i_xsize:int,i_ysize:int):void
 		{
 			var scale:Number = Number(i_xsize) / Number(this._screen_size.w);// scale = (double)xsize / (double)(source->xsize);
 			//スケールを変更
@@ -89,7 +89,7 @@ package jp.nyatla.nyartoolkit.as3.core.param
 		 */
 		public function changeScreenSize_2(i_s:NyARIntSize):void
 		{
-			this.changeScreenSize_1(i_s.w,i_s.h);
+			this.changeScreenSize(i_s.w,i_s.h);
 		}
 		/**
 		 * 右手系の視錐台を作ります。
@@ -119,7 +119,7 @@ package jp.nyatla.nyartoolkit.as3.core.param
 			tmp[12]=tmp[13]=tmp[14]=0;
 			tmp[15]=1;			
 			//Projectionオブジェクトにセット
-			this._projection_matrix.setValue_1(tmp);
+			this._projection_matrix.setValue(tmp);
 			//double値を4個読み込む
 			for (i = 0; i < 4; i++) {
 				tmp[i] = i_stream.readDouble();//bb.getDouble();

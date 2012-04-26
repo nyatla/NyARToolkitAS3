@@ -61,7 +61,7 @@ package jp.nyatla.nyartoolkit.as3.core.types.matrix
 		/**
 		 * 配列の内容をセットします。順番は、00,01,02,03,10...の順です。
 		 */
-		public function setValue_1(i_value:Vector.<Number>):void
+		public function setValue(i_value:Vector.<Number>):void
 		{
 			this.m00=i_value[ 0];
 			this.m01=i_value[ 1];
@@ -243,7 +243,7 @@ package jp.nyatla.nyartoolkit.as3.core.types.matrix
 			
 			return true;
 		}	
-		public function transform3d_1( i_x:Number , i_y:Number , i_z:Number , o_out:NyARDoublePoint3d ):void
+		public function transform3d( i_x:Number , i_y:Number , i_z:Number , o_out:NyARDoublePoint3d ):void
 		{ 
 			o_out.x = this.m00 * i_x + this.m01 * i_y + this.m02 * i_z + this.m03 ;
 			o_out.y = this.m10 * i_x + this.m11 * i_y + this.m12 * i_z + this.m13 ;
@@ -253,7 +253,7 @@ package jp.nyatla.nyartoolkit.as3.core.types.matrix
 		
 		public function transform3d_2( i_in:NyARDoublePoint3d , o_out:NyARDoublePoint3d ):void
 		{ 
-			transform3d_1(i_in.x , i_in.y , i_in.z , o_out) ;
+			transform3d(i_in.x , i_in.y , i_in.z , o_out) ;
 		}
 		
 		public function getZXYAngle( o_out:NyARDoublePoint3d ):void

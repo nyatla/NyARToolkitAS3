@@ -100,7 +100,7 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 		}
 		//頂点予測と範囲予測
 		this.estimate_sum_sq_vertex_velocity_ave=sum_of_vertex_sq_dist/4;
-		this.estimate_rect.setAreaRect_1(ve_ptr,4);
+		this.estimate_rect.setAreaRect(ve_ptr,4);
 //		this.estimate_rect.clip(i_left, i_top, i_right, i_bottom);
 		return;
 	}
@@ -152,7 +152,7 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 	{
 		var vecpos:VecLinearCoordinates=this._ref_my_pool._vecpos;
 		//輪郭線を取る
-		if(!i_vec_reader.traceConture_1(i_source.lebeling_th,i_source.entry_pos,vecpos)){
+		if(!i_vec_reader.traceConture(i_source.lebeling_th,i_source.entry_pos,vecpos)){
 			return false;
 		}
 		//3,4象限方向のベクトルは1,2象限のベクトルに変換する。
@@ -217,7 +217,7 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 		}
 		//4点抽出
 		for(var i:int=3;i>=0;i--){
-			if(!sh_l[i].crossPos_1(sh_l[(i + 3) % 4],this.vertex[i])){
+			if(!sh_l[i].crossPos(sh_l[(i + 3) % 4],this.vertex[i])){
 				//四角が作れない。
 				return false;
 			}
@@ -304,14 +304,14 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 		//検出した四角形の対角点が検出エリア内か？
 		var cx:int=(int)(this_vx[0].x+this_vx[1].x+this_vx[2].x+this_vx[3].x)/4;
 		var cy:int=(int)(this_vx[0].y+this_vx[1].y+this_vx[2].y+this_vx[3].y)/4;
-		if(!i_sample_area.isInnerPoint_1(cx,cy)){
+		if(!i_sample_area.isInnerPoint(cx,cy)){
 			return false;
 		}
 		//一番長い辺と短い辺の比を確認(10倍の比があったらなんか変)
 		var max:int=int.MIN_VALUE;
 		var min:int=int.MAX_VALUE;
 		for(var i:int=0;i<4;i++){
-			var t:int=(int)(this_vx[i].sqDist_1(this_vx[(i+1)%4]));
+			var t:int=(int)(this_vx[i].sqDist(this_vx[(i+1)%4]));
 			if(t>max){max=t;}
 			if(t<min){min=t;}
 		}
@@ -342,7 +342,7 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 		var max:int=int.MIN_VALUE;
 		var min:int=int.MAX_VALUE;
 		for(var i:int=0;i<4;i++){
-			var t:int=(int)(this_vx[i].sqDist_1(this_vx[(i+1)%4]));
+			var t:int=(int)(this_vx[i].sqDist(this_vx[(i+1)%4]));
 			if(t>max){max=t;}
 			if(t<min){min=t;}
 		}

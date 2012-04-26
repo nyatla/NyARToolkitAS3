@@ -174,7 +174,7 @@ package jp.nyatla.nyartoolkit.as3.core.param
 		 * @param i_3dvertex
 		 * @param o_2d
 		 */
-		public function project_1(i_3dvertex:NyARDoublePoint3d,o_2d:NyARDoublePoint2d):void
+		public function project(i_3dvertex:NyARDoublePoint3d,o_2d:NyARDoublePoint2d):void
 		{
 			var w:Number=1/(i_3dvertex.z*this.m22);
 			o_2d.x=(i_3dvertex.x*this.m00+i_3dvertex.y*this.m01+i_3dvertex.z*this.m02)*w;

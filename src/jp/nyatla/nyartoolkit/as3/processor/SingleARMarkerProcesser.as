@@ -122,7 +122,7 @@ package jp.nyatla.nyartoolkit.as3.processor
 			}
 			//検出するマーカセット、情報、検出器を作り直す。(1ピクセル4ポイントサンプリング,マーカのパターン領域は50%)
 			this._detectmarker.setNyARCodeTable(i_ref_code_table,i_code_resolution);
-			this._offset.setSquare_1(i_marker_width);
+			this._offset.setSquare(i_marker_width);
 			return;
 		}
 
@@ -146,7 +146,7 @@ package jp.nyatla.nyartoolkit.as3.processor
 		public function detectMarker(i_raster:INyARRgbRaster):void
 		{
 			// サイズチェック			
-			NyAS3Utils.assert(this._gs_raster.getSize().isEqualSize_1(i_raster.getSize().w, i_raster.getSize().h));
+			NyAS3Utils.assert(this._gs_raster.getSize().isEqualSize(i_raster.getSize().w, i_raster.getSize().h));
 			if(this._last_input_raster!=i_raster){
 				this._histmaker=INyARHistogramFromRaster(this._gs_raster.createInterface(INyARHistogramFromRaster));
 				this._togs_filter=INyARRgb2GsFilter(i_raster.createInterface(INyARRgb2GsFilter));
@@ -324,7 +324,7 @@ class DetectSquare extends NyARSquareContourDetector_Rle
 			return;//取得失敗
 		}
 		//取得パターンをカラー差分データに変換して評価する。
-		this._deviation_data.setRaster_1(this._inst_patt);
+		this._deviation_data.setRaster(this._inst_patt);
 
 		
 		//code_index,dir,c1にデータを得る。
@@ -385,7 +385,7 @@ class DetectSquare extends NyARSquareContourDetector_Rle
 		}
 		for (i = 0; i < 4; i++) {
 			//直線同士の交点計算
-			if(!sq.line[i].crossPos_1(sq.line[(i + 3) % 4],sq.sqvertex[i])){
+			if(!sq.line[i].crossPos(sq.line[(i + 3) % 4],sq.sqvertex[i])){
 				throw new NyARException();//ここのエラー復帰するならダブルバッファにすればOK
 			}
 		}

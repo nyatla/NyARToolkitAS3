@@ -38,7 +38,7 @@ package jp.nyatla.nyartoolkit.as3.core.types.matrix
 		 * 遅いので余り使わないでね。
 		 * @param o_value
 		 */
-		function setValue_1(i_value:Vector.<Number>):void; // double[]
+		function setValue(i_value:Vector.<Number>):void; // double[]
 		
 		/**
 		 * 行列の内容を配列に返す。

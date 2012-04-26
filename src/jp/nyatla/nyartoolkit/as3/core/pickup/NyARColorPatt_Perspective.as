@@ -208,7 +208,7 @@ package jp.nyatla.nyartoolkit.as3.core.pickup
 				this._last_input_raster=image;
 			}
 			//遠近法のパラメータを計算
-			return this._raster_driver.copyPatt_1(i_vertexs,this._edge.x,this._edge.y,this._sample_per_pixel, this);
+			return this._raster_driver.copyPatt(i_vertexs,this._edge.x,this._edge.y,this._sample_per_pixel, this);
 		}
 
 		public function createInterface(iIid:Class):Object

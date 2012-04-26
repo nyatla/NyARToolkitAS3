@@ -75,7 +75,7 @@ package jp.nyatla.nyartoolkit.as3.core.types
 		public var y:int;
 		public var w:int;
 		public var h:int;
-		public function setAreaRect_1( i_vertex:Vector.<NyARDoublePoint2d> , i_num_of_vertex:int ):void
+		public function setAreaRect( i_vertex:Vector.<NyARDoublePoint2d> , i_num_of_vertex:int ):void
 		{ 
 			var xmax:int , xmin:int , ymax:int , ymin:int ;
 			xmin = xmax = int(i_vertex[i_num_of_vertex - 1].x) ;
@@ -169,7 +169,7 @@ package jp.nyatla.nyartoolkit.as3.core.types
 			return  ;
 		}
 		
-		public function isInnerPoint_1( i_x:int , i_y:int ):Boolean
+		public function isInnerPoint( i_x:int , i_y:int ):Boolean
 		{ 
 			var x:int = i_x - this.x ;
 			var y:int = i_y - this.y ;
@@ -190,7 +190,7 @@ package jp.nyatla.nyartoolkit.as3.core.types
 			return ( 0 <= x && x < this.w && 0 <= y && y < this.h ) ;
 		}
 	
-		public function isInnerRect_1( i_rect:NyARIntRect ):Boolean
+		public function isInnerRect( i_rect:NyARIntRect ):Boolean
 		{ 
 			//assert( ! (( i_rect.w >= 0 && i_rect.h >= 0 ) ) );
 			var lx:int = i_rect.x - this.x ;
@@ -230,7 +230,7 @@ package jp.nyatla.nyartoolkit.as3.core.types
 			return lh * lh + lw * lw ;
 		}
 		
-		public function setValue_1( i_source:NyARIntRect ):void
+		public function setValue( i_source:NyARIntRect ):void
 		{ 
 			this.x = i_source.x ;
 			this.y = i_source.y ;

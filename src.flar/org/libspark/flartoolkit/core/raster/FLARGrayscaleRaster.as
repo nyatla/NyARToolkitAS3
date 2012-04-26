@@ -69,6 +69,9 @@ package org.libspark.flartoolkit.core.raster
 			if(i_iid==INyARHistogramFromRaster){
 				return new NyARHistogramFromRaster_AnyGs(this);
 			}
+			if(i_iid==NyARContourPickup_IRasterDriver){
+				return FLARContourPickupFactory.createDriver(this);
+			}
 			throw new NyARException();
 		}
 		public function getBitmapData():BitmapData

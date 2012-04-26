@@ -18,7 +18,7 @@ public interface INyARPerspectiveCopy
 	 * @return
 	 * @throws NyARException
 	 */
-	function copyPatt_1(i_vertex:Vector.<NyARIntPoint2d>,i_edge_x:int,i_edge_y:int,i_resolution:int,i_out:INyARRgbRaster):Boolean;
+	function copyPatt(i_vertex:Vector.<NyARIntPoint2d>,i_edge_x:int,i_edge_y:int,i_resolution:int,i_out:INyARRgbRaster):Boolean;
 	function copyPatt_2(i_vertex:Vector.<NyARDoublePoint2d>,i_edge_x:int,i_edge_y:int,i_resolution:int,i_out:INyARRgbRaster):Boolean;
 	function copyPatt_3(i_x1:Number,i_y1:Number,i_x2:Number,i_y2:Number,i_x3:Number,i_y3:Number,i_x4:Number,i_y4:Number,i_edge_x:int,i_edge_y:int,i_resolution:int,i_out:INyARRgbRaster):Boolean;
 }

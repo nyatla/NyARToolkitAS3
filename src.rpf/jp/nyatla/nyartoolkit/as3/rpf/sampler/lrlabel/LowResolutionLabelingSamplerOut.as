@@ -92,10 +92,10 @@ class AreaPool extends NyARManagedObjectPool
 {
 	public function AreaPool(i_length:int)
 	{
-		super.initInstance_1(i_length);
+		super.initInstance(i_length);
 		return;
 	}
-	protected override function createElement_1():NyARManagedObject
+	protected override function createElement():NyARManagedObject
 	{
 		return new LowResolutionLabelingSamplerOut_Item(this._op_interface);
 	}
@@ -108,6 +108,6 @@ class AreaStack extends NyARPointerStack
 {
 	public function AreaStack(i_length:int)
 	{
-		super.initInstance_1(i_length);
+		super.initInstance(i_length);
 	}
 }

@@ -42,7 +42,7 @@ package jp.nyatla.nyartoolkit.as3.core.rasterfilter.rgb2gs
 		 * @param i_gsraster
 		 * INT1D_BIN_8形式である必要があります。
 		 */
-		function doFilter_1(i_th:int,i_gsraster:INyARGrayscaleRaster):void;
+		function doFilter(i_th:int,i_gsraster:INyARGrayscaleRaster):void;
 		function doFilter_2(i_l:int,i_t:int,i_w:int,i_h:int,i_th:int,i_gsraster:INyARGrayscaleRaster):void;
 	}
 }

@@ -154,7 +154,7 @@ package org.libspark.flartoolkit.processor
 			this._current_arcode_index = -1;
 			return;
 		}
-		public function detectMarker(i_raster:FLARRgbRaster_BitmapData):void
+		public function detectMarker(i_raster:FLARRgbRaster):void
 		{
 			// サイズチェック			
 			NyAS3Utils.assert(this._bin_raster.getSize().isEqualSize(i_raster.getSize().w, i_raster.getSize().h));

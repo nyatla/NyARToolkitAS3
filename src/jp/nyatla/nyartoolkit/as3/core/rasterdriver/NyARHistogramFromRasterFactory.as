@@ -42,7 +42,7 @@ package jp.nyatla.nyartoolkit.as3.core.rasterdriver
 	 */
 	public class NyARHistogramFromRasterFactory
 	{
-		public static function createInstance_1(i_raster:INyARGrayscaleRaster):INyARHistogramFromRaster
+		public static function createInstance(i_raster:INyARGrayscaleRaster):INyARHistogramFromRaster
 		{
 			switch(i_raster.getBufferType()){
 			case NyARBufferType.INT1D_GRAY_8:
@@ -89,9 +89,9 @@ class NyARHistogramFromRaster_AnyGs implements INyARHistogramFromRaster
 	public function createHistogram_2(i_skip:int,o_histogram:NyARHistogram):void
 	{
 		var s:NyARIntSize=this._gsr.getSize();
-		this.createHistogram_1(0,0,s.w,s.h,i_skip,o_histogram);
+		this.createHistogram(0,0,s.w,s.h,i_skip,o_histogram);
 	}
-	public function createHistogram_1(i_l:int,i_t:int,i_w:int,i_h:int,i_skip:int,o_histogram:NyARHistogram):void
+	public function createHistogram(i_l:int,i_t:int,i_w:int,i_h:int,i_skip:int,o_histogram:NyARHistogram):void
 	{
 		o_histogram.reset();
 		var data_ptr:Vector.<int>=o_histogram.data;
@@ -119,10 +119,10 @@ class NyARHistogramFromRaster_AnyRgb implements INyARHistogramFromRaster
 	public function createHistogram_2(i_skip:int,o_histogram:NyARHistogram):void
 	{
 		var s:NyARIntSize=this._gsr.getSize();
-		this.createHistogram_1(0,0,s.w,s.h,i_skip,o_histogram);
+		this.createHistogram(0,0,s.w,s.h,i_skip,o_histogram);
 	}
 	private var tmp:Vector.<int>=new Vector.<int>[3];
-	public function createHistogram_1(i_l:int, i_t:int, i_w:int, i_h:int, i_skip:int, o_histogram:NyARHistogram):void
+	public function createHistogram(i_l:int, i_t:int, i_w:int, i_h:int, i_skip:int, o_histogram:NyARHistogram):void
 	{
 		o_histogram.reset();
 		var data_ptr:Vector.<int>=o_histogram.data;
@@ -152,9 +152,9 @@ class NyARHistogramFromRaster_INTGS8 implements INyARHistogramFromRaster
 	public function createHistogram_2(i_skip:int,o_histogram:NyARHistogram):void
 	{
 		var s:NyARIntSize=this._gsr.getSize();
-		this.createHistogram_1(0,0,s.w,s.h,i_skip,o_histogram);
+		this.createHistogram(0,0,s.w,s.h,i_skip,o_histogram);
 	}
-	public function createHistogram_1(i_l:int,i_t:int,i_w:int,i_h:int,i_skip:int,o_histogram:NyARHistogram):void
+	public function createHistogram(i_l:int,i_t:int,i_w:int,i_h:int,i_skip:int,o_histogram:NyARHistogram):void
 	{
 		o_histogram.reset();
 		var input:Vector.<int>=Vector.<int>(this._gsr.getBuffer());

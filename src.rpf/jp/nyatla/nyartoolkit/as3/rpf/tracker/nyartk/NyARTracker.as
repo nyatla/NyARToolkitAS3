@@ -699,7 +699,7 @@ class SampleStack extends NyARPointerStack
 	public function SampleStack(i_size:int)
 	{
 		super();
-		this.initInstance_1(i_size);
+		this.initInstance(i_size);
 	}
 }
 
@@ -717,20 +717,20 @@ class DistMap extends NyARDistMap
 	}
 	public function makePairIndexes(igsource:SampleStack,igtr:NyARTargetList ,index:Vector.<int>):void
 	{
-		this.setPointDists_1(igsource.getArray(),igsource.getLength(),igtr.getArray(),igtr.getLength());
+		this.setPointDists_3(igsource.getArray(),igsource.getLength(),igtr.getArray(),igtr.getLength());
 		this.getMinimumPair(index);
 		return;
 	}
 	/**
 	 * ２ペアの点間距離を計算します。
 	 * getMinimumPairで求まるインデクスは、NyARTargetに最も一致するLowResolutionLabelingSamplerOut.Itemのインデックスになります。
-	 * setPointDists_1(i_sample:Vector.<LowResolutionLabelingSamplerOut_Item>,i_smp_len:int,i_target:Vector.<NyARTarget>,i_target_len:int):void
+	 * setPointDists(i_sample:Vector.<LowResolutionLabelingSamplerOut_Item>,i_smp_len:int,i_target:Vector.<NyARTarget>,i_target_len:int):void
 	 * @param i_sample
 	 * @param i_smp_len
 	 * @param i_target
 	 * @param i_target_len
 	 */
-	public function setPointDists_1(i_sample:Vector.<Object>,i_smp_len:int,i_target:Vector.<Object>,i_target_len:int):void
+	public function setPointDists_3(i_sample:Vector.<Object>,i_smp_len:int,i_target:Vector.<Object>,i_target_len:int):void
 	{
 		var map:Vector.<NyARDistMap_DistItem>=this._map;
 		//distortionMapを作成。ついでに最小値のインデクスも取得

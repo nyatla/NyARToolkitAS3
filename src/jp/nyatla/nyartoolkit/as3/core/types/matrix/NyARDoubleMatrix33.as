@@ -55,7 +55,7 @@ package jp.nyatla.nyartoolkit.as3.core.types.matrix
 		/**
 		 * 遅いからあんまり使わないでね。
 		 */
-		public function setValue_1(i_value:Vector.<Number>):void
+		public function setValue(i_value:Vector.<Number>):void
 		{
 			this.m00=i_value[0];
 			this.m01=i_value[1];
@@ -158,7 +158,7 @@ package jp.nyatla.nyartoolkit.as3.core.types.matrix
 				o_out.y = Math.atan2(-this.m20, this.m22);
 			}
 		}
-		public final function setZXYAngle_1(i_angle:NyARDoublePoint3d):void
+		public final function setZXYAngle(i_angle:NyARDoublePoint3d):void
 		{
 			setZXYAngle_2(i_angle.x,i_angle.y,i_angle.z);
 			return;
@@ -197,7 +197,7 @@ package jp.nyatla.nyartoolkit.as3.core.types.matrix
 		 * @param i_angle
 		 * @param o_out
 		 */
-		public final function transformVertex_1(i_position:NyARDoublePoint3d,o_out:NyARDoublePoint3d):void
+		public final function transformVertex(i_position:NyARDoublePoint3d,o_out:NyARDoublePoint3d):void
 		{
 			transformVertex_2(i_position.x,i_position.y,i_position.z,o_out);
 			return;

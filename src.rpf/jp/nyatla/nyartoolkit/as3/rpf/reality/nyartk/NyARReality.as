@@ -92,7 +92,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk
 			case 5:
 				if((args[0] is NyARParam) && (args[1] is Number) && (args[2] is Number) && (args[3] is int) && (args[4] is int))
 				{
-					override_NyARReality_1(NyARParam(args[0]), Number(args[1]), Number(args[2]), int(args[3]), int(args[4]));
+					override_NyARReality(NyARParam(args[0]), Number(args[1]), Number(args[2]), int(args[3]), int(args[4]));
 					return;
 				}
 				break;
@@ -125,7 +125,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk
 		 * UnKnownターゲットの最大数を指定します。
 		 * @throws NyARException
 		 */
-		protected function override_NyARReality_1(i_param:NyARParam, i_near:Number, i_far:Number, i_max_known_target:int, i_max_unknown_target:int):void
+		protected function override_NyARReality(i_param:NyARParam, i_near:Number, i_far:Number, i_max_known_target:int, i_max_unknown_target:int):void
 		{
 			//定数とかいろいろ
 			this.MAX_LIMIT_KNOWN=i_max_known_target;
@@ -230,7 +230,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk
 				case NyARRealityTarget.RT_UNKNOWN:
 					//KNOWNとUNKNOWNは、生存チェックして、死んでたらdeadターゲットへ。自動死んでたの復帰機能を作るときは、この辺いじくる。
 					if(!isTargetAlive(NyARRealityTarget(rt_array[i]))){
-						this.changeTargetToDead_1(NyARRealityTarget(rt_array[i]));
+						this.changeTargetToDead(NyARRealityTarget(rt_array[i]));
 					}
 					continue;
 				default:
@@ -291,7 +291,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk
 			//線分を平滑化。（ノイズが多いソースを使う時は線分の平滑化。ほんとは使いたくない。）
 			var i:int;
 			for(i=3;i>=0;i--){
-				i_s.sqvertex[i].setValue_1(i_vx[i]);
+				i_s.sqvertex[i].setValue(i_vx[i]);
 				l.makeLinearWithNormalize_2(i_vx[i], i_vx[(i+1)%4]);
 				i_s.line[i].a=i_s.line[i].a*0.6+l.a*0.4;
 				i_s.line[i].b=i_s.line[i].b*0.6+l.b*0.4;
@@ -299,7 +299,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk
 			}
 			
 			for(i=3;i>=0;i--){
-				i_s.line[i].crossPos_1(i_s.line[(i+3)%4],i_s.sqvertex[i]);
+				i_s.line[i].crossPos(i_s.line[(i+3)%4],i_s.sqvertex[i]);
 			}	
 		}
 		/**
@@ -386,7 +386,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk
 		 * 成功するとtrueを返します。
 		 * @throws NyARException 
 		 */
-		public function changeTargetToKnown_1(i_item:NyARRealityTarget,i_dir:int,i_marker_size:Number):Boolean
+		public function changeTargetToKnown(i_item:NyARRealityTarget,i_dir:int,i_marker_size:Number):Boolean
 		{
 			return changeTargetToKnown_2(i_item,i_dir,i_marker_size,i_marker_size);
 		}
@@ -432,7 +432,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk
 			//矩形セット
 			var vx:Vector.<NyARDoublePoint2d>=((NyARRectTargetStatus)(i_item._ref_tracktarget._ref_status)).vertex;
 			for(var i:int=3;i>=0;i--){
-				i_item._screen_square.sqvertex[i].setValue_1(vx[i]);
+				i_item._screen_square.sqvertex[i].setValue(vx[i]);
 				i_item._screen_square.line[i].makeLinearWithNormalize_2(vx[i],vx[(i+1)%4]);
 			}
 			//3d座標計算
@@ -449,7 +449,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk
 		 * @param i_item
 		 * @throws NyARException 
 		 */	
-		public function changeTargetToDead_1(i_item:NyARRealityTarget):void
+		public function changeTargetToDead(i_item:NyARRealityTarget):void
 		{
 			changeTargetToDead_2(i_item,50);
 		}
@@ -498,7 +498,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk
 			if(item==null){
 				return false;
 			}
-			return changeTargetToKnown_1(item,i_dir,i_marker_width);
+			return changeTargetToKnown(item,i_dir,i_marker_width);
 		}
 		/**
 		 * 指定したシリアル番号のKnown/UnknownターゲットをDeadターゲットへ遷移します。
@@ -511,7 +511,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk
 			if(item==null){
 				return null;
 			}
-			changeTargetToDead_1(item);
+			changeTargetToDead(item);
 			return item;
 		}
 		
@@ -607,9 +607,9 @@ package jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk
 		 * @return
 		 * @throws NyARException
 		 */
-		public function getRgbPatt2d_1(i_src:NyARRealitySource,i_vertex:Vector.<NyARIntPoint2d>,i_resolution:int,o_raster:INyARRgbRaster):Boolean
+		public function getRgbPatt2d(i_src:NyARRealitySource,i_vertex:Vector.<NyARIntPoint2d>,i_resolution:int,o_raster:INyARRgbRaster):Boolean
 		{
-			return i_src.refPerspectiveRasterReader().copyPatt_1(i_vertex,0,0,i_resolution, o_raster);
+			return i_src.refPerspectiveRasterReader().copyPatt(i_vertex,0,0,i_resolution, o_raster);
 		}
 		/**
 		 * 画面座標系の4頂点でかこまれる領域から、RGB画像をo_rasterに取得します。
@@ -644,12 +644,12 @@ package jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk
 				var v3d:NyARDoublePoint3d=new NyARDoublePoint3d();
 				for(i=3;i>=0;i--){
 					i_matrix.transform3d_2(i_vertex[i],v3d);
-					this._ref_prjmat.project_1(v3d,vx[i]);
+					this._ref_prjmat.project(v3d,vx[i]);
 				}
 			}else{
 				//射影変換のみ
 				for(i=3;i>=0;i--){
-					this._ref_prjmat.project_1(i_vertex[i],vx[i]);
+					this._ref_prjmat.project(i_vertex[i],vx[i]);
 				}
 			}
 			//パターンの取得

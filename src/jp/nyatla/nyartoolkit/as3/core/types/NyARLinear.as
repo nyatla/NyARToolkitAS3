@@ -64,7 +64,7 @@ package jp.nyatla.nyartoolkit.as3.core.types
 		 * @param o_point
 		 * @return
 		 */
-		public function crossPos_1(l_line_2:NyARLinear ,o_point:NyARDoublePoint2d):Boolean
+		public function crossPos(l_line_2:NyARLinear ,o_point:NyARDoublePoint2d):Boolean
 		{
 			var w1:Number = this.a * l_line_2.b - l_line_2.a * this.b;
 			if (w1 == 0.0) {
@@ -119,7 +119,7 @@ package jp.nyatla.nyartoolkit.as3.core.types
 		 * @param i_point2
 		 * @return
 		 */
-		public function makeLinearWithNormalize_1(i_point1:NyARIntPoint2d,i_point2:NyARIntPoint2d):Boolean
+		public function makeLinearWithNormalize(i_point1:NyARIntPoint2d,i_point2:NyARIntPoint2d):Boolean
 		{
 			return makeLinearWithNormalize_3(i_point1.x,i_point1.y,i_point2.x,i_point2.y);
 		}
@@ -160,7 +160,7 @@ package jp.nyatla.nyartoolkit.as3.core.types
 		 * @param i_x
 		 * @param i_y
 		 */
-		public function setVector_1(i_dx:Number,i_dy:Number,i_x:Number,i_y:Number):void
+		public function setVector(i_dx:Number,i_dy:Number,i_x:Number,i_y:Number):void
 		{
 			this.a= i_dy;
 			this.b=-i_dx;
@@ -231,7 +231,7 @@ package jp.nyatla.nyartoolkit.as3.core.types
 		 * @param o_point
 		 * @return
 		 */
-		public function makeSegmentLine_1(i_width:int,i_height:int,o_point:Vector.<NyARIntPoint2d>):Boolean
+		public function makeSegmentLine(i_width:int,i_height:int,o_point:Vector.<NyARIntPoint2d>):Boolean
 		{	
 			var idx:int=0;
 			var ptr:NyARIntPoint2d=o_point[0];

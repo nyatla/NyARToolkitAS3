@@ -50,9 +50,9 @@ package jp.nyatla.nyartoolkit.as3.core.raster
 		 * ラスタのサイズ
 		 * @throws NyARException
 		 */
-		public function NyARBinRaster(i_width:int,i_height:int)
+		public function NyARBinRaster(i_width:int,i_height:int,i_raster_type:int=-1,i_is_attach:Boolean=true)
 		{
-			super(i_width,i_height,NyARBufferType.INT1D_BIN_8,true);
+			super(i_width,i_height,i_raster_type==-1?NyARBufferType.INT1D_BIN_8:i_raster_type,i_is_attach);
 		}
 		/*
 		 * この関数は、インスタンスの初期化シーケンスを実装します。
@@ -78,7 +78,7 @@ package jp.nyatla.nyartoolkit.as3.core.raster
 					super.initInstance(i_size, i_buf_type, i_is_alloc);
 					return;
 			}
-			this._pixdrv=NyARGsPixelDriverFactory.createDriver_1(this);
+			this._pixdrv=NyARGsPixelDriverFactory.createDriver(this);
 			this._is_attached_buffer=i_is_alloc;
 			return;
 		}

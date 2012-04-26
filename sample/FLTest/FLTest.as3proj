@@ -1,23 +1,25 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<project>
+<project version="2">
   <!-- Output SWF options -->
   <output>
-    <movie disabled="False" />
+    <movie outputType="Application" />
     <movie input="" />
     <movie path="bin\FLTest.swf" />
     <movie fps="30" />
     <movie width="800" />
     <movie height="600" />
     <movie version="10" />
+    <movie minorVersion="0" />
+    <movie platform="Flash Player" />
     <movie background="#FFFFFF" />
   </output>
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
     <class path="src" />
     <class path="..\..\src" />
-    <class path="..\..\src.flarif" />
     <class path="..\..\src.rpf" />
     <class path="..\..\extlib\paperVision" />
+    <class path="..\..\src.flar" />
   </classpaths>
   <!-- Build options -->
   <build>
@@ -25,10 +27,13 @@
     <option allowSourcePathOverlap="False" />
     <option benchmark="False" />
     <option es="False" />
+    <option locale="" />
     <option loadConfig="" />
     <option optimize="True" />
+    <option omitTraces="True" />
     <option showActionScriptWarnings="True" />
     <option showBindingWarnings="True" />
+    <option showInvalidCSS="True" />
     <option showDeprecationWarnings="True" />
     <option showUnusedTypeSelectorWarnings="True" />
     <option strict="True" />
@@ -38,8 +43,10 @@
     <option verboseStackTraces="False" />
     <option linkReport="" />
     <option loadExterns="" />
+    <option staticLinkRSL="True" />
     <option additional="" />
-    <option customSDK="" />
+    <option compilerConstants="" />
+    <option minorVersion="" />
   </build>
   <!-- SWC Include Libraries -->
   <includeLibraries>
@@ -67,7 +74,7 @@
   </library>
   <!-- Class files to compile (other referenced classes will automatically be included) -->
   <compileTargets>
-    <compile path="src\TrackerView.as" />
+    <compile path="src\Main.as" />
   </compileTargets>
   <!-- Paths to exclude from the Project Explorer tree -->
   <hiddenPaths>
@@ -82,4 +89,6 @@
     <option showHiddenPaths="True" />
     <option testMovie="Default" />
   </options>
+  <!-- Plugin storage -->
+  <storage />
 </project>

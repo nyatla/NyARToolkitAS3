@@ -19,12 +19,12 @@ package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk.status
 		 */
 		public function NyARContourTargetStatusPool(i_size:int)
 		{
-			super.initInstance_1(i_size);
+			super.initInstance(i_size);
 		}
 		/**
 		 * @Override
 		 */
-		protected override function createElement_1():NyARManagedObject
+		protected override function createElement():NyARManagedObject
 		{
 			return new NyARContourTargetStatus(this._op_interface);
 		}

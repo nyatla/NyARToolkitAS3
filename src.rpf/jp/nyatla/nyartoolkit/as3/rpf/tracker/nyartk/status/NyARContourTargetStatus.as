@@ -41,7 +41,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk.status
 		 */
 		public function setValue(i_vecreader:INyARVectorReader,i_sample:LowResolutionLabelingSamplerOut_Item):Boolean
 		{
-			return i_vecreader.traceConture_1(i_sample.lebeling_th, i_sample.entry_pos, this.vecpos);
+			return i_vecreader.traceConture(i_sample.lebeling_th, i_sample.entry_pos, this.vecpos);
 		}	
 	}
 }

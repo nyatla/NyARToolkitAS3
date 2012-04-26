@@ -107,7 +107,7 @@ package jp.nyatla.nyartoolkit.as3.core.squaredetect
 			var flagment:NyARRleLabelFragmentInfoPtrStack = this._labeling.label_stack ;
 			var overlap:NyARLabelOverlapChecker = this._overlap_checker ;
 			flagment.clear() ;
-			this._labeling.labeling_1(i_raster,i_th) ;
+			this._labeling.labeling(i_raster,i_th) ;
 			var label_num:int = flagment.getLength() ;
 			if( label_num < 1 ) {
 				return  ;
@@ -125,7 +125,7 @@ package jp.nyatla.nyartoolkit.as3.core.squaredetect
 					continue ;
 				}
 				
-				if( !this._cpickup.getContour_1(i_raster,i_th, label_pt.entry_x, label_pt.clip_t, coord) ) {
+				if( !this._cpickup.getContour(i_raster,i_th, label_pt.entry_x, label_pt.clip_t, coord) ) {
 					continue ;
 				}
 				
@@ -168,10 +168,10 @@ class Labeling extends NyARLabeling_Rle
 		this.label_stack.sortByArea() ;
 	}
 	
-	public override function labeling_1(i_raster:INyARGrayscaleRaster,i_th:int):void
+	public override function labeling(i_raster:INyARGrayscaleRaster,i_th:int):void
 	{ 
 		this.label_stack.clear() ;
-		super.labeling_1(i_raster,i_th) ;
+		super.labeling(i_raster,i_th) ;
 		this.label_stack.sortByArea() ;
 	}
 	

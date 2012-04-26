@@ -135,7 +135,7 @@ package jp.nyatla.nyartoolkit.as3.core.transmat
 			if(this._ref_dist_factor!=null){
 				//歪み復元必要
 				vertex_2d=this.__transMat_vertex_2d;
-				this._ref_dist_factor.ideal2ObservBatch_1(i_square.sqvertex, vertex_2d,4);
+				this._ref_dist_factor.ideal2ObservBatch(i_square.sqvertex, vertex_2d,4);
 			}else{
 				//歪み復元は不要
 				vertex_2d=i_square.sqvertex;
@@ -178,7 +178,7 @@ package jp.nyatla.nyartoolkit.as3.core.transmat
 			var vertex_2d:Vector.<NyARDoublePoint2d>;
 			if(this._ref_dist_factor!=null){
 				vertex_2d=this.__transMat_vertex_2d;
-				this._ref_dist_factor.ideal2ObservBatch_1(i_square.sqvertex, vertex_2d,4);		
+				this._ref_dist_factor.ideal2ObservBatch(i_square.sqvertex, vertex_2d,4);		
 			}else{
 				vertex_2d=i_square.sqvertex;
 			}
@@ -196,14 +196,14 @@ package jp.nyatla.nyartoolkit.as3.core.transmat
 			//現在のエラーレートを計算
 			var min_err:Number=errRate(this._rotmatrix,trans,i_offset.vertex, vertex_2d,4,vertex_3d);
 			//結果をストア
-			o_result.setValue(rot,trans,min_err);
+			o_result.setValue_3(rot,trans,min_err);
 			//エラーレートの判定
 			if(min_err<last_error+err_threshold){
 	//			System.out.println("TR:ok");
 				//最適化してみる。
 				for (var i:int = 0;i<5; i++) {
 					//変換行列の最適化
-					this._mat_optimize.modifyMatrix_1(rot, trans, i_offset.vertex, vertex_2d, 4);
+					this._mat_optimize.modifyMatrix(rot, trans, i_offset.vertex, vertex_2d, 4);
 					var err:Number=errRate(rot,trans,i_offset.vertex, vertex_2d,4,vertex_3d);
 					//System.out.println("E:"+err);
 					if(min_err-err<err_threshold/2){
@@ -211,7 +211,7 @@ package jp.nyatla.nyartoolkit.as3.core.transmat
 						break;
 					}
 					this._transsolver.solveTransportVector(vertex_3d, trans);				
-					o_result.setValue(rot,trans,err);
+					o_result.setValue_3(rot,trans,err);
 					min_err=err;
 				}
 			}else{
@@ -235,11 +235,11 @@ package jp.nyatla.nyartoolkit.as3.core.transmat
 			var vertex_3d:Vector.<NyARDoublePoint3d>=this.__transMat_vertex_3d;
 			//初期のエラー値を計算
 			var min_err:Number=errRate(iw_rotmat, iw_transvec, i_offset_3d, i_2d_vertex,4,vertex_3d);
-			o_result.setValue(iw_rotmat,iw_transvec,min_err);
+			o_result.setValue_3(iw_rotmat,iw_transvec,min_err);
 
 			for (var i:int = 0;i<5; i++) {
 				//変換行列の最適化
-				this._mat_optimize.modifyMatrix_1(iw_rotmat,iw_transvec, i_offset_3d, i_2d_vertex,4);
+				this._mat_optimize.modifyMatrix(iw_rotmat,iw_transvec, i_offset_3d, i_2d_vertex,4);
 				var err:Number=errRate(iw_rotmat,iw_transvec, i_offset_3d, i_2d_vertex,4,vertex_3d);
 				//System.out.println("E:"+err);
 				if(min_err-err<i_err_threshold){
@@ -247,7 +247,7 @@ package jp.nyatla.nyartoolkit.as3.core.transmat
 					break;
 				}
 				i_solver.solveTransportVector(vertex_3d,iw_transvec);
-				o_result.setValue(iw_rotmat,iw_transvec,err);
+				o_result.setValue_3(iw_rotmat,iw_transvec,err);
 				min_err=err;
 			}
 			//System.out.println("END");

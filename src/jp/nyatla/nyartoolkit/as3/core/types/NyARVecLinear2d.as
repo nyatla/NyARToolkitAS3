@@ -41,7 +41,7 @@ package jp.nyatla.nyartoolkit.as3.core.types
 		 * @param i_v1
 		 * @return
 		 */
-		public function getVecCos_1(i_v1:NyARVecLinear2d):Number
+		public function getVecCos(i_v1:NyARVecLinear2d):Number
 		{
 			var x1:Number=i_v1.dx;
 			var y1:Number=i_v1.dy;
@@ -63,7 +63,7 @@ package jp.nyatla.nyartoolkit.as3.core.types
 			var d:Number=(x1*i_dx+y1*i_dy)/Math.sqrt((x1*x1+y1*y1)*(i_dx*i_dx+i_dy*i_dy));
 			return d;
 		}		
-		public function getAbsVecCos_1(i_v1:NyARVecLinear2d):Number
+		public function getAbsVecCos(i_v1:NyARVecLinear2d):Number
 		{
 			var x1:Number=i_v1.dx;
 			var y1:Number=i_v1.dy;

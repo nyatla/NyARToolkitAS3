@@ -159,7 +159,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk
 			NyAS3Utils.assert(this._target_type==RT_UNKNOWN || this._target_type==RT_KNOWN);
 			var v:Vector.<NyARDoublePoint2d>=((NyARRectTargetStatus)(this._ref_tracktarget._ref_status)).vertex;
 			for(var i:int=3;i>=0;i--){
-				o_vertex[i].setValue_1(v[i]);
+				o_vertex[i].setValue(v[i]);
 			}
 		}
 		/**
@@ -167,10 +167,10 @@ package jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk
 		 * 樽型歪みの逆矯正は行いません。
 		 * @param o_center
 		 */
-		public function getTargetCenter_1(o_center:NyARDoublePoint2d):void
+		public function getTargetCenter(o_center:NyARDoublePoint2d):void
 		{
 			NyAS3Utils.assert(this._target_type==RT_UNKNOWN || this._target_type==RT_KNOWN);
-			NyARDoublePoint2d.makeCenter_1(((NyARRectTargetStatus)(this._ref_tracktarget._ref_status)).vertex,4,o_center);
+			NyARDoublePoint2d.makeCenter(((NyARRectTargetStatus)(this._ref_tracktarget._ref_status)).vertex,4,o_center);
 		}
 		/**
 		 * {@link #getTargetCenter}の出力型違いの関数です。
@@ -214,8 +214,8 @@ package jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk
 			//assert(this._target_type==RT_UNKNOWN || this._target_type==RT_KNOWN);
 			var rect:NyARIntRect=new NyARIntRect();
 			var vx:Vector.<NyARDoublePoint2d>=((NyARRectTargetStatus(this._ref_tracktarget._ref_status)).vertex);
-			rect.setAreaRect_1(vx,4);
-			return rect.isInnerPoint_1(i_x, i_y);
+			rect.setAreaRect(vx,4);
+			return rect.isInnerPoint(i_x, i_y);
 		}
 		
 		/**
@@ -245,14 +245,14 @@ package jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk
 					//姿勢を変更して射影変換
 					i_matrix.transform3d_2(i_vertex[i],v3d);
 					this._transform_matrix.transform3d_2(v3d,v3d);
-					this._ref_pool._ref_prj_mat.project_1(v3d,da4[i]);
+					this._ref_pool._ref_prj_mat.project(v3d,da4[i]);
 				}
 			}else{
 				//射影変換のみ
 				for(i=3;i>=0;i--){
 					//姿勢を変更して射影変換
 					this._transform_matrix.transform3d_2(i_vertex[i],v3d);
-					this._ref_pool._ref_prj_mat.project_1(v3d,da4[i]);
+					this._ref_pool._ref_prj_mat.project(v3d,da4[i]);
 				}
 			}
 			//パターンの取得

@@ -86,12 +86,12 @@ package jp.nyatla.nyartoolkit.as3.core
 		 * 格納順は、パターンの右上が、1,2,3,4象限になる順番です。
 		 * @throws NyARException
 		 */
-		public function setRaster_1(i_raster:Vector.<INyARRgbRaster>):void
+		public function setRaster(i_raster:Vector.<INyARRgbRaster>):void
 		{
 			NyAS3Utils.assert(i_raster.length!=4);
 			//ラスタにパターンをロードする。
 			for(var i:int=0;i<4;i++){
-				this._color_pat[i].setRaster_1(i_raster[i]);				
+				this._color_pat[i].setRaster(i_raster[i]);				
 			}
 			return;
 		}
@@ -139,7 +139,7 @@ class NyARCodeFileReader
 		for (var h:int = 0; h < 4; h++){
 			readBlock(token,width,height,buf);
 			//ARCodeにセット(カラー)
-			o_code.getColorData(h).setRaster_1(tmp_raster);
+			o_code.getColorData(h).setRaster(tmp_raster);
 			o_code.getBlackWhiteData(h).setRaster(tmp_raster);
 		}
 		tmp_raster=null;//ポイ

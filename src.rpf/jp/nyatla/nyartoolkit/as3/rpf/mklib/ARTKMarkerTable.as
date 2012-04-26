@@ -71,7 +71,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.mklib
 		 * マーカの幅[通常mm単位]
 		 * @return
 		 */
-		public function addMarker_1(i_code:NyARCode,i_id:int,i_name:String,i_width:Number,i_height:Number):Boolean
+		public function addMarker(i_code:NyARCode,i_id:int,i_name:String,i_width:Number,i_height:Number):Boolean
 		{
 			//assert(i_code.getHeight()== this._resolution_height && i_code.getHeight()== this._resolution_width);
 			var d:SerialTableRow=SerialTableRow(this._table.prePush());
@@ -154,7 +154,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.mklib
 			var r:INyARPerspectiveCopy=i_rtsorce.refPerspectiveRasterReader();
 			r.copyPatt(i_target.refTargetVertex(),this._edge_x,this._edge_y,this._sample_per_pix,this._tmp_raster);
 			//比較パターン生成
-			this._deviation_data.setRaster_1(this._tmp_raster);
+			this._deviation_data.setRaster(this._tmp_raster);
 			var ret:int=-1;
 			var dir:int=-1;
 			var cf:Number=0;
@@ -207,9 +207,9 @@ class MarkerTable extends NyARObjectStack
 {
 	public function MarkerTable(i_length:int)
 	{
-		super.initInstance_1(i_length);
+		super.initInstance(i_length);
 	}
-	protected override function createElement_1():Object
+	protected override function createElement():Object
 	{
 		return new SerialTableRow();
 	}
