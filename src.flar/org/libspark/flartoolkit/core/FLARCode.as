@@ -35,12 +35,7 @@ package org.libspark.flartoolkit.core
 		public function FLARCode(i_width:int, i_height:int)
 		{
 			super(i_width,i_height);
-		}
-		public function loadARPatt(i_stream:String):void
-		{
-			super.loadARPattFromFile(i_stream);
-			return;
-		}		
+		}	
 	}
 
 }

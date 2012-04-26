@@ -35,30 +35,22 @@ package org.libspark.flartoolkit.processor
 	import jp.nyatla.nyartoolkit.as3.core.squaredetect.*;
 	import jp.nyatla.nyartoolkit.as3.core.transmat.*;
 	import jp.nyatla.nyartoolkit.as3.core.raster.*;
+	import jp.nyatla.nyartoolkit.as3.core.rasterfilter.rgb2gs.*;
 	import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
 	import jp.nyatla.nyartoolkit.as3.core.*;
-	import jp.nyatla.nyartoolkit.as3.core.rasterfilter.rgb2bin.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
-	import jp.nyatla.nyartoolkit.as3.*;
 	import jp.nyatla.nyartoolkit.as3.nyidmarker.data.*;
-	import jp.nyatla.nyartoolkit.as3.core.analyzer.raster.threshold.*;
+	import jp.nyatla.nyartoolkit.as3.nyidmarker.*;
 	import jp.nyatla.as3utils.*;
-	
-	import org.libspark.flartoolkit.core.raster.*;
-	import org.libspark.flartoolkit.core.rasterfilter.rgb2bin.*;
+	import org.libspark.flartoolkit.core.types.*;
+	import org.libspark.flartoolkit.core.transmat.*;
 	import org.libspark.flartoolkit.core.squaredetect.*;
-	import org.libspark.flartoolkit.core.*;
-	import org.libspark.flartoolkit.*;
-	import org.libspark.flartoolkit.core.param.*;
-	import org.libspark.flartoolkit.core.raster.rgb.*;
-	import org.libspark.flartoolkit.core.transmat.*;	
-	import org.libspark.flartoolkit.core.analyzer.raster.threshold.*;
-	
+	import org.libspark.flartoolkit.core.raster.*;
+	import jp.nyatla.nyartoolkit.as3.core.analyzer.histogram.*;
+	import jp.nyatla.nyartoolkit.as3.core.rasterdriver.*;
+	import org.libspark.flartoolkit.core.rasterfilter.* ;
 	public class FLSingleNyIdMarkerProcesser
 	{
-		/**
-		 * オーナーが自由に使えるタグ変数です。
-		 */
 		public var tag:Object;
 
 		/**
@@ -74,42 +66,46 @@ package org.libspark.flartoolkit.processor
 		private var _current_threshold:int=110;
 		// [AR]検出結果の保存用
 		private var _bin_raster:FLARBinRaster;
-		private var _tobin_filter:FLARRasterFilter_Threshold;
+		private var _gs_raster:FLARGrayscaleRaster;
 		private var _data_current:INyIdMarkerData;
-
+		private var _threshold_detect:NyARHistogramAnalyzer_SlidePTile;
+		private var _hist:NyARHistogram=new NyARHistogram(256);
+		private var _histmaker:INyARHistogramFromRaster;
 
 		public function FLSingleNyIdMarkerProcesser()
 		{
 			return;
 		}
 		private var _initialized:Boolean=false;
-		protected function initInstance(i_param:FLARParam, i_encoder:INyIdMarkerDataEncoder ,i_marker_width:Number):void
+		protected function initInstance(i_param:NyARParam, i_encoder:INyIdMarkerDataEncoder ,i_marker_width:Number):void
 		{
 			//初期化済？
 			NyAS3Utils.assert(this._initialized==false);
 			
-			var scr_size:NyARIntSize = i_param.getScreenSize();
+			var scr_size:NyARIntSize  = i_param.getScreenSize();
 			// 解析オブジェクトを作る
-			this._square_detect = new FLDetector(i_param,i_encoder);
+			this._square_detect = new FLDetector(
+				i_param,
+				i_encoder);
 			this._transmat = new NyARTransMat(i_param);
 
 			// ２値画像バッファを作る
+			this._gs_raster = new FLARGrayscaleRaster(scr_size.w, scr_size.h,true);
 			this._bin_raster = new FLARBinRaster(scr_size.w, scr_size.h);
+			this._histmaker=INyARHistogramFromRaster(this._gs_raster.createInterface(INyARHistogramFromRaster));
 			//ワーク用のデータオブジェクトを２個作る
 			this._data_current=i_encoder.createDataInstance();
-			this._tobin_filter =new FLARRasterFilter_Threshold(110);
-			this._threshold_detect=new FLARRasterThresholdAnalyzer_SlidePTile(15,4);
+			this._threshold_detect=new NyARHistogramAnalyzer_SlidePTile(15);
 			this._initialized=true;
 			this._is_active=false;
-			this._offset = new NyARRectOffset();
-			this._offset.setSquare_1(i_marker_width);
-			return;
-			
+			this._offset=new NyARRectOffset();
+			this._offset.setSquare(i_marker_width);	
+			return;			
 		}
 
 		public function setMarkerWidth(i_width:int):void
 		{
-			this._offset.setSquare_1(i_width);
+			this._offset.setSquare(i_width);
 			return;
 		}
 
@@ -123,20 +119,25 @@ package org.libspark.flartoolkit.processor
 			this._is_active=false;
 			return;
 		}
+		private var _last_input_raster:INyARRgbRaster;
+		private var _togs_filter:FLARRgb2GsBinFilter;
 
 		public function detectMarker(i_raster:INyARRgbRaster):void
 		{
 			// サイズチェック
-			if (!this._bin_raster.getSize().isEqualSize_1(i_raster.getSize().w, i_raster.getSize().h)) {
+			if (!this._gs_raster.getSize().isEqualSize(i_raster.getSize().w, i_raster.getSize().h)) {
 				throw new NyARException();
 			}
-			// ラスタを２値イメージに変換する.
-			this._tobin_filter.setThreshold(this._current_threshold);
-			this._tobin_filter.doFilter_1(i_raster, this._bin_raster);
+			// ラスタをGSへ変換する。
+			if(this._last_input_raster!=i_raster){
+				this._togs_filter = FLARRgb2GsBinFilter(i_raster.createInterface(FLARRgb2GsBinFilter));
+				this._last_input_raster=i_raster;
+			}
+			this._togs_filter.convert(this._current_threshold,this._gs_raster,this._bin_raster);
 
 			// スクエアコードを探す(第二引数に指定したマーカ、もしくは新しいマーカを探す。)
-			this._square_detect.init(i_raster,this._is_active?this._data_current:null);
-			this._square_detect.detectMarker_1(this._bin_raster);
+			this._square_detect.init(this._gs_raster,this._is_active?this._data_current:null);
+			this._square_detect.detectMarker(this._bin_raster);
 
 			// 認識状態を更新(マーカを発見したなら、current_dataを渡すかんじ)
 			var is_id_found:Boolean=updateStatus(this._square_detect.square,this._square_detect.marker_data);
@@ -147,14 +148,13 @@ package org.libspark.flartoolkit.processor
 				this._current_threshold=(this._current_threshold+this._square_detect.threshold)/2;
 			}else{
 				//マーカがなければ、探索+DualPTailで基準輝度検索
-				var th:int=this._threshold_detect.analyzeRaster_1(i_raster);
+				this._histmaker.createHistogram_2(4,this._hist);
+				var th:int= this._threshold_detect.getThreshold(this._hist);
 				this._current_threshold=(this._current_threshold+th)/2;
-			}		
-			return;
+			}
 		}
 
 		
-		private var _threshold_detect:NyARRasterThresholdAnalyzer_SlidePTile;
 		private var __NyARSquare_result:FLARTransMatResult = new FLARTransMatResult();
 
 		/**オブジェクトのステータスを更新し、必要に応じてハンドル関数を駆動します。
@@ -225,11 +225,11 @@ import jp.nyatla.nyartoolkit.as3.core.transmat.*;
 import jp.nyatla.nyartoolkit.as3.core.raster.*;
 import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.as3.core.*;
-import jp.nyatla.nyartoolkit.as3.core.rasterfilter.rgb2bin.*;
 import jp.nyatla.nyartoolkit.as3.core.types.*;
 import jp.nyatla.nyartoolkit.as3.*;
 import jp.nyatla.nyartoolkit.as3.nyidmarker.data.*;
 import jp.nyatla.nyartoolkit.as3.nyidmarker.*;
+import org.libspark.flartoolkit.core.raster.*;
 import org.libspark.flartoolkit.core.squaredetect.*;
 
 /**
@@ -244,7 +244,7 @@ class FLDetector extends FLARSquareContourDetector
 
 	
 	//参照
-	private var _ref_raster:INyARRgbRaster;
+	private var _ref_gs_raster:FLARGrayscaleRaster;
 	//所有インスタンス
 	private var _current_data:INyIdMarkerData;
 	private var _id_pickup:NyIdMarkerPickup = new NyIdMarkerPickup();
@@ -268,11 +268,11 @@ class FLDetector extends FLARSquareContourDetector
 	/**
 	 * Initialize call back handler.
 	 */
-	public function init(i_raster:INyARRgbRaster,i_prev_data:INyIdMarkerData):void
+	public function init(i_gs_raster:FLARGrayscaleRaster,i_prev_data:INyIdMarkerData):void
 	{
-		this.marker_data=null;
+		this.marker_data = null;
+		this._ref_gs_raster = i_gs_raster;
 		this._prev_data=i_prev_data;
-		this._ref_raster=i_raster;
 	}
 	private var _marker_param:NyIdMarkerParam=new NyIdMarkerParam();
 	private var _marker_data:NyIdMarkerPattern =new NyIdMarkerPattern();
@@ -297,7 +297,7 @@ class FLDetector extends FLARSquareContourDetector
 		var param:NyIdMarkerParam=this._marker_param;
 		var patt_data:NyIdMarkerPattern=this._marker_data;			
 		// 評価基準になるパターンをイメージから切り出す
-		if (!this._id_pickup.pickFromRaster_2(this._ref_raster,vertex, patt_data, param)){
+		if (!this._id_pickup.pickFromRaster_2(this._ref_gs_raster.getGsPixelDriver(),vertex, patt_data, param)){
 			return;
 		}
 		//エンコード
@@ -326,7 +326,7 @@ class FLDetector extends FLARSquareContourDetector
 		}
 		for (i= 0; i < 4; i++) {
 			//直線同士の交点計算
-			if(!sq.line[i].crossPos_1(sq.line[(i + 3) % 4],sq.sqvertex[i])){
+			if(!sq.line[i].crossPos(sq.line[(i + 3) % 4],sq.sqvertex[i])){
 				throw new NyARException();//ここのエラー復帰するならダブルバッファにすればOK
 			}
 		}

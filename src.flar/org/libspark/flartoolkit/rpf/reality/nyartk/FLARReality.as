@@ -4,7 +4,7 @@ package org.libspark.flartoolkit.rpf.reality.nyartk
 	import jp.nyatla.as3utils.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
 	import jp.nyatla.nyartoolkit.as3.core.param.*;
-	import jp.nyatla.nyartoolkit.as3.*;
+	import jp.nyatla.nyartoolkit.as3.core.*;
 
 	/**
 	 * ...
@@ -20,7 +20,7 @@ package org.libspark.flartoolkit.rpf.reality.nyartk
 			case 5:
 				if((args[0] is NyARParam) && (args[1] is Number) && (args[2] is Number) && (args[3] is int) && (args[4] is int))
 				{
-					override_NyARReality_1(NyARParam(args[0]), Number(args[1]), Number(args[2]), int(args[3]), int(args[4]));
+					override_NyARReality(NyARParam(args[0]), Number(args[1]), Number(args[2]), int(args[3]), int(args[4]));
 					return;
 				}
 				break;

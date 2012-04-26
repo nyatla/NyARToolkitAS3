@@ -29,31 +29,29 @@
 package org.libspark.flartoolkit.detector
 {
 	import flash.display.*;
+	import jp.nyatla.nyartoolkit.as3.core.*;
 	import jp.nyatla.nyartoolkit.as3.core.match.*;
 	import jp.nyatla.nyartoolkit.as3.core.pickup.*;
 	import jp.nyatla.nyartoolkit.as3.core.squaredetect.*;
 	import jp.nyatla.nyartoolkit.as3.core.transmat.*;
 	import jp.nyatla.nyartoolkit.as3.core.raster.*;
 	import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
-	import jp.nyatla.nyartoolkit.as3.core.rasterreader.*;
-	import jp.nyatla.nyartoolkit.as3.core.rasterfilter.rgb2bin.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
 	import org.libspark.flartoolkit.core.raster.*;
-	import org.libspark.flartoolkit.core.rasterfilter.rgb2bin.*;
+	import jp.nyatla.nyartoolkit.as3.core.rasterfilter.rgb2gs.*;
 	import org.libspark.flartoolkit.core.squaredetect.*;
 	import org.libspark.flartoolkit.core.*;
 	import org.libspark.flartoolkit.*;
 	import org.libspark.flartoolkit.core.param.*;
 	import org.libspark.flartoolkit.core.raster.rgb.*;
 	import org.libspark.flartoolkit.core.transmat.*;
+	import sketch.*;
 	public class FLARSingleMarkerDetector
 	{	
 		/** 一致率*/
 		private var _confidence:Number;
 		private var _square:NyARSquare=new NyARSquare();
 		
-		//参照インスタンス
-		private var _ref_raster:INyARRgbRaster;
 		//所有インスタンス
 		private var _inst_patt:INyARColorPatt;
 		private var _deviation_data:NyARMatchPattDeviationColorData;
@@ -81,11 +79,11 @@ package org.libspark.flartoolkit.detector
 
 		
 			//画像を取得
-			if (!this._inst_patt.pickFromRaster(this._ref_raster,vertex)){
+			if (!this._inst_patt.pickFromRaster(this._last_input_raster,vertex)){
 				return;
 			}
 			//取得パターンをカラー差分データに変換して評価する。
-			this._deviation_data.setRaster_1(this._inst_patt);
+			this._deviation_data.setRaster(this._inst_patt);
 			if(!this._match_patt.evaluate(this._deviation_data,mr)){
 				return;
 			}
@@ -104,7 +102,7 @@ package org.libspark.flartoolkit.detector
 			//ちょっと、ひっくり返してみようか。
 			for (i = 0; i < 4; i++) {
 				//直線同士の交点計算
-				if(!sq.line[i].crossPos_1(sq.line[(i + 3) % 4],sq.sqvertex[i])){
+				if(!sq.line[i].crossPos(sq.line[(i + 3) % 4],sq.sqvertex[i])){
 					throw new FLARException();//ここのエラー復帰するならダブルバッファにすればOK
 				}
 			}
@@ -115,55 +113,51 @@ package org.libspark.flartoolkit.detector
 		private var _square_detect:FLARDetector;
 		protected var _transmat:INyARTransMat;
 		//画処理用
-		private var _bin_raster:NyARBinRaster;
-		protected var _tobin_filter:INyARRasterFilter_Rgb2Bin;
+		private var _bin_raster:FLARBinRaster;
+		protected var _tobin_filter:INyARRgb2GsFilterArtkTh;
 
 		private var _offset:NyARRectOffset; 
 
 
 		public function FLARSingleMarkerDetector(i_ref_param:FLARParam,i_ref_code:FLARCode,i_marker_width:Number)
 		{
-			var th:INyARRasterFilter_Rgb2Bin=new FLARRasterFilter_Threshold(100);
 			var patt_inst:INyARColorPatt;
 			var sqdetect_inst:FLARDetector;
 			var transmat_inst:INyARTransMat;
 
-			patt_inst=new NyARColorPatt_Perspective_O2(i_ref_code.getWidth(), i_ref_code.getHeight(),4,25,NyARBufferType.OBJECT_AS3_BitmapData);
 			sqdetect_inst=new FLARDetector(this,i_ref_param.getScreenSize());
 			transmat_inst=new NyARTransMat(i_ref_param);
-			initInstance(patt_inst, sqdetect_inst, transmat_inst, th, i_ref_param, i_ref_code, i_marker_width);
-			
+			initInstance(sqdetect_inst, transmat_inst, i_ref_param, i_ref_code, i_marker_width);
 			return;
 		}
 
 		protected function initInstance(
-			i_patt_inst:INyARColorPatt,
 			i_sqdetect_inst:FLARDetector,
 			i_transmat_inst:INyARTransMat,
-			i_filter:INyARRasterFilter_Rgb2Bin,
 			i_ref_param:FLARParam,
 			i_ref_code:FLARCode,
 			i_marker_width:Number):void
 		{
 			var scr_size:NyARIntSize=i_ref_param.getScreenSize();		
 			// 解析オブジェクトを作る
+			this._inst_patt=new NyARColorPatt_Perspective(i_ref_code.getWidth(), i_ref_code.getHeight(),4,25);
 			this._square_detect = i_sqdetect_inst;
 			this._transmat = i_transmat_inst;
-			this._tobin_filter=i_filter;
 			//２値画像バッファを作る
 			this._bin_raster=new FLARBinRaster(scr_size.w,scr_size.h);
 			//パターンの一致検索処理用
-			this._inst_patt=i_patt_inst;
 			this._deviation_data=new NyARMatchPattDeviationColorData(i_ref_code.getWidth(),i_ref_code.getHeight());
 			this._coordline=new NyARCoord2Linear(i_ref_param.getScreenSize(),i_ref_param.getDistortionFactor());
 			this._match_patt=new NyARMatchPatt_Color_WITHOUT_PCA(i_ref_code);
 			//オフセットを作成
 			this._offset=new NyARRectOffset();
-			this._offset.setSquare_1(i_marker_width);
+			this._offset.setSquare(i_marker_width);			
 			return;
 			
 		}
-		
+		/** 参照インスタンス*/
+		private var _last_input_raster:INyARRgbRaster=null;
+		private var _bin_filter:INyARRgb2GsFilterArtkTh=null;		
 		/**
 		 * i_imageにマーカー検出処理を実行し、結果を記録します。
 		 * 
@@ -177,19 +171,22 @@ package org.libspark.flartoolkit.detector
 		{
 			//サイズチェック
 			if(!this._bin_raster.getSize().isEqualSize_2(i_raster.getSize())){
-				throw new FLARException();
+				throw new NyARException();
 			}
-
+			//最終入力ラスタを更新
+			if(this._last_input_raster!=i_raster){
+				this._bin_filter=INyARRgb2GsFilterArtkTh(i_raster.createInterface(INyARRgb2GsFilterArtkTh));
+				this._last_input_raster=i_raster;
+			}
 			//ラスタを２値イメージに変換する.
-			((FLARRasterFilter_Threshold)(this._tobin_filter)).setThreshold(i_threshold);
-			this._tobin_filter.doFilter_1(i_raster, this._bin_raster);
-			
+			this._bin_filter.doFilter(i_threshold,this._bin_raster);
+
 			//コールバックハンドラの準備
 			this._confidence=0;
-			this._ref_raster=i_raster;
-
-			//矩形を探す(戻り値はコールバック関数で受け取る。)
-			this._square_detect.detectMarker_1(this._bin_raster);
+			this._last_input_raster=i_raster;
+			//
+			//マーカ検出器をコール
+			this._square_detect.detectMarker(this._bin_raster);
 			if(this._confidence==0){
 				return false;
 			}
@@ -246,11 +243,39 @@ package org.libspark.flartoolkit.detector
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import jp.nyatla.nyartoolkit.as3.detector.*;
 import jp.nyatla.nyartoolkit.as3.core.squaredetect.*;
 import jp.nyatla.nyartoolkit.as3.core.types.*;
 import org.libspark.flartoolkit.core.squaredetect.*;
 import org.libspark.flartoolkit.detector.*;
+
+
+
+
+
+
 
 
 

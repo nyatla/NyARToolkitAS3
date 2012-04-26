@@ -25,7 +25,7 @@
 package org.libspark.flartoolkit.rpf
 {
 
-	import jp.nyatla.nyartoolkit.as3.NyARException;
+	import jp.nyatla.nyartoolkit.as3.core.*;
 	import jp.nyatla.nyartoolkit.as3.core.raster.*;
 	import jp.nyatla.nyartoolkit.as3.core.rasterfilter.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.*;

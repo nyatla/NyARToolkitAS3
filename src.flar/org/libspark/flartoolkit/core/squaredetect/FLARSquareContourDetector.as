@@ -42,7 +42,7 @@ package org.libspark.flartoolkit.core.squaredetect
 	
 	public class FLARSquareContourDetector extends NyARSquareContourDetector
 	{
-		private var _cpickup:FLContourPickup = new FLContourPickup();//FL依存部分
+		private var _cpickup:NyARContourPickup = new NyARContourPickup();//FL依存部分
 		private var _width:int ; 
 		private var _height:int ; 
 		private var _labeling:Labeling; 
@@ -60,12 +60,12 @@ package org.libspark.flartoolkit.core.squaredetect
 			return  ;
 		}
 	private var __detectMarker_mkvertex:Vector.<int> = new Vector.<int>(4); 
-	public function detectMarker_2( i_raster:NyARGrayscaleRaster , i_area:NyARIntRect , i_th:int ):void
+	public function detectMarker_2( i_raster:NyARBinRaster , i_area:NyARIntRect , i_th:int ):void
 	{ 
 		//assert( ! (( i_area.w * i_area.h > 0 ) ) );
 		var flagment:NyARRleLabelFragmentInfoPtrStack = this._labeling.label_stack ;
 		var overlap:NyARLabelOverlapChecker = this._overlap_checker ;
-		this._labeling.labeling_4(i_raster , i_area , i_th) ;
+		this._labeling.labeling_2(i_raster , i_area) ;
 		var label_num:int = flagment.getLength() ;
 		if( label_num < 1 ) {
 			return  ;
@@ -82,7 +82,7 @@ package org.libspark.flartoolkit.core.squaredetect
 				continue ;
 			}
 			
-			if ( !this._cpickup.getContour_4(i_raster, i_area, i_th, label_pt.entry_x, label_pt.clip_t, coord) )
+			if ( !this._cpickup.getContour_2(i_raster, i_area, i_th, label_pt.entry_x, label_pt.clip_t, coord) )
 			{
 				continue ;
 			}
@@ -99,12 +99,12 @@ package org.libspark.flartoolkit.core.squaredetect
 		return  ;
 	}
 	
-	public override function detectMarker_1( i_raster:NyARBinRaster ):void
+	public function detectMarker( i_raster:FLARBinRaster ):void
 	{ 
 		var flagment:NyARRleLabelFragmentInfoPtrStack = this._labeling.label_stack ;
 		var overlap:NyARLabelOverlapChecker = this._overlap_checker ;
 		flagment.clear() ;
-		this._labeling.labeling_1(i_raster) ;
+		this._labeling.labeling(i_raster) ;
 		var label_num:int = flagment.getLength() ;
 		if( label_num < 1 ) {
 			return  ;
@@ -122,7 +122,7 @@ package org.libspark.flartoolkit.core.squaredetect
 				continue ;
 			}
 			
-			if( !this._cpickup.getContour_1(i_raster, label_pt.entry_x, label_pt.clip_t, coord) ) {
+			if( !this._cpickup.getContour(i_raster,0,label_pt.entry_x, label_pt.clip_t, coord) ) {
 				continue ;
 			}
 		
@@ -159,17 +159,11 @@ class Labeling extends FLARLabeling
 		this._right = i_width - 1 ;
 		return  ;
 	}
-	public override function labeling_4( i_raster:NyARGrayscaleRaster , i_area:NyARIntRect , i_th:int ):void
-	{ 
-		this.label_stack.clear() ;
-		super.labeling_4(i_raster , i_area , i_th) ;
-		this.label_stack.sortByArea() ;
-	}
 	
-	public override function labeling_1( i_bin_raster:NyARBinRaster ):void
+	public override function labeling( i_bin_raster:NyARBinRaster ):void
 	{ 
 		this.label_stack.clear() ;
-		super.labeling_1(i_bin_raster) ;
+		super.labeling(i_bin_raster) ;
 		this.label_stack.sortByArea() ;
 	}
 	

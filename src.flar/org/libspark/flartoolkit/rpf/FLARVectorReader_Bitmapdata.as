@@ -27,7 +27,7 @@ package org.libspark.flartoolkit.rpf
 
 	import flash.display.BitmapData;
 	import flash.geom.Rectangle;
-	import jp.nyatla.nyartoolkit.as3.NyARException;
+	import jp.nyatla.nyartoolkit.as3.core.*;
 	import jp.nyatla.nyartoolkit.as3.core.param.NyARCameraDistortionFactor;
 	import jp.nyatla.nyartoolkit.as3.core.raster.NyARGrayscaleRaster;
 	import jp.nyatla.nyartoolkit.as3.core.squaredetect.NyARContourPickup;
@@ -56,7 +56,7 @@ package org.libspark.flartoolkit.rpf
 		 */
 		public function FLARVectorReader_Bitmapdata(i_ref_raster:FLARGrayscaleRaster,i_ref_raster_distortion:NyARCameraDistortionFactor,i_ref_rob_raster:NyARGrayscaleRaster)
 		{
-			super(i_ref_raster,i_ref_raster_distortion,i_ref_rob_raster,new FLContourPickup());
+			super(i_ref_raster,i_ref_raster_distortion,i_ref_rob_raster,new NyARContourPickup());
 			//assert (i_ref_raster.getBufferType() == NyARBufferType.INT1D_GRAY_8);
 		}
 		/**

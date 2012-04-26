@@ -5,11 +5,11 @@ package org.libspark.flartoolkit.rpf.realitysource.nyartk
 	import org.libspark.flartoolkit.*;
 	import jp.nyatla.nyartoolkit.as3.core.param.*;
 	import jp.nyatla.nyartoolkit.as3.rpf.realitysource.nyartk.*;
-	import jp.nyatla.nyartoolkit.as3.core.rasterreader.*;
 	import jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk.*;
 	import org.libspark.flartoolkit.rpf.*;
-	import org.libspark.flartoolkit.core.rasterfilter.rgb2gs.*;
 	import jp.nyatla.as3utils.*;
+	import jp.nyatla.nyartoolkit.as3.core.rasterfilter.rgb2gs.*;
+	import jp.nyatla.nyartoolkit.as3.core.rasterdriver.*;
 	/**
 	 * このクラスは、BufferedImageと互換性のあるNyARRealitySourceです。
 	 * @author nyatla
@@ -17,7 +17,7 @@ package org.libspark.flartoolkit.rpf.realitysource.nyartk
 	 */
 	public class FLARRealitySource_BitmapImage extends NyARRealitySource
 	{
-		protected var _filter:FLARRasterFilter_Rgb2Gs_RgbAve192;
+		protected var _filter:INyARRgb2GsFilter;
 
 		/**
 		 * ビットマップのアタッチされていない、
@@ -41,8 +41,8 @@ package org.libspark.flartoolkit.rpf.realitysource.nyartk
 			this._rgb_source = i_attach_bitmap == null
 				?new FLARRgbRaster_BitmapData(i_width, i_height, false)
 				:new FLARRgbRaster_BitmapData(i_attach_bitmap);
-			this._filter=new FLARRasterFilter_Rgb2Gs_RgbAve192();
-			this._source_perspective_reader=new NyARPerspectiveRasterReader(this._rgb_source.getBufferType());
+			this._filter=INyARRgb2GsFilter(this._rgb_source.createInterface(INyARRgb2GsFilter));			
+			this._source_perspective_reader =INyARPerspectiveCopy(this._rgb_source.createInterface(INyARPerspectiveCopy));
 			this._tracksource=new FLARTrackerSource_Reference(i_number_of_sample,i_ref_raster_distortion,this._rgb_source.getWidth(),this._rgb_source.getHeight(),i_depth,true);
 			return;
 		}
@@ -61,12 +61,12 @@ package org.libspark.flartoolkit.rpf.realitysource.nyartk
 		}
 		public override function syncResource():void
 		{
-			this._filter.doFilter(this._rgb_source,this._tracksource.refBaseRaster());
+			this._filter.convert(this._tracksource.refBaseRaster());
 			super.syncResource();
 		}
 		public override function makeTrackSource():NyARTrackerSource
 		{
-			this._filter.doFilter(this._rgb_source,this._tracksource.refBaseRaster());		
+			this._filter.convert(this._tracksource.refBaseRaster());		
 			return this._tracksource;
 		}
 		/**

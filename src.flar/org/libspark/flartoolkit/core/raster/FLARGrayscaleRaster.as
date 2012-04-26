@@ -28,51 +28,159 @@
  */
 package org.libspark.flartoolkit.core.raster 
 {
+	import jp.nyatla.nyartoolkit.as3.utils.as3.*;
+	import jp.nyatla.nyartoolkit.as3.core.rasterdriver.*;
+	import jp.nyatla.nyartoolkit.as3.core.labeling.rlelabeling.*;
+	import jp.nyatla.nyartoolkit.as3.core.pixeldriver.*;
+	import jp.nyatla.nyartoolkit.as3.core.squaredetect.*;
+	import jp.nyatla.nyartoolkit.as3.core.*;
+	import jp.nyatla.as3utils.*;
 	import jp.nyatla.nyartoolkit.as3.core.raster.*;
-	import jp.nyatla.nyartoolkit.as3.core.rasterreader.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
 	import jp.nyatla.nyartoolkit.as3.utils.*;
 	import org.libspark.flartoolkit.*;
 	import flash.display.*;
 	import flash.geom.*;
 	/**
-	 * このRasterは、0x0000ff - 0x000000の値で、グレースケール画像を表現します。
+	 * このクラスは、BitmapDataをバッファ荷物グレースケールラスタです。
 	 */
 	public final class FLARGrayscaleRaster extends NyARGrayscaleRaster
 	{
-		public var vec_imege:Vector.<uint>;
-		public function FLARGrayscaleRaster(i_width:int,i_height:int,i_is_alloc:Boolean)
+		public function FLARGrayscaleRaster(i_width:int,i_height:int,i_is_alloc:Boolean=true)
 		{
 			super(i_width,i_height,NyARBufferType.OBJECT_AS3_BitmapData,i_is_alloc);
 		}
-		protected override function initInstance(i_size:NyARIntSize,i_buf_type:int,i_is_alloc:Boolean):Boolean
+		protected override function initInstance(i_size:NyARIntSize, i_raster_type:int, i_is_alloc:Boolean):void
 		{
-			if (i_buf_type != NyARBufferType.OBJECT_AS3_BitmapData) {
+			if (i_raster_type != NyARBufferType.OBJECT_AS3_BitmapData) {
 				throw new FLARException();
 			}
-			this._buf = i_is_alloc?new BitmapData(i_size.w,i_size.h,false):null;
-			return true;
-		}
-		public override function copyTo(i_left:int,i_top:int,i_skip:int,o_output:NyARGrayscaleRaster):void
-		{
-			//assert (this.getSize().isInnerSize(i_left + o_output.getWidth() * i_skip, i_top+ o_output.getHeight() * i_skip));		
-			//assert (this.isEqualBufferType(o_output.getBufferType()));
-			var d:BitmapData = BitmapData(o_output.getBuffer());
-			var s:BitmapData = BitmapData(this.getBuffer());
-			var mat:Matrix = new Matrix();
-			mat.a = mat.d = (1.0 / (i_skip));
-			mat.tx = i_left;
-			mat.ty = i_top;
-			d.draw(s, mat,null,null,null,false);
+			this._buf = i_is_alloc?new BitmapData(i_size.w, i_size.h, false):null;
+			this._pixdrv = new FLARGsPixelDriver_AsBitmap();
+			this._pixdrv.switchRaster(this);
+			this._is_attached_buffer = i_is_alloc;
 			return;
 		}
-		/**
-		 * このインスタンスのvectorImageとBitmapImageを同期する。
-		 */
-		public function syncVecImage():void
+		public override function createInterface(i_iid:Class):Object
 		{
-			 vec_imege = BitmapData(this._buf).getVector(new Rectangle(0,0,this._size.w,this._size.h));
-			 return;
+			if(i_iid==NyARLabeling_Rle_IRasterDriver){
+				return new NyARRlePixelDriver_ASBmp(this);
+			}
+			if(i_iid==INyARHistogramFromRaster){
+				return new NyARHistogramFromRaster_AnyGs(this);
+			}
+			throw new NyARException();
+		}
+		public function getBitmapData():BitmapData
+		{
+			return BitmapData(this._buf);
 		}
 	}
 }
+
+
+
+import jp.nyatla.nyartoolkit.as3.core.raster.*;
+import jp.nyatla.nyartoolkit.as3.core.types.*;
+import jp.nyatla.nyartoolkit.as3.core.squaredetect.*;
+import jp.nyatla.nyartoolkit.as3.core.rasterdriver.*;
+import jp.nyatla.nyartoolkit.as3.core.pixeldriver.*;
+import jp.nyatla.nyartoolkit.as3.core.labeling.rlelabeling.*;
+import org.libspark.flartoolkit.core.raster.*;
+import org.libspark.flartoolkit.core.raster.rgb.*;
+import flash.display.*;
+import flash.geom.*;
+//
+//画像ドライバ
+//
+class NyARHistogramFromRaster_AnyGs implements INyARHistogramFromRaster
+{
+	private var _gsr:FLARGrayscaleRaster;
+	public function NyARHistogramFromRaster_AnyGs(i_raster:FLARGrayscaleRaster)
+	{
+		this._gsr=i_raster;
+	}
+	public function createHistogram_2(i_skip:int,o_histogram:NyARHistogram):void
+	{
+		var s:NyARIntSize=this._gsr.getSize();
+		this.createHistogram(0,0,s.w,s.h,i_skip,o_histogram);
+	}
+	public function createHistogram(i_l:int,i_t:int,i_w:int,i_h:int,i_skip:int,o_histogram:NyARHistogram):void
+	{
+		var hist:Vector.<Vector.<Number>>=this._gsr.getBitmapData().histogram(new Rectangle(i_l, i_t, i_w, i_h));
+		o_histogram.reset();
+		var data_ptr:Vector.<int> = o_histogram.data;
+		var src_ptr:Vector.<Number> = hist[2];
+		for (var i:int = 0; i < 256; i++) {
+			data_ptr[i] = (int)(src_ptr[i]);
+		}
+		o_histogram.total_of_data=i_w*i_h;
+		return;
+	}	
+}
+
+class NyARRlePixelDriver_ASBmp implements NyARLabeling_Rle_IRasterDriver
+{
+	private var _ref_raster:FLARGrayscaleRaster;
+	public function NyARRlePixelDriver_ASBmp(i_ref_raster:FLARGrayscaleRaster)
+	{
+		this._ref_raster=i_ref_raster;
+	}
+	public function xLineToRle(i_x:int, i_y:int, i_len:int,i_th:int,i_out:Vector.<NyARLabeling_Rle_RleElement>):int
+	{
+		var buf:BitmapData=BitmapData(this._ref_raster.getBitmapData());
+		var current:int = 0;
+		var r:int = -1;
+		// 行確定開始
+		var st:int=i_x+this._ref_raster.getWidth()*i_y;
+		var x:int = st;
+		var right_edge:int = st + i_len - 1;
+		while (x < right_edge) {
+			// 暗点(0)スキャン
+			if (buf[x] > i_th) {
+				x++;//明点
+				continue;
+			}
+			// 暗点発見→暗点長を調べる
+			r = (x - st);
+			i_out[current].l = r;
+			r++;// 暗点+1
+			x++;
+			while (x < right_edge) {
+				if (buf[x] > i_th) {
+					// 明点(1)→暗点(0)配列終了>登録
+					i_out[current].r = r;
+					current++;
+					x++;// 次点の確認。
+					r = -1;// 右端の位置を0に。
+					break;
+				} else {
+					// 暗点(0)長追加
+					r++;
+					x++;
+				}
+			}
+		}
+		// 最後の1点だけ判定方法が少し違うの。
+		if (buf[x] > i_th) {
+			// 明点→rカウント中なら暗点配列終了>登録
+			if (r >= 0) {
+				i_out[current].r = r;
+				current++;
+			}
+		} else {
+			// 暗点→カウント中でなければl1で追加
+			if (r >= 0) {
+				i_out[current].r = (r + 1);
+			} else {
+				// 最後の1点の場合
+				i_out[current].l = (i_len - 1);
+				i_out[current].r = (i_len);
+			}
+			current++;
+		}
+		// 行確定
+		return current;
+	}
+}
+

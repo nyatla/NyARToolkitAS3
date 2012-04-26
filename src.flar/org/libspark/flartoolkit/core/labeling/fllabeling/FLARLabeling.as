@@ -32,7 +32,7 @@ package org.libspark.flartoolkit.core.labeling.fllabeling
 	import org.libspark.flartoolkit.core.raster.*;
 	import org.libspark.flartoolkit.*;
 	import jp.nyatla.nyartoolkit.as3.core.labeling.*;
-	import jp.nyatla.nyartoolkit.as3.*;
+	import jp.nyatla.nyartoolkit.as3.core.*;
 	import jp.nyatla.nyartoolkit.as3.core.raster.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
 	import jp.nyatla.nyartoolkit.as3.core.labeling.rlelabeling.*;
@@ -61,12 +61,12 @@ package org.libspark.flartoolkit.core.labeling.fllabeling
 			this._fllstack=new FLLabelInfoStack(i_width*i_height*2048/(320*240)+32);
 			return;
 		}
-		public function labeling_1(i_bin_raster:NyARBinRaster):void
+		public function labeling(i_bin_raster:NyARBinRaster):void
 		{
 			var label_img:BitmapData = this._tmp_bmp;
 			//BIN
 			label_img.copyPixels(BitmapData(i_bin_raster.getBuffer()), label_img.rect, ZERO_POINT);
-			this.labeling(label_img);
+			this.labeling_impl(label_img);
 		}
 		public function labeling_2(i_bin_raster:NyARBinRaster,i_area:NyARIntRect):void
 		{
@@ -80,12 +80,9 @@ package org.libspark.flartoolkit.core.labeling.fllabeling
 
 			label_img.fillRect(label_img.rect, 0x0);		
 			label_img.threshold(BitmapData(i_gs_raster.getBuffer()), label_img.rect, ZERO_POINT, '<=', i_th, 0xff0000ff, 0x000000ff);
-			this.labeling(label_img);
+			this.labeling_impl(label_img);
 		}
-		public function labeling_4(i_gs_raster:NyARGrayscaleRaster,i_area:NyARIntRect,i_th:int):void
-		{
-			NyARException.notImplement();
-		}
+
 		
 		protected function onLabelFound(i_ref_label:NyARRleLabelFragmentInfo):void
 		{
@@ -98,7 +95,7 @@ package org.libspark.flartoolkit.core.labeling.fllabeling
 		 * @param	o_stack
 		 * @return
 		 */
-		public function labeling(label_img:BitmapData):void
+		public function labeling_impl(label_img:BitmapData):void
 		{
 			var tmp_label:NyARRleLabelFragmentInfo;
 			var fllstack:FLLabelInfoStack=this._fllstack;
@@ -175,10 +172,10 @@ class FLLabelInfoStack extends NyARObjectStack
 	public function FLLabelInfoStack(i_length:int)
 	{
 		super();
-		super.initInstance_1(i_length);
+		super.initInstance(i_length);
 		return;
 	}
-	protected override function createElement_1():Object
+	protected override function createElement():Object
 	{
 		return new NyARRleLabelFragmentInfo();
 	}

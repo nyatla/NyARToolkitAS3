@@ -35,26 +35,22 @@ package org.libspark.flartoolkit.processor
 	import jp.nyatla.nyartoolkit.as3.core.raster.*;
 	import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
 	import jp.nyatla.nyartoolkit.as3.core.*;
-	import jp.nyatla.nyartoolkit.as3.core.rasterfilter.rgb2bin.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
 	import jp.nyatla.nyartoolkit.as3.*;
-	import jp.nyatla.nyartoolkit.as3.core.analyzer.raster.*;
-	import jp.nyatla.nyartoolkit.as3.core.analyzer.raster.threshold.*;
 	import jp.nyatla.as3utils.*;
 	
 	
 	import org.libspark.flartoolkit.core.raster.*;
-	import org.libspark.flartoolkit.core.rasterfilter.rgb2bin.*;
 	import org.libspark.flartoolkit.core.squaredetect.*;
 	import org.libspark.flartoolkit.core.*;
 	import org.libspark.flartoolkit.*;
 	import org.libspark.flartoolkit.core.param.*;
 	import org.libspark.flartoolkit.core.raster.rgb.*;
 	import org.libspark.flartoolkit.core.transmat.*;
-	import org.libspark.flartoolkit.core.analyzer.raster.threshold.*;
-	import org.libspark.flartoolkit.core.analyzer.raster.*;
-	
-	
+	import jp.nyatla.nyartoolkit.as3.core.analyzer.histogram.*;	
+	import jp.nyatla.nyartoolkit.as3.core.rasterdriver.*;
+	import jp.nyatla.nyartoolkit.as3.core.rasterfilter.rgb2gs.*;
+	import org.libspark.flartoolkit.core.rasterfilter.* ;
 	/**
 	 * このクラスは、同時に１個のマーカを処理することのできる、アプリケーションプロセッサです。
 	 * マーカの出現・移動・消滅を、イベントで通知することができます。
@@ -69,7 +65,6 @@ package org.libspark.flartoolkit.processor
 	 */
 	public class FLSingleARMarkerProcesser
 	{
-
 		/**オーナーが自由に使えるタグ変数です。
 		 */
 		public var tag:Object;
@@ -83,13 +78,10 @@ package org.libspark.flartoolkit.processor
 		private var _offset:NyARRectOffset; 
 		private var _threshold:int = 110;
 		// [AR]検出結果の保存用
-		private var _bin_raster:NyARBinRaster;
-
-		private var _tobin_filter:FLARRasterFilter_Threshold;
-
+		private var _bin_raster:FLARBinRaster;
+		private var _gs_raster:FLARGrayscaleRaster;
+		
 		protected var _current_arcode_index:int = -1;
-
-		private var _threshold_detect:FLARRasterThresholdAnalyzer_SlidePTile;
 		
 		public function FLSingleARMarkerProcesser()
 		{
@@ -106,11 +98,11 @@ package org.libspark.flartoolkit.processor
 			var scr_size:NyARIntSize = i_param.getScreenSize();
 			// 解析オブジェクトを作る
 			this._transmat = new NyARTransMat(i_param);
-			this._tobin_filter=new FLARRasterFilter_Threshold(110);
+			this._thdetect=new NyARHistogramAnalyzer_SlidePTile(15);
 
 			// ２値画像バッファを作る
 			this._bin_raster = new FLARBinRaster(scr_size.w, scr_size.h);
-			this._threshold_detect=new FLARRasterThresholdAnalyzer_SlidePTile(15,4);
+			this._gs_raster = new FLARGrayscaleRaster(scr_size.w, scr_size.h,true);
 			this._initialized=true;
 			//コールバックハンドラ
 			this._detectmarker=new DetectSquare(i_param);
@@ -141,10 +133,17 @@ package org.libspark.flartoolkit.processor
 			
 			//検出するマーカセット、情報、検出器を作り直す。(1ピクセル4ポイントサンプリング,マーカのパターン領域は50%)
 			this._detectmarker.setNyARCodeTable(tmp_ncode,i_code_resolution);
-			this._offset.setSquare_1(i_marker_width);
+			this._offset.setSquare(i_marker_width);
 			return;
 		}
-
+		private var _detectmarker:DetectSquare;
+		private var _last_input_raster:INyARRaster=null;
+		
+		private var _tobin_filter:FLARRgb2GsBinFilter;
+		private var _histmaker:INyARHistogramFromRaster;
+		private var _thdetect:NyARHistogramAnalyzer_SlidePTile;
+		private var _hist:NyARHistogram = new NyARHistogram(256);
+		
 		public function reset(i_is_force:Boolean):void
 		{
 			if (this._current_arcode_index != -1 && i_is_force == false) {
@@ -155,28 +154,26 @@ package org.libspark.flartoolkit.processor
 			this._current_arcode_index = -1;
 			return;
 		}
-		private var _detectmarker:DetectSquare;
-		public function detectMarker(i_raster:INyARRgbRaster):void
+		public function detectMarker(i_raster:FLARRgbRaster_BitmapData):void
 		{
-			// サイズチェック
-			NyAS3Utils.assert(this._bin_raster.getSize().isEqualSize_1(i_raster.getSize().w, i_raster.getSize().h));
+			// サイズチェック			
+			NyAS3Utils.assert(this._bin_raster.getSize().isEqualSize(i_raster.getSize().w, i_raster.getSize().h));
+			if(this._last_input_raster!=i_raster){
+				this._histmaker=INyARHistogramFromRaster(this._gs_raster.createInterface(INyARHistogramFromRaster));
+				this._tobin_filter=FLARRgb2GsBinFilter(i_raster.createInterface(FLARRgb2GsBinFilter));
+				this._last_input_raster=i_raster;
+			}
 
-			//BINイメージへの変換
-			this._tobin_filter.setThreshold(this._threshold);
-			this._tobin_filter.doFilter_1(i_raster, this._bin_raster);
-
+			//GSイメージへの変換とヒストグラムの生成
+			this._tobin_filter.convert(this._threshold,this._gs_raster,this._bin_raster);
+			this._histmaker.createHistogram_2(4, this._hist);
+			
 			// スクエアコードを探す
 			this._detectmarker.init(i_raster,this._current_arcode_index);
-			this._detectmarker.detectMarker_1(this._bin_raster);
+			this._detectmarker.detectMarker(this._bin_raster);
 			
 			// 認識状態を更新
-			var is_id_found:Boolean=this.updateStatus(this._detectmarker.square,this._detectmarker.code_index);
-			//閾値フィードバック(detectExistMarkerにもあるよ)
-			if(!is_id_found){
-				//マーカがなければ、探索+DualPTailで基準輝度検索
-				var th:int=this._threshold_detect.analyzeRaster_1(i_raster);
-				this._threshold=(this._threshold+th)/2;
-			}
+			this.updateStatus(this._detectmarker.square,this._detectmarker.code_index);
 			
 			
 			return;
@@ -262,7 +259,6 @@ import jp.nyatla.nyartoolkit.as3.core.transmat.*;
 import jp.nyatla.nyartoolkit.as3.core.raster.*;
 import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.as3.core.*;
-import jp.nyatla.nyartoolkit.as3.core.rasterfilter.rgb2bin.*;
 import jp.nyatla.nyartoolkit.as3.core.types.*;
 import jp.nyatla.nyartoolkit.as3.*;
 import org.libspark.flartoolkit.core.squaredetect.*;
@@ -298,7 +294,7 @@ class DetectSquare extends FLARSquareContourDetector
 	{
 		/*unmanagedで実装するときは、ここでリソース解放をすること。*/
 		this._deviation_data=new NyARMatchPattDeviationColorData(i_code_resolution,i_code_resolution);
-		this._inst_patt=new NyARColorPatt_Perspective_O2(i_code_resolution,i_code_resolution,4,25,NyARBufferType.OBJECT_AS3_BitmapData);
+		this._inst_patt=new NyARColorPatt_Perspective(i_code_resolution,i_code_resolution,4,25);
 		this._match_patt = new Vector.<NyARMatchPatt_Color_WITHOUT_PCA>(i_ref_code.length);
 		for(var i:int=0;i<i_ref_code.length;i++){
 			this._match_patt[i]=new NyARMatchPatt_Color_WITHOUT_PCA(i_ref_code[i]);
@@ -340,7 +336,7 @@ class DetectSquare extends FLARSquareContourDetector
 			return;//取得失敗
 		}
 		//取得パターンをカラー差分データに変換して評価する。
-		this._deviation_data.setRaster_1(this._inst_patt);
+		this._deviation_data.setRaster(this._inst_patt);
 
 		
 		//code_index,dir,c1にデータを得る。
@@ -401,7 +397,7 @@ class DetectSquare extends FLARSquareContourDetector
 		}
 		for (i = 0; i < 4; i++) {
 			//直線同士の交点計算
-			if(!sq.line[i].crossPos_1(sq.line[(i + 3) % 4],sq.sqvertex[i])){
+			if(!sq.line[i].crossPos(sq.line[(i + 3) % 4],sq.sqvertex[i])){
 				throw new NyARException();//ここのエラー復帰するならダブルバッファにすればOK
 			}
 		}

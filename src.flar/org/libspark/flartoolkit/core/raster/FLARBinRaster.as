@@ -29,11 +29,14 @@
 package org.libspark.flartoolkit.core.raster 
 {
 	import jp.nyatla.nyartoolkit.as3.core.raster.*;
-	import jp.nyatla.nyartoolkit.as3.core.rasterreader.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
 	import jp.nyatla.nyartoolkit.as3.utils.*;
+	import jp.nyatla.nyartoolkit.as3.core.*;
 	import org.libspark.flartoolkit.*;
-	import flash.display.BitmapData;
+	import flash.display.*;
+	import jp.nyatla.nyartoolkit.as3.core.pixeldriver.*;
+	import jp.nyatla.nyartoolkit.as3.core.labeling.rlelabeling.*;
+	import jp.nyatla.nyartoolkit.as3.core.squaredetect.*;	
 	/**
 	 * このRasterは、明点を0xffffff,暗点を0xff000000であらわします。
 	 */
@@ -43,14 +46,28 @@ package org.libspark.flartoolkit.core.raster
 		{
 			super(i_width,i_height,NyARBufferType.OBJECT_AS3_BitmapData,true);
 		}
-		protected override function initInstance(i_size:NyARIntSize,i_buf_type:int,i_is_alloc:Boolean):Boolean
+		protected override function initInstance(i_size:NyARIntSize,i_buf_type:int,i_is_alloc:Boolean):void
 		{
 			if (i_buf_type != NyARBufferType.OBJECT_AS3_BitmapData) {
 				throw new FLARException();
 			}
-			this._buf = i_is_alloc?new BitmapData(i_size.w,i_size.h,false):null;
-			return true;
+			this._buf = i_is_alloc?new BitmapData(i_size.w, i_size.h, false):null;
+			this._pixdrv = new FLARGsPixelDriver_AsBitmap();
+			this._pixdrv.switchRaster(this);
+			this._is_attached_buffer = i_is_alloc;
+			return;
 		}
+        public function getBitmapData():BitmapData
+        {
+            return BitmapData(this._buf);
+        }
+		public override function createInterface(i_iid:Class):Object
+		{
+			if(i_iid==NyARContourPickup_IRasterDriver){
+				return new FLARContourPickup_GsReader(this);
+			}
+			return super.createInterface(i_iid);
+		}	
 		
 	}
 }

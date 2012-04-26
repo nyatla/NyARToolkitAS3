@@ -30,7 +30,7 @@
 
 package org.libspark.flartoolkit
 {
-	import jp.nyatla.nyartoolkit.as3.NyARException;
+	import jp.nyatla.nyartoolkit.as3.core.*;
 
 	public class FLARException extends NyARException
 	{
@@ -41,7 +41,7 @@ package org.libspark.flartoolkit
 
 		public static function trap(m:String):void
 		{
-			throw new FLARException("トラップ:" + m);
+			throw new FLARException("Trap!" + m);
 		}
 
 		public static function notImplement():void

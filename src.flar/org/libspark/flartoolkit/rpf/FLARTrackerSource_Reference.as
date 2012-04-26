@@ -1,8 +1,8 @@
 package org.libspark.flartoolkit.rpf
 {
 
-	import jp.nyatla.nyartoolkit.as3.NyARException;
-	import jp.nyatla.nyartoolkit.as3.core.param.NyARCameraDistortionFactor;
+	import jp.nyatla.nyartoolkit.as3.core.*;
+	import jp.nyatla.nyartoolkit.as3.core.param.*;
 	import jp.nyatla.nyartoolkit.as3.core.raster.NyARGrayscaleRaster;
 	import jp.nyatla.nyartoolkit.as3.core.types.NyARBufferType;
 	import jp.nyatla.nyartoolkit.as3.rpf.realitysource.nyartk.*;
@@ -11,7 +11,7 @@ package org.libspark.flartoolkit.rpf
 	import org.libspark.flartoolkit.core.raster .*;
 	import org.libspark.flartoolkit.rpf.sampler.lrlabel.*;
 	import org.libspark.flartoolkit.core.squaredetect.*;
-	import org.libspark.flartoolkit.core.rasterfilter.rgb2gs.*;
+	import jp.nyatla.nyartoolkit.as3.rpf.utils.*;
 
 	/**
 	 * NyARTrackerSourceのリファレンス実装です。
@@ -25,6 +25,7 @@ package org.libspark.flartoolkit.rpf
 		private var _sampler:FLARLowResolutionLabelingSampler;
 		private var _rb_source:FLARGrayscaleRaster;
 		private var _rfilter:FLARNegativeSqRoberts=new FLARNegativeSqRoberts();
+		private var _gs_graphics:INyARGsRasterGraphics;
 		/**
 		 * @param i_number_of_sample
 		 * サンプラが検出する最大数。
@@ -50,6 +51,7 @@ package org.libspark.flartoolkit.rpf
 			var div:int=this._rob_resolution;
 			//主GSラスタ
 			this._base_raster=new FLARGrayscaleRaster(i_width,i_height,i_is_alloc);
+			this._gs_graphics=new NyARGsRasterGraphics_ASBitmap(FLARGrayscaleRaster(this._base_raster));
 			//Roberts変換ラスタ
 			this._rb_source=new FLARGrayscaleRaster(i_width/div,i_height/div, true);
 			//Robertsラスタは最も解像度の低いラスタと同じ
@@ -75,8 +77,7 @@ package org.libspark.flartoolkit.rpf
 		public override function syncResource():void
 		{
 			//内部状態の同期
-			FLARGrayscaleRaster(this._base_raster).syncVecImage();
-			this._base_raster.copyTo(0,0,this._rob_resolution,this._rb_source);
+			this._gs_graphics.copyTo(0,0,this._rob_resolution,this._rb_source);
 			this._rfilter.doFilter(this._rb_source,this._rbraster);
 		}
 		/**
@@ -92,7 +93,39 @@ package org.libspark.flartoolkit.rpf
 			this._sampler.sampling(this._rbraster,220,this._sample_out);
 			return this._sample_out;
 		}
-		
+	}
+}
 
+import flash.display.*;
+import flash.geom.*;
+import jp.nyatla.as3utils.*;
+import jp.nyatla.nyartoolkit.as3.rpf.utils.*;
+import jp.nyatla.nyartoolkit.as3.core.raster.*;
+import org.libspark.flartoolkit.core.raster.rgb.*;
+import org.libspark.flartoolkit.core.raster .*;
+	
+class NyARGsRasterGraphics_ASBitmap implements INyARGsRasterGraphics
+{
+	private var _raster:FLARGrayscaleRaster;
+
+	public function NyARGsRasterGraphics_ASBitmap(i_raster:FLARGrayscaleRaster)
+	{
+		this._raster = i_raster;
+	}
+	public function fill(i_value:int):void
+	{	
+		var bm:BitmapData = this._raster.getBitmapData();
+		bm.fillRect(bm.rect,i_value);
+	}
+	public function copyTo(i_left:int,i_top:int,i_skip:int,o_output:INyARGrayscaleRaster):void
+	{
+		var d:BitmapData = BitmapData(o_output.getBuffer());
+		var s:BitmapData = BitmapData(this._raster.getBuffer());
+		var mat:Matrix = new Matrix();
+		mat.a = mat.d = (1.0 / (i_skip));
+		mat.tx = i_left;
+		mat.ty = i_top;
+		d.draw(s, mat,null,null,null,false);
+		return;
 	}
 }
