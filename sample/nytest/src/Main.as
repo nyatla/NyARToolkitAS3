@@ -12,7 +12,6 @@ package
 	import jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk.*;
 	import jp.nyatla.nyartoolkit.as3.rpf.realitysource.nyartk.*;
 	import jp.nyatla.nyartoolkit.as3.markersystem.*;
-	import jp.nyatla.nyartoolkit.as3.pro.markersystem.*;
 	import flash.net.*;
 	import flash.text.*;
     import flash.display.*; 
@@ -59,7 +58,7 @@ package
 				{
  		            param=new NyARParam();
             		param.loadARParam(data);
-            		param.changeScreenSize_1(320,240);
+            		param.changeScreenSize(320,240);
 				});
 			mf.addTarget(
 				"../../../data/patt.hiro",URLLoaderDataFormat.TEXT,
@@ -191,7 +190,7 @@ package
 			msg(reality.getNumberOfDead().toString());
 			var rt:Vector.<NyARRealityTarget>=new Vector.<NyARRealityTarget>(10);
 			reality.selectUnKnownTargets(rt);
-			reality.changeTargetToKnown_1(rt[0],2,80);
+			reality.changeTargetToKnown(rt[0],2,80);
 			msg(rt[0]._transform_matrix.m00+","+rt[0]._transform_matrix.m01+","+rt[0]._transform_matrix.m02+","+rt[0]._transform_matrix.m03);
 			msg(rt[0]._transform_matrix.m10+","+rt[0]._transform_matrix.m11+","+rt[0]._transform_matrix.m12+","+rt[0]._transform_matrix.m13);
 			msg(rt[0]._transform_matrix.m20+","+rt[0]._transform_matrix.m21+","+rt[0]._transform_matrix.m22+","+rt[0]._transform_matrix.m23);
@@ -201,7 +200,7 @@ package
 		{
 			var ss:NyARSensor = new NyARSensor(new NyARIntSize(320, 240));
 			var cf:NyARMarkerSystemConfig = new NyARMarkerSystemConfig(320, 240);
-			var cf2:NyARProMarkerSystemConfig = new NyARProMarkerSystemConfig(320,240);
+			var cf2:NyARMarkerSystemConfig = new NyARMarkerSystemConfig(320,240);
 			var ms:NyARMarkerSystem = new NyARMarkerSystem(cf);
 /*
 			msg("cf=" + d.getConfidence());
@@ -234,7 +233,7 @@ package
 			msg("NyARToolkitAS3 check program.");
 			msg("(c)2010 nyatla.");
 			msg("#ready!");
-			{
+/*			{
 				msg("<NyARSingleDetectMarker>");
 				testNyARSingleDetectMarker();
 			}
@@ -249,7 +248,7 @@ package
 			{
 				msg("<SingleProcessor>");
 				testSingleProcessor();
-			}
+			}*/
 			{
 				msg("<Reality>");
 				testNyARReality();
