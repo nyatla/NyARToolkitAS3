@@ -158,7 +158,7 @@ class GsReader extends BaseReader
 					x= c + xdir[dir] ;
 					y= r + ydir[dir] ;
 					if( x >= i_l && x <= i_r && y >= i_t && y <= i_b ) {
-						if((buf.getPixel(x,y)&0xff)>0 ) {
+						if((buf.getPixel(x,y)) <= i_th ) {
 							break ;
 						}
 						

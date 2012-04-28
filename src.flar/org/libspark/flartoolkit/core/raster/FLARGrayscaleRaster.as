@@ -39,6 +39,7 @@ package org.libspark.flartoolkit.core.raster
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
 	import jp.nyatla.nyartoolkit.as3.utils.*;
 	import org.libspark.flartoolkit.*;
+	import org.libspark.flartoolkit.core.rasterfilter.*;
 	import flash.display.*;
 	import flash.geom.*;
 	/**
@@ -72,6 +73,11 @@ package org.libspark.flartoolkit.core.raster
 			if(i_iid==NyARContourPickup_IRasterDriver){
 				return FLARContourPickupFactory.createDriver(this);
 			}
+			if (i_iid == FLARGs2BinFilter) {
+                if (this.isEqualBufferType(NyARBufferType.OBJECT_AS3_BitmapData)) {
+					return new FLARGs2BinFilter(this);
+				}
+			}			
 			throw new NyARException();
 		}
 		public function getBitmapData():BitmapData
@@ -186,4 +192,3 @@ class NyARRlePixelDriver_ASBmp implements NyARLabeling_Rle_IRasterDriver
 		return current;
 	}
 }
-

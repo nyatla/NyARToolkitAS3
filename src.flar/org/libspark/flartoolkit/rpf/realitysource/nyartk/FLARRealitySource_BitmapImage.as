@@ -10,6 +10,7 @@ package org.libspark.flartoolkit.rpf.realitysource.nyartk
 	import jp.nyatla.as3utils.*;
 	import jp.nyatla.nyartoolkit.as3.core.rasterfilter.rgb2gs.*;
 	import jp.nyatla.nyartoolkit.as3.core.rasterdriver.*;
+
 	/**
 	 * このクラスは、BufferedImageと互換性のあるNyARRealitySourceです。
 	 * @author nyatla
@@ -66,7 +67,8 @@ package org.libspark.flartoolkit.rpf.realitysource.nyartk
 		}
 		public override function makeTrackSource():NyARTrackerSource
 		{
-			this._filter.convert(this._tracksource.refBaseRaster());		
+			this._filter.convert(this._tracksource.refBaseRaster());
+			
 			return this._tracksource;
 		}
 		/**

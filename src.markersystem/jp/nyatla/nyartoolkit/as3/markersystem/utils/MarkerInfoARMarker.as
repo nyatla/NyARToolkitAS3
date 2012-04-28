@@ -48,7 +48,7 @@ package jp.nyatla.nyartoolkit.as3.markersystem.utils
 			super();
 			this.matchpatt=new NyARMatchPatt_Color_WITHOUT_PCA(i_patt);
 			this.patt_edge_percentage=i_patt_edge_percentage;
-			this.marker_offset.setSquare_1(i_patt_size);
+			this.marker_offset.setSquare(i_patt_size);
 			this.patt_w=i_patt.getWidth();
 			this.patt_h=i_patt.getHeight();
 			return;

@@ -6,6 +6,7 @@ package
 	import jp.nyatla.nyartoolkit.as3.core.param.*;
 	import jp.nyatla.nyartoolkit.as3.core.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
+	import jp.nyatla.nyartoolkit.as3.core.types.matrix.*;
 	import jp.nyatla.nyartoolkit.as3.detector.*;
 	import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
 	import jp.nyatla.nyartoolkit.as3.core.transmat.*;
@@ -196,34 +197,34 @@ package
 			msg(rt[0]._transform_matrix.m20+","+rt[0]._transform_matrix.m21+","+rt[0]._transform_matrix.m22+","+rt[0]._transform_matrix.m23);
 			msg(rt[0]._transform_matrix.m30+","+rt[0]._transform_matrix.m31+","+rt[0]._transform_matrix.m32+","+rt[0]._transform_matrix.m33);
 		}
-		private function testNymarkerSystem():void
+		private function testNyMarkerSystem():void
 		{
 			var ss:NyARSensor = new NyARSensor(new NyARIntSize(320, 240));
 			var cf:NyARMarkerSystemConfig = new NyARMarkerSystemConfig(320, 240);
-			var cf2:NyARMarkerSystemConfig = new NyARMarkerSystemConfig(320,240);
 			var ms:NyARMarkerSystem = new NyARMarkerSystem(cf);
-/*
-			msg("cf=" + d.getConfidence());
+			
+			var id:int = ms.addARMarker_2(this.code, 25, 80);
+			ss.update(this.raster_bgra);
+			ms.update(ss);
+			var mat:NyARDoubleMatrix44=ms.getMarkerMatrix(id);
+
+			msg("cf=" + ms.getConfidence(id));
 			{
-				d.getTransmationMatrix(mat);
 				msg("getTransmationMatrix");
 				msg(mat.m00 + "," + mat.m01 + "," + mat.m02 + "," + mat.m03);
 				msg(mat.m10 + "," + mat.m11 + "," + mat.m12 + "," + mat.m13);
 				msg(mat.m20 + "," + mat.m21 + "," + mat.m22 + "," + mat.m23);
-				msg("getZXYAngle");
-				mat.getZXYAngle(ang);
-				msg(ang.x + "," + ang.y + "," + ang.z);
 			}
 			msg("#benchmark");
 			{
 				var date : Date = new Date();
 				for(var i2:int=0;i2<100;i2++){
-					d.detectMarkerLite(raster_bgra,100);
-					d.getTransmationMatrix(mat);
+					ss.update(this.raster_bgra);
+					ms.update(ss);
 				}
 				var date2 : Date = new Date();
 				msg(((date2.valueOf() - date.valueOf()).toString())+"[ms] par 100 frame");
-			}*/
+			}
 			return;
 		}		
 		private function main(e:Event):void
@@ -233,7 +234,7 @@ package
 			msg("NyARToolkitAS3 check program.");
 			msg("(c)2010 nyatla.");
 			msg("#ready!");
-/*			{
+			{
 				msg("<NyARSingleDetectMarker>");
 				testNyARSingleDetectMarker();
 			}
@@ -248,10 +249,14 @@ package
 			{
 				msg("<SingleProcessor>");
 				testSingleProcessor();
-			}*/
+			}
 			{
 				msg("<Reality>");
 				testNyARReality();
+			}
+			{
+				msg("<NyARSingleDetectMarker>");
+				testNyMarkerSystem();
 			}
 			msg("#finish!");
 			return;

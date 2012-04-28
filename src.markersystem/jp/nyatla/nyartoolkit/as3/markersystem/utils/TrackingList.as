@@ -148,7 +148,7 @@ package jp.nyatla.nyartoolkit.as3.markersystem.utils
 					target.sq=top_item.ref_sq;
 					target.sq.rotateVertexL(4-top_item.shift);
 					NyARIntPoint2d.shiftCopy_2(top_item.ref_sq.ob_vertex,target.tl_vertex,4-top_item.shift);
-					target.tl_center.setValue_1(top_item.ref_sq.center2d);
+					target.tl_center.setValue(top_item.ref_sq.center2d);
 					target.tl_rect_area=top_item.ref_sq.rect_area;
 				}
 				//基準アイテムと重複するアイテムを削除する。

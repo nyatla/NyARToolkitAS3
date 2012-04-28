@@ -63,7 +63,7 @@ package jp.nyatla.nyartoolkit.as3.core.squaredetect
 			this._cpickup=new NyARContourPickup();
 		}
 		private var __detectMarker_mkvertex:Vector.<int> = new Vector.<int>(4); 
-		public function detectMarker_3( i_raster:INyARGrayscaleRaster , i_area:NyARIntRect , i_th:int ):void
+		public function detectMarker_3( i_raster:INyARGrayscaleRaster , i_area:NyARIntRect , i_th:int,i_cb:NyARSquareContourDetector_CbHandler):void
 		{ 
 			//assert( ! (( i_area.w * i_area.h > 0 ) ) );
 			var flagment:NyARRleLabelFragmentInfoPtrStack = this._labeling.label_stack ;
@@ -96,13 +96,13 @@ package jp.nyatla.nyartoolkit.as3.core.squaredetect
 					continue ;
 				}
 				
-				this.onSquareDetect(coord , mkvertex) ;
+				i_cb.detectMarkerCallback(coord , mkvertex) ;
 				overlap.push(label_pt) ;
 			}
 			return  ;
 		}
 		
-		public function detectMarker_2( i_raster:INyARGrayscaleRaster,i_th:int ):void
+		public function detectMarker_2( i_raster:INyARGrayscaleRaster,i_th:int,i_cb:NyARSquareContourDetector_CbHandler):void
 		{ 
 			var flagment:NyARRleLabelFragmentInfoPtrStack = this._labeling.label_stack ;
 			var overlap:NyARLabelOverlapChecker = this._overlap_checker ;
@@ -133,7 +133,7 @@ package jp.nyatla.nyartoolkit.as3.core.squaredetect
 					continue ;
 				}
 				
-				this.onSquareDetect(coord , mkvertex) ;
+				i_cb.detectMarkerCallback(coord , mkvertex) ;
 				overlap.push(label_pt) ;
 			}
 			return  ;

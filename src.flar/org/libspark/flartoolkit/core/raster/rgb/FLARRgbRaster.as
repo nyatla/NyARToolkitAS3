@@ -175,8 +175,10 @@ package org.libspark.flartoolkit.core.raster.rgb
             {
                 return this.isEqualBufferType(NyARBufferType.OBJECT_AS3_BitmapData) ? new NyARRgb2GsFilterArtkTh_AsBitmap(this) : NyARRgb2GsFilterArtkThFactory.createDriver(this);
             }
-			if (iIid == FLARRgb2GsBinFilter) {
-                return this.isEqualBufferType(NyARBufferType.OBJECT_AS3_BitmapData) ? new FLARRgb2GsBinFilter(this) : NyARRgb2GsFilterArtkThFactory.createDriver(this);
+			if (iIid == FLARRgb2GsFilter) {
+                if (this.isEqualBufferType(NyARBufferType.OBJECT_AS3_BitmapData)) {
+					return new FLARRgb2GsFilter(this);
+				}
 			}
             throw new NyARException();
         }

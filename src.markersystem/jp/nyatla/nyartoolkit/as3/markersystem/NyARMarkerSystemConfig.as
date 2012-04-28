@@ -91,7 +91,7 @@ package jp.nyatla.nyartoolkit.as3.markersystem
 		{
 			this._param=new NyARParam();
 			this._param.loadARParam(i_ar_param_stream);
-			this._param.changeScreenSize_1(i_width,i_height);
+			this._param.changeScreenSize(i_width,i_height);
 		}
 		/**
 		 * コンストラクタです。カメラパラメータにサンプル値(../Data/camera_para.dat)の値をロードして、
@@ -106,7 +106,7 @@ package jp.nyatla.nyartoolkit.as3.markersystem
 		{
 			this._param=new NyARParam();
 			this._param.loadDefaultParameter();
-			this._param.changeScreenSize_1(i_width,i_height);		
+			this._param.changeScreenSize(i_width,i_height);		
 		}
 		/**
 		 * この値は、カメラパラメータのスクリーンサイズです。

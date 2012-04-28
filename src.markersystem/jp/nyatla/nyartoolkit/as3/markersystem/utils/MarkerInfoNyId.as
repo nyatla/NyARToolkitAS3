@@ -49,7 +49,7 @@ package jp.nyatla.nyartoolkit.as3.markersystem.utils
 		public function MarkerInfoNyId(i_nyid_range_s:Number,i_nyid_range_e:Number,i_patt_size:Number)
 		{
 			super();
-			this.marker_offset.setSquare_1(i_patt_size);
+			this.marker_offset.setSquare(i_patt_size);
 			this.nyid_range_s=i_nyid_range_s;
 			this.nyid_range_e=i_nyid_range_e;
 			return;

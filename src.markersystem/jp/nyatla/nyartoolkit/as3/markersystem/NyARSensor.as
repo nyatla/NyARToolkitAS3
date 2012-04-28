@@ -45,11 +45,11 @@ package jp.nyatla.nyartoolkit.as3.markersystem
 	public class NyARSensor
 	{
 		protected var _gs_hist:NyARHistogram;
-		private var _ref_raster:INyARRgbRaster;
+		protected var _ref_raster:INyARRgbRaster;
 		protected var _gs_raster:INyARGrayscaleRaster;
-		private var _src_ts:int;
-		private var _gs_id_ts:int;
-		private var _gs_hist_ts:int;
+		protected var _src_ts:int;
+		protected var _gs_id_ts:int;
+		protected var _gs_hist_ts:int;
 		/**
 		 * 画像サイズ（スクリーンサイズ）を指定して、インスタンスを生成します。
 		 * @param i_size

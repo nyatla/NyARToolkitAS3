@@ -72,14 +72,14 @@ package org.libspark.flartoolkit.detector
 		 * 入力ラスタのピクセルタイプを指定します。この値は、INyARBufferReaderインタフェイスのgetBufferTypeの戻り値を指定します。
 		 * @throws NyARException
 		 */
-		public function FLARMultiMarkerDetector(i_param:FLARParam, i_code:Vector.<FLARCode>, i_marker_width:Vector.<Number>, i_number_of_code:int)
+		public function FLARMultiMarkerDetector(i_param:FLARParam, i_code:Vector.<NyARCode>, i_marker_width:Vector.<Number>, i_number_of_code:int)
 		{
 			initInstance(i_param,i_code,i_marker_width,i_number_of_code);
 			return;
 		}
 		protected function initInstance(
 			i_ref_param:FLARParam,
-			i_ref_code:Vector.<FLARCode>,
+			i_ref_code:Vector.<NyARCode>,
 			i_marker_width:Vector.<Number>,
 			i_number_of_code:int):void
 		{
@@ -130,7 +130,7 @@ package org.libspark.flartoolkit.detector
 			this._tobin_filter.doFilter(i_threshold,this._bin_raster);
 			//detect
 			this._square_detect.init(i_raster);
-			this._square_detect.detectMarker(this._bin_raster);
+			this._square_detect.detectMarker(this._bin_raster,this._square_detect);
 
 			//見付かった数を返す。
 			return this._square_detect.result_stack.getLength();
@@ -241,7 +241,7 @@ class NyARDetectMarkerResultStack extends NyARObjectStack
 	}	
 }	
 	
-class FLDetector extends FLARSquareContourDetector
+class FLDetector extends FLARSquareContourDetector implements NyARSquareContourDetector_CbHandler
 {
 		private static const AR_SQUARE_MAX:int = 300;
 	
@@ -256,7 +256,7 @@ class FLDetector extends FLARSquareContourDetector
 	private var __detectMarkerLite_mr:NyARMatchPattResult=new NyARMatchPattResult();
 	private var _coordline:NyARCoord2Linear;
 
-	public function FLDetector(i_inst_patt:INyARColorPatt,i_ref_code:Vector.<FLARCode>,i_num_of_code:int,i_param:NyARParam)
+	public function FLDetector(i_inst_patt:INyARColorPatt,i_ref_code:Vector.<NyARCode>,i_num_of_code:int,i_param:NyARParam)
 	{
 		super(i_param.getScreenSize());
 		var cw:int = i_ref_code[0].getWidth();
@@ -281,7 +281,7 @@ class FLDetector extends FLARSquareContourDetector
 	 * 矩形が見付かるたびに呼び出されます。
 	 * 発見した矩形のパターンを検査して、方位を考慮した頂点データを確保します。
 	 */
-	protected override function onSquareDetect(i_coord:NyARIntCoordinates, i_vertex_index:Vector.<int>):void
+	public function detectMarkerCallback(i_coord:NyARIntCoordinates, i_vertex_index:Vector.<int>):void
 	{
 		var mr:NyARMatchPattResult=this.__detectMarkerLite_mr;
 		//輪郭座標から頂点リストに変換

@@ -28,6 +28,7 @@
  */
 package org.libspark.flartoolkit.core.squaredetect
 {
+	import jp.nyatla.nyartoolkit.as3.core.NyARException;
 	import jp.nyatla.nyartoolkit.as3.core.param.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
 	import jp.nyatla.nyartoolkit.as3.core.raster.*;
@@ -59,84 +60,82 @@ package org.libspark.flartoolkit.core.squaredetect
 			this._coord = new NyARIntCoordinates( number_of_coord ) ;
 			return  ;
 		}
-	private var __detectMarker_mkvertex:Vector.<int> = new Vector.<int>(4); 
-	public function detectMarker_2( i_raster:NyARBinRaster , i_area:NyARIntRect , i_th:int ):void
-	{ 
-		//assert( ! (( i_area.w * i_area.h > 0 ) ) );
-		var flagment:NyARRleLabelFragmentInfoPtrStack = this._labeling.label_stack ;
-		var overlap:NyARLabelOverlapChecker = this._overlap_checker ;
-		this._labeling.labeling_2(i_raster , i_area) ;
-		var label_num:int = flagment.getLength() ;
-		if( label_num < 1 ) {
+		private var __detectMarker_mkvertex:Vector.<int> = new Vector.<int>(4); 
+		public function detectMarker_2( i_raster:NyARBinRaster , i_area:NyARIntRect , i_th:int,i_cb:NyARSquareContourDetector_CbHandler):void
+		{ 
+			//assert( ! (( i_area.w * i_area.h > 0 ) ) );
+			var flagment:NyARRleLabelFragmentInfoPtrStack = this._labeling.label_stack ;
+			var overlap:NyARLabelOverlapChecker = this._overlap_checker ;
+			this._labeling.labeling_2(i_raster , i_area) ;
+			var label_num:int = flagment.getLength() ;
+			if( label_num < 1 ) {
+				return  ;
+			}
+			
+			var labels:Vector.<Object> = flagment.getArray() ;
+			var coord:NyARIntCoordinates = this._coord ;
+			var mkvertex:Vector.<int> = this.__detectMarker_mkvertex ;
+			overlap.setMaxLabels(label_num) ;
+			for( var i:int = 0 ; i < label_num ; i++ ) {
+				var label_pt:NyARRleLabelFragmentInfo = NyARRleLabelFragmentInfo(labels[i]);
+				if ( !overlap.check(label_pt) )
+				{
+					continue ;
+				}
+				
+				if ( !this._cpickup.getContour_2(i_raster, i_area, i_th, label_pt.entry_x, label_pt.clip_t, coord) )
+				{
+					continue ;
+				}
+				
+				var label_area:int = label_pt.area ;
+				if ( !this._coord2vertex.getVertexIndexes(coord, label_area, mkvertex) )
+				{
+					continue ;
+				}
+				
+				i_cb.detectMarkerCallback(coord , mkvertex) ;
+				overlap.push(label_pt) ;
+			}
 			return  ;
 		}
 		
-		var labels:Vector.<Object> = flagment.getArray() ;
-		var coord:NyARIntCoordinates = this._coord ;
-		var mkvertex:Vector.<int> = this.__detectMarker_mkvertex ;
-		overlap.setMaxLabels(label_num) ;
-		for( var i:int = 0 ; i < label_num ; i++ ) {
-			var label_pt:NyARRleLabelFragmentInfo = NyARRleLabelFragmentInfo(labels[i]);
-			if ( !overlap.check(label_pt) )
-			{
-				continue ;
+		public function detectMarker( i_raster:FLARBinRaster,i_cb:NyARSquareContourDetector_CbHandler):void
+		{ 
+			var flagment:NyARRleLabelFragmentInfoPtrStack = this._labeling.label_stack ;
+			var overlap:NyARLabelOverlapChecker = this._overlap_checker ;
+			flagment.clear() ;
+			this._labeling.labeling(i_raster) ;
+			var label_num:int = flagment.getLength() ;
+			if( label_num < 1 ) {
+				return  ;
 			}
+			flagment.sortByArea() ;
+			var labels:Vector.<Object> = flagment.getArray() ;
+			var coord:NyARIntCoordinates = this._coord ;
+			var mkvertex:Vector.<int> = this.__detectMarker_mkvertex ;
+			overlap.setMaxLabels(label_num) ;
+			for ( var i:int = 0 ; i < label_num ; i++ ) {
+
+				var label_pt:NyARRleLabelFragmentInfo = NyARRleLabelFragmentInfo(labels[i]);
+				var label_area:int = label_pt.area ;
+				if( !overlap.check(label_pt) ) {
+					continue ;
+				}
+				
+				if( !this._cpickup.getContour(i_raster,0,label_pt.entry_x, label_pt.clip_t, coord) ) {
+					continue ;
+				}
 			
-			if ( !this._cpickup.getContour_2(i_raster, i_area, i_th, label_pt.entry_x, label_pt.clip_t, coord) )
-			{
-				continue ;
+				if( !this._coord2vertex.getVertexIndexes(coord, label_area, mkvertex) ) {
+					continue ;
+				}
+				
+				i_cb.detectMarkerCallback(coord , mkvertex) ;
+				overlap.push(label_pt) ;
 			}
-			
-			var label_area:int = label_pt.area ;
-			if ( !this._coord2vertex.getVertexIndexes(coord, label_area, mkvertex) )
-			{
-				continue ;
-			}
-			
-			this.onSquareDetect(coord , mkvertex) ;
-			overlap.push(label_pt) ;
-		}
-		return  ;
-	}
-	
-	public function detectMarker( i_raster:FLARBinRaster ):void
-	{ 
-		var flagment:NyARRleLabelFragmentInfoPtrStack = this._labeling.label_stack ;
-		var overlap:NyARLabelOverlapChecker = this._overlap_checker ;
-		flagment.clear() ;
-		this._labeling.labeling(i_raster) ;
-		var label_num:int = flagment.getLength() ;
-		if( label_num < 1 ) {
 			return  ;
 		}
-		flagment.sortByArea() ;
-		var labels:Vector.<Object> = flagment.getArray() ;
-		var coord:NyARIntCoordinates = this._coord ;
-		var mkvertex:Vector.<int> = this.__detectMarker_mkvertex ;
-		overlap.setMaxLabels(label_num) ;
-		for ( var i:int = 0 ; i < label_num ; i++ ) {
-
-			var label_pt:NyARRleLabelFragmentInfo = NyARRleLabelFragmentInfo(labels[i]);
-			var label_area:int = label_pt.area ;
-			if( !overlap.check(label_pt) ) {
-				continue ;
-			}
-			
-			if( !this._cpickup.getContour(i_raster,0,label_pt.entry_x, label_pt.clip_t, coord) ) {
-				continue ;
-			}
-		
-			if( !this._coord2vertex.getVertexIndexes(coord, label_area, mkvertex) ) {
-				continue ;
-			}
-			
-			this.onSquareDetect(coord , mkvertex) ;
-			overlap.push(label_pt) ;
-		}
-		return  ;
-	}
-	
-
 	}
 }
 import jp.nyatla.nyartoolkit.as3.core.labeling.*;

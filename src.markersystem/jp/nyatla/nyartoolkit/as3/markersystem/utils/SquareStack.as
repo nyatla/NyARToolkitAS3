@@ -38,9 +38,9 @@ package jp.nyatla.nyartoolkit.as3.markersystem.utils
 
 		public function SquareStack(i_length:int)
 		{
-			super.initInstance_1(i_length);
+			super.initInstance(i_length);
 		}
-		protected override function createElement_1():Object 
+		protected override function createElement():Object 
 		{
 			return new SquareStack_Item();
 		}		

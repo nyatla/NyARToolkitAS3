@@ -99,7 +99,7 @@ package jp.nyatla.nyartoolkit.as3.markersystem.utils
 					target.life++;
 					target.sq.rotateVertexL(4-target.dir);
 					NyARIntPoint2d.shiftCopy_2(target.sq.ob_vertex,target.tl_vertex,4-target.dir);
-					target.tl_center.setValue_1(target.sq.center2d);
+					target.tl_center.setValue(target.sq.center2d);
 					target.tl_rect_area=target.sq.rect_area;
 				}
 			}

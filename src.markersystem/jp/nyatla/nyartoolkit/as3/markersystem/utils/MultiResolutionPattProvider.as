@@ -53,21 +53,21 @@ package jp.nyatla.nyartoolkit.as3.markersystem.utils
 			for(var i:int=this.items.length-1;i>=0;i--)
 			{
 				var ptr:MultiResolutionPattProvider_Item=this.items[i];//this.items.get(i);
-				if(!ptr._patt.getSize().isEqualSize_1(i_marker.patt_w,i_marker.patt_h) || ptr._patt_edge!=mk_edge)
+				if(!ptr._patt.getSize().isEqualSize(i_marker.patt_w,i_marker.patt_h) || ptr._patt_edge!=mk_edge)
 				{
 					//サイズとエッジサイズが合致しない物はスルー
 					continue;
 				}
 				//古かったら更新
-				i_pix_drv.copyPatt_1(i_vertex,ptr._patt_edge,ptr._patt_edge,ptr._patt_resolution,ptr._patt);
-				ptr._patt_d.setRaster_1(ptr._patt);
+				i_pix_drv.copyPatt(i_vertex,ptr._patt_edge,ptr._patt_edge,ptr._patt_resolution,ptr._patt);
+				ptr._patt_d.setRaster(ptr._patt);
 				return ptr._patt_d;
 			}
 			//無い。新しく生成
 			var item:MultiResolutionPattProvider_Item=new MultiResolutionPattProvider_Item(i_marker.patt_w,i_marker.patt_h,mk_edge);
 			//タイムスタンプの更新とデータの生成
-			i_pix_drv.copyPatt_1(i_vertex,item._patt_edge,item._patt_edge,item._patt_resolution,item._patt);
-			item._patt_d.setRaster_1(item._patt);
+			i_pix_drv.copyPatt(i_vertex,item._patt_edge,item._patt_edge,item._patt_resolution,item._patt);
+			item._patt_d.setRaster(item._patt);
 			this.items.push(item);
 			return item._patt_d;
 		}

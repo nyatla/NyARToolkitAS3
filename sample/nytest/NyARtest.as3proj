@@ -18,7 +18,6 @@
     <class path="..\..\src" />
     <class path="..\..\src.rpf" />
     <class path="..\..\src.markersystem" />
-    <class path="..\..\..\..\..\..\ARToolworks.project\FLARToolKitPro\trunk\lib\src" />
   </classpaths>
   <!-- Build options -->
   <build>

@@ -1,6 +1,8 @@
 package org.libspark.flartoolkit.rpf
 {
 
+import sketch.*;
+	import flash.display.*;
 	import jp.nyatla.nyartoolkit.as3.core.*;
 	import jp.nyatla.nyartoolkit.as3.core.param.*;
 	import jp.nyatla.nyartoolkit.as3.core.raster.NyARGrayscaleRaster;
@@ -78,7 +80,9 @@ package org.libspark.flartoolkit.rpf
 		{
 			//内部状態の同期
 			this._gs_graphics.copyTo(0,0,this._rob_resolution,this._rb_source);
-			this._rfilter.doFilter(this._rb_source,this._rbraster);
+			this._rfilter.doFilter(this._rb_source, this._rbraster);
+DebugSketch.inst.bitmap.bitmapData.draw(BitmapData(this._rbraster.getBuffer()));
+			
 		}
 		/**
 		 * SampleOutを計算して返します。

@@ -134,7 +134,7 @@ package jp.nyatla.nyartoolkit.as3.detector
 			this._tobin_filter.doFilter(i_threshold,this._bin_raster);
 			//detect
 			this._square_detect.init(i_raster);
-			this._square_detect.detectMarker_2(this._bin_raster,0);
+			this._square_detect.detectMarker_2(this._bin_raster,0,this._square_detect);
 
 			//見付かった数を返す。
 			return this._square_detect.result_stack.getLength();
@@ -213,7 +213,7 @@ import jp.nyatla.nyartoolkit.as3.core.types.*;
 /**
  * detectMarkerのコールバック関数
  */
-class RleDetector extends NyARSquareContourDetector_Rle
+class RleDetector extends NyARSquareContourDetector_Rle implements NyARSquareContourDetector_CbHandler
 {
 	//公開プロパティ
 	public var result_stack:NyARDetectMarkerResultStack=new NyARDetectMarkerResultStack(NyARDetectMarker.AR_SQUARE_MAX);
@@ -256,7 +256,7 @@ class RleDetector extends NyARSquareContourDetector_Rle
 	 * 矩形が見付かるたびに呼び出されます。
 	 * 発見した矩形のパターンを検査して、方位を考慮した頂点データを確保します。
 	 */
-	protected override function onSquareDetect(i_coord:NyARIntCoordinates, i_vertex_index:Vector.<int>):void
+	public function detectMarkerCallback(i_coord:NyARIntCoordinates, i_vertex_index:Vector.<int>):void
 	{
 		var mr:NyARMatchPattResult=this.__detectMarkerLite_mr;
 		//輪郭座標から頂点リストに変換

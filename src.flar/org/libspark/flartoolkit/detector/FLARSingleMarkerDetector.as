@@ -45,7 +45,6 @@ package org.libspark.flartoolkit.detector
 	import org.libspark.flartoolkit.core.param.*;
 	import org.libspark.flartoolkit.core.raster.rgb.*;
 	import org.libspark.flartoolkit.core.transmat.*;
-	import sketch.*;
 	public class FLARSingleMarkerDetector
 	{	
 		/** 一致率*/
@@ -119,7 +118,7 @@ package org.libspark.flartoolkit.detector
 		private var _offset:NyARRectOffset; 
 
 
-		public function FLARSingleMarkerDetector(i_ref_param:FLARParam,i_ref_code:FLARCode,i_marker_width:Number)
+		public function FLARSingleMarkerDetector(i_ref_param:FLARParam,i_ref_code:NyARCode,i_marker_width:Number)
 		{
 			var patt_inst:INyARColorPatt;
 			var sqdetect_inst:FLARDetector;
@@ -135,7 +134,7 @@ package org.libspark.flartoolkit.detector
 			i_sqdetect_inst:FLARDetector,
 			i_transmat_inst:INyARTransMat,
 			i_ref_param:FLARParam,
-			i_ref_code:FLARCode,
+			i_ref_code:NyARCode,
 			i_marker_width:Number):void
 		{
 			var scr_size:NyARIntSize=i_ref_param.getScreenSize();		
@@ -186,7 +185,7 @@ package org.libspark.flartoolkit.detector
 			this._last_input_raster=i_raster;
 			//
 			//マーカ検出器をコール
-			this._square_detect.detectMarker(this._bin_raster);
+			this._square_detect.detectMarker(this._bin_raster,this._square_detect);
 			if(this._confidence==0){
 				return false;
 			}
@@ -283,7 +282,7 @@ import org.libspark.flartoolkit.detector.*;
  * Rleラ矩形Detectorのブリッジ
  *
  */
-class FLARDetector extends FLARSquareContourDetector
+class FLARDetector extends FLARSquareContourDetector  implements NyARSquareContourDetector_CbHandler
 {
 	private var _parent:FLARSingleMarkerDetector;
 	public function FLARDetector(i_parent:FLARSingleMarkerDetector,i_size:NyARIntSize):void
@@ -291,7 +290,7 @@ class FLARDetector extends FLARSquareContourDetector
 		super(i_size);
 		this._parent=i_parent;
 	}
-	protected override function onSquareDetect(i_coord:NyARIntCoordinates, i_vertex_index:Vector.<int>):void
+	public function detectMarkerCallback(i_coord:NyARIntCoordinates, i_vertex_index:Vector.<int>):void
 	{
 
 		this._parent.updateSquareInfo(i_coord, i_vertex_index);

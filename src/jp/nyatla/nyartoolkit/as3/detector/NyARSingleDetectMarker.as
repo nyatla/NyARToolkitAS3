@@ -339,7 +339,7 @@ class NyARSingleDetectMarker_NyARTK extends NyARSingleDetectMarker
 	protected override function execDetectMarker():void
 	{
 		//矩形を探す(戻り値はコールバック関数で受け取る。)
-		this._square_detect.detectMarker_2(this._bin_raster,0);
+		this._square_detect.detectMarker_2(this._bin_raster,0,this._square_detect);
 		
 	}
 }
@@ -349,7 +349,7 @@ class NyARSingleDetectMarker_NyARTK extends NyARSingleDetectMarker
  * Rleラ矩形Detectorのブリッジ
  *
  */
-class RleDetector extends NyARSquareContourDetector_Rle
+class RleDetector extends NyARSquareContourDetector_Rle implements NyARSquareContourDetector_CbHandler
 {
 	private var _parent:NyARSingleDetectMarker;
 	public function RleDetector(i_parent:NyARSingleDetectMarker,i_size:NyARIntSize):void
@@ -357,7 +357,7 @@ class RleDetector extends NyARSquareContourDetector_Rle
 		super(i_size);
 		this._parent=i_parent;
 	}
-	protected override function onSquareDetect(i_coord:NyARIntCoordinates, i_vertex_index:Vector.<int>):void
+	public function detectMarkerCallback(i_coord:NyARIntCoordinates, i_vertex_index:Vector.<int>):void
 	{
 
 		this._parent.updateSquareInfo(i_coord, i_vertex_index);

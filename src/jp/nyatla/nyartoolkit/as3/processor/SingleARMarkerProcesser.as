@@ -159,7 +159,7 @@ package jp.nyatla.nyartoolkit.as3.processor
 			
 			// スクエアコードを探す
 			this._detectmarker.init(i_raster,this._current_arcode_index);
-			this._detectmarker.detectMarker_2(this._gs_raster,this._thdetect.getThreshold(this._hist));
+			this._detectmarker.detectMarker_2(this._gs_raster,this._thdetect.getThreshold(this._hist),this._detectmarker);
 			
 			// 認識状態を更新
 			this.updateStatus(this._detectmarker.square,this._detectmarker.code_index);
@@ -254,7 +254,7 @@ import jp.nyatla.nyartoolkit.as3.*;
 /**
  * detectMarkerのコールバック関数
  */
-class DetectSquare extends NyARSquareContourDetector_Rle
+class DetectSquare extends NyARSquareContourDetector_Rle implements NyARSquareContourDetector_CbHandler
 {
 	//公開プロパティ
 	public var square:NyARSquare=new NyARSquare();
@@ -306,7 +306,7 @@ class DetectSquare extends NyARSquareContourDetector_Rle
 	 * 矩形が見付かるたびに呼び出されます。
 	 * 発見した矩形のパターンを検査して、方位を考慮した頂点データを確保します。
 	 */
-	protected override function onSquareDetect(i_coord:NyARIntCoordinates,i_vertex_index:Vector.<int>):void
+	public function detectMarkerCallback(i_coord:NyARIntCoordinates,i_vertex_index:Vector.<int>):void
 	{
 		if (this._match_patt==null) {
 			return;

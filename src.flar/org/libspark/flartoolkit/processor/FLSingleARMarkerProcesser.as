@@ -120,7 +120,7 @@ package org.libspark.flartoolkit.processor
 		/**検出するマーカコードの配列を指定します。 検出状態でこの関数を実行すると、
 		 * オブジェクト状態に強制リセットがかかります。
 		 */
-		public function setARCodeTable(i_ref_code_table:Vector.<FLARCode>,i_code_resolution:int,i_marker_width:Number):void
+		public function setARCodeTable(i_ref_code_table:Vector.<NyARCode>,i_code_resolution:int,i_marker_width:Number):void
 		{
 			if (this._current_arcode_index != -1) {
 				// 強制リセット
@@ -139,7 +139,8 @@ package org.libspark.flartoolkit.processor
 		private var _detectmarker:DetectSquare;
 		private var _last_input_raster:INyARRaster=null;
 		
-		private var _tobin_filter:FLARRgb2GsBinFilter;
+		private var _togs_filter:FLARRgb2GsFilter;
+		private var _tobin_filter:FLARGs2BinFilter;
 		private var _histmaker:INyARHistogramFromRaster;
 		private var _thdetect:NyARHistogramAnalyzer_SlidePTile;
 		private var _hist:NyARHistogram = new NyARHistogram(256);
@@ -160,17 +161,19 @@ package org.libspark.flartoolkit.processor
 			NyAS3Utils.assert(this._bin_raster.getSize().isEqualSize(i_raster.getSize().w, i_raster.getSize().h));
 			if(this._last_input_raster!=i_raster){
 				this._histmaker=INyARHistogramFromRaster(this._gs_raster.createInterface(INyARHistogramFromRaster));
-				this._tobin_filter=FLARRgb2GsBinFilter(i_raster.createInterface(FLARRgb2GsBinFilter));
+				this._togs_filter=FLARRgb2GsFilter(i_raster.createInterface(FLARRgb2GsFilter));
+				this._tobin_filter=FLARGs2BinFilter(this._gs_raster.createInterface(FLARGs2BinFilter));
 				this._last_input_raster=i_raster;
 			}
 
 			//GSイメージへの変換とヒストグラムの生成
-			this._tobin_filter.convert(this._threshold,this._gs_raster,this._bin_raster);
+			this._togs_filter.convert(this._gs_raster);
+			this._tobin_filter.convert(this._threshold,this._bin_raster);
 			this._histmaker.createHistogram_2(4, this._hist);
 			
 			// スクエアコードを探す
 			this._detectmarker.init(i_raster,this._current_arcode_index);
-			this._detectmarker.detectMarker(this._bin_raster);
+			this._detectmarker.detectMarker(this._bin_raster,this._detectmarker);
 			
 			// 認識状態を更新
 			this.updateStatus(this._detectmarker.square,this._detectmarker.code_index);
@@ -266,7 +269,7 @@ import org.libspark.flartoolkit.core.squaredetect.*;
 /**
  * detectMarkerのコールバック関数
  */
-class DetectSquare extends FLARSquareContourDetector
+class DetectSquare extends FLARSquareContourDetector implements NyARSquareContourDetector_CbHandler
 {
 	//公開プロパティ
 	public var square:FLARSquare=new FLARSquare();
@@ -318,7 +321,7 @@ class DetectSquare extends FLARSquareContourDetector
 	 * 矩形が見付かるたびに呼び出されます。
 	 * 発見した矩形のパターンを検査して、方位を考慮した頂点データを確保します。
 	 */
-	protected override function onSquareDetect(i_coord:NyARIntCoordinates,i_vertex_index:Vector.<int>):void
+	public function detectMarkerCallback(i_coord:NyARIntCoordinates,i_vertex_index:Vector.<int>):void
 	{
 		if (this._match_patt==null) {
 			return;

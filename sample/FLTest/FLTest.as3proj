@@ -20,6 +20,7 @@
     <class path="..\..\src.rpf" />
     <class path="..\..\extlib\paperVision" />
     <class path="..\..\src.flar" />
+    <class path="..\..\src.markersystem" />
   </classpaths>
   <!-- Build options -->
   <build>
@@ -74,7 +75,7 @@
   </library>
   <!-- Class files to compile (other referenced classes will automatically be included) -->
   <compileTargets>
-    <compile path="src\Main.as" />
+    <compile path="src\sketch\test.as" />
   </compileTargets>
   <!-- Paths to exclude from the Project Explorer tree -->
   <hiddenPaths>
