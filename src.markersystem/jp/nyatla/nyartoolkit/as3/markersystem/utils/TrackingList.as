@@ -65,7 +65,7 @@ package jp.nyatla.nyartoolkit.as3.markersystem.utils
 				}
 				//移動距離^2の二乗が対角線距離^2の4倍以上なら無視
 				var sq_move:Number=target.tl_center.sqDist(i_new_sq.center2d);
-				if(sq_move*4/new_sq_dist>0){
+				if(Math.floor(sq_move*4/new_sq_dist)>0){
 					continue;
 				}
 				compareVertexSet(i_new_sq.ob_vertex,target.tl_vertex,ret);

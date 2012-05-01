@@ -28,25 +28,23 @@
  * 
  */
 
-package org.libspark.flartoolkit.support.pv3d {
+package org.libspark.flartoolkit.pv3d {
+	
+	import jp.nyatla.nyartoolkit.as3.core.NyARMat;
+	import jp.nyatla.nyartoolkit.as3.core.param.*;
+	import jp.nyatla.nyartoolkit.as3.core.types.NyARIntSize;
 	
 	import org.libspark.flartoolkit.core.param.FLARParam;
-	import org.libspark.flartoolkit.core.types.FLARIntSize;
 	import org.libspark.flartoolkit.utils.ArrayUtil;
-	import org.papervision3d.cameras.*;
-	import org.papervision3d.core.math.*;
+	import org.papervision3d.cameras.Camera3D;
+	import org.papervision3d.core.math.Matrix3D;
 
-	import jp.nyatla.nyartoolkit.as3.core.types.*;
-	import jp.nyatla.nyartoolkit.as3.core.*;
-	import jp.nyatla.nyartoolkit.as3.core.param.*;
-	public class FLARCamera3D extends Camera3D
-	{
+	public class FLARCamera3D extends Camera3D {
 		
 		private static const NEAR_CLIP:Number = 10;
 		private static const FAR_CLIP:Number = 10000;
 		
-		public function FLARCamera3D(param:NyARParam = null)
-		{
+		public function FLARCamera3D(param:NyARParam=null) {
 			super();
 			this.z = 0;
 			
@@ -120,8 +118,9 @@ package org.libspark.flartoolkit.support.pv3d {
 			// 巣の GreatWhite のままだと _projection が Camera3D の private プロパティなのでエラる。
 			// ので protected とかにしてください。無理やり。害はない。つーかまーそれ以外に方法がない。
 			this._projection = new Matrix3D(m_projection);
-		}		
-		public override function transformView(transform:Matrix3D=null):void {
+		}
+		
+		override public function transformView(transform:Matrix3D=null):void {
 			// Camera3D の transformView はいらんことしやがるので super.transformView() しない。
 			// ただし CameraObject3D の transformView は必要なのでそこでやってる処理をここに移植。
 			this.eye.calculateMultiply(this.transform, _flipY);

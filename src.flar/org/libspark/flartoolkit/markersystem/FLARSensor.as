@@ -26,7 +26,7 @@ package org.libspark.flartoolkit.markersystem
 {
 
 
-
+	import flash.display.*;
 	import jp.nyatla.nyartoolkit.as3.core.*;
 	import jp.nyatla.nyartoolkit.as3.core.raster.*;
 	import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
@@ -35,15 +35,16 @@ package org.libspark.flartoolkit.markersystem
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
 	import jp.nyatla.nyartoolkit.as3.markersystem.NyARSensor;
 	import org.libspark.flartoolkit.core.raster.*;
+	import org.libspark.flartoolkit.core.raster.rgb.*;
 	import org.libspark.flartoolkit.core.rasterfilter.*;
 
 
 
 	/**
-	 * このクラスは、{@link NyARMarkerSystem}へ入力するセンサ情報（画像）を管理します。
-	 * センサ情報のスナップショットに対するアクセサ、形式変換機能を提供します。
-	 * 管理している情報は、元画像（カラー）、グレースケール画像、ヒストグラムです。
-	 * このインスタンスは{@link NyARMarkerSystem#update(NyARSensor)}関数により、{@link NyARMarkerSystem}に入力します。
+	 * このクラスは、Flash向けにﾁｭｰﾆﾝｸﾞしたNyARSensorクラスです。
+	 * {@link Video}、{@link BitmapData}等の{@link IBitmapDrawable}インタフェイスを持つ
+	 * オブジェクトをセットできます。
+	 * オブジェクトのセットには、{@link #update_2}を使います。
 	 */
 	public class FLARSensor extends NyARSensor
 	{
@@ -56,6 +57,8 @@ package org.libspark.flartoolkit.markersystem
 		public function FLARSensor(i_size:NyARIntSize)
 		{
 			super(i_size);
+			this._raster = new FLARRgbRaster(i_size.w, i_size.h);
+			this.update(this._raster);
 		}
 		/**
 		 * この関数は、画像ドライバに依存するインスタンスを生成する。
@@ -73,7 +76,13 @@ package org.libspark.flartoolkit.markersystem
 		private var _gstobin:FLARGs2BinFilter;
 		private var _bin_raster:FLARBinRaster
 		private var _bin_id_ts:int;
-		private var _bin_th:int=-1;
+		private var _bin_th:int = -1;
+		private var _raster:FLARRgbRaster;
+		/**
+		 * i_thで2値化した画像の参照値を得ます。この関数は{@link FLARMarkerSystem}用の関数です。
+		 * @return
+		 * [readonly]
+		 */
 		public function getBinImage(i_th:int):FLARBinRaster
 		{
 			if((this._gs_id_ts!=this._bin_id_ts)||(this._bin_th!=i_th)){
@@ -83,5 +92,10 @@ package org.libspark.flartoolkit.markersystem
 			}
 			return this._bin_raster;
 		}
+		public function update_2(i_bmp:IBitmapDrawable):void
+		{
+			this._raster.getBitmapData().draw(i_bmp);
+			this.updateTimeStamp();
+		}		
 	}
 }

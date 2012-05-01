@@ -33,23 +33,23 @@ package sketch
 		public override function setup():void
 		{
 			//コンテンツのセットアップ
-			this.setupFile("../../../data/camera_para.dat", URLLoaderDataFormat.BINARY);//0
-			this.setupFile("../../../data/patt.hiro", URLLoaderDataFormat.TEXT);//1
-			this.setupFile("../../../data/320x240ABGR.raw", URLLoaderDataFormat.BINARY);//2
-			this.setupFile("../../../data/320x240NyId.raw", URLLoaderDataFormat.BINARY);//3
+			this.setSketchFile("../../../data/camera_para.dat", URLLoaderDataFormat.BINARY);//0
+			this.setSketchFile("../../../data/patt.hiro", URLLoaderDataFormat.TEXT);//1
+			this.setSketchFile("../../../data/320x240ABGR.raw", URLLoaderDataFormat.BINARY);//2
+			this.setSketchFile("../../../data/320x240NyId.raw", URLLoaderDataFormat.BINARY);//3
 		}
 		public override function main():void
 		{
-			param=new FLARParam(this.getFile(0),320,240);
+			param=new FLARParam(this.getSketchFile(0),320,240);
 			code=new NyARCode(16, 16);
-			code.loadARPatt(this.getFile(1));
+			code.loadARPatt(this.getSketchFile(1));
 			
 			var b:BitmapData;
 			var data:ByteArray;
 			var i:int;
 			{	
 				b=	arimg.getBitmapData();
-				data = this.getFile(2);
+				data = this.getSketchFile(2);
 				data.endian = Endian.LITTLE_ENDIAN;
 				for (i = 0; i < 320 * 240; i++) {
 					b.setPixel(i % 320, i / 320, data.readInt());
@@ -57,7 +57,7 @@ package sketch
 			}
 			{
 				b =	idimg.getBitmapData();
-				data = this.getFile(3);
+				data = this.getSketchFile(3);
 				data.endian = Endian.LITTLE_ENDIAN;
 				for (i = 0; i < 320 * 240; i++) {
 					b.setPixel(i%320,i/320,data.readInt());
@@ -101,8 +101,10 @@ package sketch
 				msg("<FLARReality>");
 				testFLARReality();
 			}
-			testFLARMarkerSystem();
-			
+			{
+				msg("<testFLARMarkerSystem>");
+				testFLARMarkerSystem();
+			}
 			msg("#finish!");
 			
 			
@@ -117,7 +119,7 @@ package sketch
 			var cf:NyARMarkerSystemConfig = new NyARMarkerSystemConfig(320, 240);
 			var ms:FLARMarkerSystem = new FLARMarkerSystem(cf);
 			
-			var id:int = ms.addARMarker_2(this.code, 25, 80);
+			var id:int = ms.addARMarker(this.code, 25, 80);
 			ss.update(this.arimg);
 			ms.update(ss);
 			var mat:NyARDoubleMatrix44=ms.getMarkerMatrix(id);

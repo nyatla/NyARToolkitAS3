@@ -171,7 +171,7 @@ package jp.nyatla.nyartoolkit.as3.markersystem
 		 * マーカID（ハンドル）値。この値はNyIDの値ではなく、マーカのハンドル値です。
 		 * @throws NyARException
 		 */
-		public function addNyIdMarker_1(i_id_s:Number,i_id_e:Number,i_marker_size:Number):int
+		public function addNyIdMarker_2(i_id_s:Number,i_id_e:Number,i_marker_size:Number):int
 		{
 			var target:MarkerInfoNyId=new MarkerInfoNyId(i_id_s,i_id_e,i_marker_size);
 			if(!this._idmk_list.add(target)){
@@ -192,7 +192,7 @@ package jp.nyatla.nyartoolkit.as3.markersystem
 		 * マーカID（ハンドル）値。
 		 * @throws NyARException
 		 */
-		public function addARMarker_2(i_code:NyARCode,i_patt_edge_percentage:int,i_marker_size:Number):int
+		public function addARMarker(i_code:NyARCode,i_patt_edge_percentage:int,i_marker_size:Number):int
 		{
 			var target:MarkerInfoARMarker=new MarkerInfoARMarker(i_code,i_patt_edge_percentage,i_marker_size);
 			if(!this._armk_list.add(target)){
@@ -213,11 +213,11 @@ package jp.nyatla.nyartoolkit.as3.markersystem
 		 * マーカID（ハンドル）値。
 		 * @throws NyARException
 		 */
-		public function addARMarker_3(i_stream:String,i_patt_resolution:int,i_patt_edge_percentage:int,i_marker_size:Number):int
+		public function addARMarker_2(i_stream:String,i_patt_resolution:int,i_patt_edge_percentage:int,i_marker_size:Number):int
 		{
 			var c:NyARCode=new NyARCode(i_patt_resolution,i_patt_resolution);
 			c.loadARPatt(i_stream);
-			return this.addARMarker_2(c, i_patt_edge_percentage, i_marker_size);
+			return this.addARMarker(c, i_patt_edge_percentage, i_marker_size);
 		}
 		/**
 		 * この関数は、画像からARマーカパターンを生成して、登録します。
@@ -236,7 +236,7 @@ package jp.nyatla.nyartoolkit.as3.markersystem
 		 * マーカID（ハンドル）値。
 		 * @throws NyARException
 		 */
-		public function addARMarker_4(i_raster:INyARRgbRaster, i_patt_resolution:int, i_patt_edge_percentage:int, i_marker_size:Number):int
+		public function addARMarker_3(i_raster:INyARRgbRaster, i_patt_resolution:int, i_patt_edge_percentage:int, i_marker_size:Number):int
 		{
 			var c:NyARCode=new NyARCode(i_patt_resolution,i_patt_resolution);
 			var s:NyARIntSize=i_raster.getSize();
@@ -246,7 +246,7 @@ package jp.nyatla.nyartoolkit.as3.markersystem
 			pc.copyPatt_3(0,0,s.w,0,s.w,s.h,0,s.h,i_patt_edge_percentage, i_patt_edge_percentage,4, tr);
 			//切り出したパターンをセット
 			c.setRaster_2(tr);
-			this.addARMarker_2(c,i_patt_edge_percentage,i_marker_size);
+			this.addARMarker(c,i_patt_edge_percentage,i_marker_size);
 			return 0;
 		}
 		
@@ -420,7 +420,7 @@ package jp.nyatla.nyartoolkit.as3.markersystem
 		 * 結果を格納したi_rasterオブジェクト
 		 * @throws NyARException
 		 */
-		public function getMarkerPlaneImage_1(
+		public function getMarkerPlaneImage(
 			i_id:int,
 			i_sensor:NyARSensor,
 			i_x1:int,i_y1:int,
@@ -469,7 +469,7 @@ package jp.nyatla.nyartoolkit.as3.markersystem
 			i_w:int,i_h:int,
 			i_raster:INyARRgbRaster ):INyARRgbRaster
 		{
-			return this.getMarkerPlaneImage_1(i_id,i_sensor,i_l+i_w-1,i_t+i_h-1,i_l,i_t+i_h-1,i_l,i_t,i_l+i_w-1,i_t,i_raster);
+			return this.getMarkerPlaneImage(i_id,i_sensor,i_l+i_w-1,i_t+i_h-1,i_l,i_t+i_h-1,i_l,i_t,i_l+i_w-1,i_t,i_raster);
 		}
 		/**
 		 * この関数は、マーカの姿勢変換行列を返します。

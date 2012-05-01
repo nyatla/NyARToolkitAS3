@@ -93,7 +93,7 @@ package org.libspark.flartoolkit.core.raster.rgb
          */
         public function overload_FLARRgbRaster_BitmapData_2ii(i_width:int,i_height:int):void
         {
-			super.overload_NyARRgbRaster_2ii(i_width,i_height);
+			super.overload_NyARRgbRaster_4iiib(i_width,i_height,NyARBufferType.OBJECT_AS3_BitmapData,true);
         }
         /// <summary>
         /// i_srcからインスタンスにビットマップをコピーします。

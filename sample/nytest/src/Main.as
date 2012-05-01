@@ -203,7 +203,7 @@ package
 			var cf:NyARMarkerSystemConfig = new NyARMarkerSystemConfig(320, 240);
 			var ms:NyARMarkerSystem = new NyARMarkerSystem(cf);
 			
-			var id:int = ms.addARMarker_2(this.code, 25, 80);
+			var id:int = ms.addARMarker(this.code, 25, 80);
 			ss.update(this.raster_bgra);
 			ms.update(ss);
 			var mat:NyARDoubleMatrix44=ms.getMarkerMatrix(id);
@@ -255,7 +255,7 @@ package
 				testNyARReality();
 			}
 			{
-				msg("<NyARSingleDetectMarker>");
+				msg("<testNyMarkerSystem>");
 				testNyMarkerSystem();
 			}
 			msg("#finish!");

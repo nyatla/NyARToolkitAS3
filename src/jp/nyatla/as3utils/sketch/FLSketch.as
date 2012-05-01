@@ -35,7 +35,7 @@ package jp.nyatla.as3utils.sketch
 		 * @param	i_url
 		 * @param	i_fmt
 		 */
-		public function setupFile(i_url:String,i_fmt:String):int
+		public function setSketchFile(i_url:String,i_fmt:String):int
 		{
 			return this._loader.addTarget(i_url, i_fmt);
 		}
@@ -53,7 +53,7 @@ package jp.nyatla.as3utils.sketch
 		 * @param	i_id
 		 * @return
 		 */
-		public function getFile(i_id:int):*
+		public function getSketchFile(i_id:int):*
 		{
 			return this._loader.getData(i_id);
 		}
@@ -98,7 +98,7 @@ class FilesLoader extends EventDispatcher
 		item._parent=this;
 		item._target = i_fname;
 		item._is_complete = false;
-		return this._items.push(item);
+		return this._items.push(item)-1;
 	}
 	/**
 	 * 実体化したデータを返す。
