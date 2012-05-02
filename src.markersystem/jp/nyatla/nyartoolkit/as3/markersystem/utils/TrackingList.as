@@ -125,7 +125,7 @@ package jp.nyatla.nyartoolkit.as3.markersystem.utils
 		/**
 		 * トラッキングリストへ追加。このadd以外使わないでね。
 		 */
-		public function add_2(e:TMarkerData):Boolean
+		public override function add(e:Object):Boolean
 		{
 			//1マーカ辺りの最大候補数
 			for(var i:int=0;i<2;i++){
