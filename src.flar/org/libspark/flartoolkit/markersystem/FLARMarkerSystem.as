@@ -12,6 +12,8 @@ package org.libspark.flartoolkit.markersystem
 	import jp.nyatla.nyartoolkit.as3.core.types.matrix.*;
 	import jp.nyatla.nyartoolkit.as3.markersystem.utils.*;
 	import jp.nyatla.nyartoolkit.as3.markersystem.*;
+	import flash.display.*;
+	import org.libspark.flartoolkit.core.raster.rgb.*;
 
 
 
@@ -42,6 +44,96 @@ package org.libspark.flartoolkit.markersystem
 		{
 			this._sqdetect=new FLDetector(i_ref_config);
 			this._hist_th=i_ref_config.createAutoThresholdArgorism();
+		}
+		/**
+		 * BitmapDataを元にARマーカを登録します。
+		 * BitmapDataの画像サイズは問いません。画像のうち、外周をi_patt_edge_percentageをエッジとして取り除いたものから、i_resolution^2のマーカを作ります。
+		 * @param	i_img
+		 * 基にするマーカ画像
+		 * @param	i_patt_resolution
+		 * 評価パターンの解像度(ex.16)
+		 * @param	i_patt_edge_percentage
+		 * 外周エッジの割合(ex.20%=20)
+		 * @param	i_marker_size
+		 * 物理的なマーカサイズ[mm]
+		 * @return
+		 */
+		public function addARMarker_4(i_img:BitmapData, i_patt_resolution:int, i_patt_edge_percentage:int, i_marker_size:Number):int
+		{
+			var w:int=i_img.width;
+			var h:int=i_img.height;
+			var bmr:FLARRgbRaster=new FLARRgbRaster(i_img);
+			var c:NyARCode=new NyARCode(i_patt_resolution,i_patt_resolution);
+			//ラスタからマーカパターンを切り出す。
+			var pc:INyARPerspectiveCopy=INyARPerspectiveCopy(bmr.createInterface(INyARPerspectiveCopy));
+			var tr:INyARRgbRaster=new NyARRgbRaster(i_patt_resolution,i_patt_resolution);
+			pc.copyPatt_3(0,0,w,0,w,h,0,h,i_patt_edge_percentage, i_patt_edge_percentage,4, tr);
+			//切り出したパターンをセット
+			c.setRaster_2(tr);
+			return super.addARMarker(c,i_patt_edge_percentage,i_marker_size);
+		}
+		/**
+		 * マーカ平面の任意四角領域から画像を剥がして返します。
+		 * @param	i_id
+		 * @param	i_sensor
+		 * @param	i_x1
+		 * @param	i_y1
+		 * @param	i_x2
+		 * @param	i_y2
+		 * @param	i_x3
+		 * @param	i_y3
+		 * @param	i_x4
+		 * @param	i_y4
+		 * @param	i_img
+		 */
+		public function getMarkerPlaneImage_3(
+			i_id:int,
+			i_sensor:NyARSensor,
+			i_x1:Number,i_y1:Number,
+			i_x2:Number,i_y2:Number,
+			i_x3:Number,i_y3:Number,
+			i_x4:Number,i_y4:Number,
+			i_img:BitmapData):void
+			{
+				var bmr:FLARRgbRaster=new FLARRgbRaster(i_img);
+				super.getMarkerPlaneImage(i_id, i_sensor, i_x1, i_y1, i_x2, i_y2, i_x3, i_y3, i_x4, i_y4,bmr);
+				return;
+			}
+		/**
+		 * マーカ平面の任意矩形領域から画像を剥がして返します。
+		 * この関数は、{@link #getMarkerPlaneImage(int, NyARSensor, int, int, int, int, INyARRgbRaster)}
+		 * のラッパーです。取得画像を{@link #BufferedImage}形式で返します。
+		 * @param i_id
+		 * マーカid
+		 * @param i_sensor
+		 * 画像を取得するセンサオブジェクト。通常は{@link #update(NyARSensor)}関数に入力したものと同じものを指定します。
+		 * @param i_l
+		 * @param i_t
+		 * @param i_w
+		 * @param i_h
+		 * @param i_raster
+		 * 出力先のオブジェクト
+		 * @throws NyARException
+		 */
+		public function getMarkerPlaneImage_4(
+			i_id:int,
+			i_sensor:NyARSensor ,
+			i_l:Number,i_t:Number,
+			i_w:Number,i_h:Number,
+			i_img:BitmapData):void
+		{
+			var bmr:FLARRgbRaster=new FLARRgbRaster(i_img);
+			super.getMarkerPlaneImage_2(i_id, i_sensor, i_l, i_t, i_w, i_h, bmr);
+			this.getMarkerPlaneImage(i_id,i_sensor,i_l+i_w-1,i_t+i_h-1,i_l,i_t+i_h-1,i_l,i_t,i_l+i_w-1,i_t,bmr);
+			return;
+		}
+		public override function getMarkerPlanePos(i_id:int, i_x:int, i_y:int, i_out:NyARDoublePoint3d):NyARDoublePoint3d
+		{
+			var p:NyARDoublePoint3d = super.getMarkerPlanePos(i_id, i_x, i_y, i_out);
+			var px:Number = p.x;
+			p.x = p.y;
+			p.y = px;
+			return p;
 		}
 	}
 }
