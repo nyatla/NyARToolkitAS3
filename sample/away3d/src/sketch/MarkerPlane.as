@@ -1,5 +1,7 @@
 package sketch 
 {
+	import away3d.core.math.MatrixAway3D;
+	import flash.accessibility.Accessibility;
 	import flash.media.*;
 	import flash.geom.*;
 	import flash.net.*;
@@ -13,43 +15,46 @@ package sketch
 	import org.libspark.flartoolkit.core.*;
 	import org.libspark.flartoolkit.core.types.*;
 	import org.libspark.flartoolkit.markersystem.*;
-	import org.libspark.flartoolkit.pv3d.*;
-	import org.papervision3d.render.*;
-	import org.papervision3d.view.*;
-	import org.papervision3d.objects.*;
-	import org.papervision3d.lights.*;
-	import org.papervision3d.materials.*;
-	import org.papervision3d.materials.shadematerials.*;
-	import org.papervision3d.objects.primitives.*;
-	import org.papervision3d.materials.utils.*;
-	import org.papervision3d.scenes.*;
+	import org.libspark.flartoolkit.away3d.*;
+	import away3d.containers.ObjectContainer3D;
+	import away3d.containers.Scene3D;
+	import away3d.containers.View3D;
+	import away3d.materials.WireframeMaterial;
+	import away3d.primitives.Cube;
+	import away3d.primitives.Plane;
 	/**
 	 * MarkerSystemを使ったSimpleLiteの実装です。
 	 * このサンプルは、FLSketchを使用したプログラムです。
-	 * PV3Dの初期化、Flashオブジェクトの配置などを省略せずに実装しています。
+	 * Away3Dの初期化、Flashオブジェクトの配置などを省略せずに実装しています。
 	 */
-	public class SimpleLite extends FLSketch
+	public class MarkerPlane extends FLSketch
 	{
 		private static const _CAM_W:int = 320;
 		private static const _CAM_H:int = 240;
 		private var _ss:FLARSensor;
-		private var _ms:FLARPV3DMarkerSystem;
+		private var _ms:FLARAway3DMarkerSystem;
 		public var bitmap:Bitmap = new Bitmap(new BitmapData(_CAM_W,_CAM_H));
 
 		private var _video:Video;
-		private var _render:LazyRenderEngine;
+		private var _view3d:View3D;
 		
 		private var marker_id:int;
-		private var marker_node:DisplayObject3D;
+		private var marker_node:ObjectContainer3D;
 		
-		public function SimpleLite()
+		public function MarkerPlane()
 		{
+			//setup Away3d
+			this._view3d = new View3D();
 			//setup UI
-			this.bitmap.x = 0;
-			this.bitmap.y = 0;
-			this.bitmap.width = _CAM_W;
-			this.bitmap.height = _CAM_H;
-            this.addChild(bitmap);
+			//640x480 is Magic number. I do not know why those number becomes so. Does anyone know reason?
+			//何故640x480で正しいサイズ計算が出来るか、その理由は判りませんでした。誰か知ってる？
+			this._view3d.x = 640 / 2;
+			this._view3d.y = 480 / 2;
+			this.bitmap.x = -640 / 2;
+			this.bitmap.y = -480 / 2;
+			this.bitmap.width = 640;
+			this.bitmap.height = 480;
+            this._view3d.background.addChild(bitmap);
 		}
 		private var _fid:Vector.<int>=new Vector.<int>(3);
 		public override function setup():void
@@ -72,27 +77,19 @@ package sketch
 			//FLMarkerSystem
 			var cf:FLARMarkerSystemConfig = new FLARMarkerSystemConfig(this.getSketchFile(this._fid[0]),_CAM_W, _CAM_H);//make configlation
 			this._ss = new FLARSensor(new NyARIntSize(_CAM_W, _CAM_H));
-			this._ms = new FLARPV3DMarkerSystem(cf);
+			this._ms = new FLARAway3DMarkerSystem(cf);
 			this.marker_id = this._ms.addARMarker_2(this.getSketchFile(this._fid[1]), 16, 25, 80); //register AR Marker
-			
-			//setup PV3d
-			var light:PointLight3D = new PointLight3D();
-			light.x = 0;
-			light.y = 1000;
-			light.z = -1000;			
-			var viewport3d:Viewport3D = new Viewport3D(_CAM_W,_CAM_H);
-			viewport3d.scaleX = 1;
-			viewport3d.scaleY = 1;
-			viewport3d.x = -4; // 4pix ???
-			this.addChild(viewport3d);
+			//setup Away3d
+			// PV3DのViewport3Dと似たようなもの
+			this._view3d.scene=new Scene3D();
+			this._view3d.camera = this._ms.getAway3DCamera();			
+
+			// 微調整
+			this.addChild(this._view3d);
 			//3d object
-			this.marker_node = PV3DHelper.createFLARCube(light,80,0xff22aa, 0x75104e);
-			this.marker_node.visible = false;
-			//scene
-			var s:Scene3D = new Scene3D();
-			s.addChild(this.marker_node);
-			this._render=new LazyRenderEngine(s,this._ms.getPV3DCamera(),viewport3d);
-			
+			this.marker_node = Away3DHelper.createFLARCube(80);
+			this.marker_node.visible = true;
+			this._view3d.scene.addChild(this.marker_node);
 			//start camera
 			this.addEventListener(Event.ENTER_FRAME, _onEnterFrame);
 		}
@@ -104,14 +101,25 @@ package sketch
 		{
 			this._ss.update_2(this._video);//update sensor status
 			this._ms.update(this._ss);//update markersystem status
-			if (this._ms.isExistMarker(marker_id)){
+			if (this._ms.isExistMarker(marker_id)) {
+				var p:NyARDoublePoint3d = new NyARDoublePoint3d();
+				this._ms.getMarkerPlanePos(this.marker_id,this.bitmap.mouseX,this.bitmap.mouseY,p);
+
+				var m:MatrixAway3D = new MatrixAway3D();
+				m.clear();
+				m.tx = p.x;
+				m.ty = p.y;
+				m.tz = p.z;
+				var m2:MatrixAway3D = new MatrixAway3D();
+				this._ms.getAway3dMarkerMatrix(this.marker_id,m2);
+				m.multiply4x4(m2, m);
+				this.marker_node.transform = m;
 				this.marker_node.visible = true;
-				this._ms.getPv3dMarkerMatrix(this.marker_id, this.marker_node.transform);
 			}else {
 				this.marker_node.visible = false;
 			}
 			this.bitmap.bitmapData.draw(this._video);
-			this._render.render();
+			this._view3d.render();
 		}
 	}
 }

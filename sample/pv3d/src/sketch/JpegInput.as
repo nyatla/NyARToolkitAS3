@@ -25,10 +25,11 @@ package sketch
 	import org.papervision3d.scenes.*;
 	/**
 	 * MarkerSystemを使ったSimpleLiteの実装です。
+	 * Webcamの画像の変わりに、既にあるJpeg画像を使います。
 	 * このサンプルは、FLSketchを使用したプログラムです。
 	 * PV3Dの初期化、Flashオブジェクトの配置などを省略せずに実装しています。
 	 */
-	public class SimpleLite extends FLSketch
+	public class JpegInput extends FLSketch
 	{
 		private static const _CAM_W:int = 320;
 		private static const _CAM_H:int = 240;
@@ -42,7 +43,7 @@ package sketch
 		private var marker_id:int;
 		private var marker_node:DisplayObject3D;
 		
-		public function SimpleLite()
+		public function JpegInput()
 		{
 			//setup UI
 			this.bitmap.x = 0;
@@ -56,19 +57,16 @@ package sketch
 		{
 			//setup content files...
 			this._fid[0]=this.setSketchFile("../../../data/camera_para.dat", URLLoaderDataFormat.BINARY);//0
-			this._fid[1]=this.setSketchFile("../../../data/patt.hiro", URLLoaderDataFormat.TEXT);//1
+			this._fid[1] = this.setSketchFile("../../../data/patt.hiro", URLLoaderDataFormat.TEXT);//1
+			this._fid[2] = this.setSketchFile("../../../data/320x240ABGR.jpg","AS_OBJECT");//2
 		}
+		private var _patt:Bitmap;
 
 		public override function main():void
 		{
-			//webcam
-			var webcam:Camera = Camera.getCamera();
-			if (!webcam) {
-				throw new Error('No webcam!!!!');
-			}
-			webcam.setMode(_CAM_W, _CAM_H, 30);
-			this._video = new Video(_CAM_W, _CAM_H);
-			this._video.attachCamera(webcam);			
+			//image
+			var ld:Loader = new Loader();
+			this._patt = this.getSketchFile(this._fid[2]);
 			//FLMarkerSystem
 			var cf:FLARMarkerSystemConfig = new FLARMarkerSystemConfig(this.getSketchFile(this._fid[0]),_CAM_W, _CAM_H);//make configlation
 			this._ss = new FLARSensor(new NyARIntSize(_CAM_W, _CAM_H));
@@ -93,16 +91,16 @@ package sketch
 			s.addChild(this.marker_node);
 			this._render=new LazyRenderEngine(s,this._ms.getPV3DCamera(),viewport3d);
 			
-			//start camera
-			this.addEventListener(Event.ENTER_FRAME, _onEnterFrame);
+			update();// 1 st not effective...??
+			update();
 		}
 		/**
 		 * MainLoop
 		 * @param	e
 		 */
-		private function _onEnterFrame(e:Event = null):void
+		private function update():void
 		{
-			this._ss.update_2(this._video);//update sensor status
+			this._ss.update_2(this._patt);//update sensor status
 			this._ms.update(this._ss);//update markersystem status
 			if (this._ms.isExistMarker(marker_id)){
 				this.marker_node.visible = true;
@@ -110,7 +108,7 @@ package sketch
 			}else {
 				this.marker_node.visible = false;
 			}
-			this.bitmap.bitmapData.draw(this._video);
+			this.bitmap.bitmapData.draw(this._patt);
 			this._render.render();
 		}
 	}

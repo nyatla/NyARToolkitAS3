@@ -4,7 +4,7 @@
   <output>
     <movie outputType="Application" />
     <movie input="" />
-    <movie path="bin\PV3dSample.swf" />
+    <movie path="bin\Away3d.swf" />
     <movie fps="30" />
     <movie width="800" />
     <movie height="600" />
@@ -19,7 +19,7 @@
     <class path="..\..\src" />
     <class path="..\..\src.flar" />
     <class path="..\..\src.markersystem" />
-    <class path="..\..\support\pv3d" />
+    <class path="..\..\support\away3d" />
   </classpaths>
   <!-- Build options -->
   <build>
@@ -37,7 +37,7 @@
     <option showDeprecationWarnings="True" />
     <option showUnusedTypeSelectorWarnings="True" />
     <option strict="True" />
-    <option useNetwork="True" />
+    <option useNetwork="False" />
     <option useResourceBundleMetadata="True" />
     <option warnings="True" />
     <option verboseStackTraces="False" />
@@ -54,7 +54,7 @@
   </includeLibraries>
   <!-- SWC Libraries -->
   <libraryPaths>
-    <element path="..\..\extlib\paperVision\Papervision3D_2.1.932.swc" />
+    <element path="..\..\extlib\away3d\away3d_3.4.0.swc" />
   </libraryPaths>
   <!-- External Libraries -->
   <externalLibraryPaths>

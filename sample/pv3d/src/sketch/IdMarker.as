@@ -22,13 +22,17 @@ package sketch
 	import org.papervision3d.materials.shadematerials.*;
 	import org.papervision3d.objects.primitives.*;
 	import org.papervision3d.materials.utils.*;
-	import org.papervision3d.scenes.*;
+	import org.papervision3d.scenes.*;	
+	import org.papervision3d.typography.*;
+	import org.papervision3d.typography.*;
+	import org.papervision3d.typography.fonts.*;	
 	/**
-	 * MarkerSystemを使ったSimpleLiteの実装です。
+	 * MarkerSystemを使ったIdマーカ認識の実装です。
+	 * 0番のマーカを1つ認識します。SimpleLiteとの差異は、マーカの登録部分と、表示部分です。
 	 * このサンプルは、FLSketchを使用したプログラムです。
 	 * PV3Dの初期化、Flashオブジェクトの配置などを省略せずに実装しています。
 	 */
-	public class SimpleLite extends FLSketch
+	public class IdMarker extends FLSketch
 	{
 		private static const _CAM_W:int = 320;
 		private static const _CAM_H:int = 240;
@@ -42,7 +46,7 @@ package sketch
 		private var marker_id:int;
 		private var marker_node:DisplayObject3D;
 		
-		public function SimpleLite()
+		public function IdMarker()
 		{
 			//setup UI
 			this.bitmap.x = 0;
@@ -56,7 +60,6 @@ package sketch
 		{
 			//setup content files...
 			this._fid[0]=this.setSketchFile("../../../data/camera_para.dat", URLLoaderDataFormat.BINARY);//0
-			this._fid[1]=this.setSketchFile("../../../data/patt.hiro", URLLoaderDataFormat.TEXT);//1
 		}
 
 		public override function main():void
@@ -70,10 +73,10 @@ package sketch
 			this._video = new Video(_CAM_W, _CAM_H);
 			this._video.attachCamera(webcam);			
 			//FLMarkerSystem
-			var cf:FLARMarkerSystemConfig = new FLARMarkerSystemConfig(this.getSketchFile(this._fid[0]),_CAM_W, _CAM_H);//make configlation
+			var cf:FLARMarkerSystemConfig = new FLARMarkerSystemConfig(_CAM_W, _CAM_H);//make configlation
 			this._ss = new FLARSensor(new NyARIntSize(_CAM_W, _CAM_H));
 			this._ms = new FLARPV3DMarkerSystem(cf);
-			this.marker_id = this._ms.addARMarker_2(this.getSketchFile(this._fid[1]), 16, 25, 80); //register AR Marker
+			this.marker_id = this._ms.addNyIdMarker(0,80); //register AR Marker
 			
 			//setup PV3d
 			var light:PointLight3D = new PointLight3D();
@@ -86,7 +89,7 @@ package sketch
 			viewport3d.x = -4; // 4pix ???
 			this.addChild(viewport3d);
 			//3d object
-			this.marker_node = PV3DHelper.createFLARCube(light,80,0xff22aa, 0x75104e);
+			this.marker_node = PV3DHelper.createFLText("0", 80, 0.5, 0xff0000);
 			this.marker_node.visible = false;
 			//scene
 			var s:Scene3D = new Scene3D();

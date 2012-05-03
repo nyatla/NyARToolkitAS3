@@ -1,34 +1,30 @@
-package org.libspark.flartoolkit.pv3d 
+package org.libspark.flartoolkit.away3d 
 {
 	import flash.display.BitmapData;
-	import org.papervision3d.core.math.Matrix3D;
 	import flash.media.Camera;
+	import flash.geom.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.matrix.*;
 	import jp.nyatla.nyartoolkit.as3.markersystem.*;
 	import jp.nyatla.nyartoolkit.as3.core.*;
-	import jp.nyatla.nyartoolkit.as3.core.raster.*;
-	import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
+	import jp.nyatla.nyartoolkit.as3.core.types.*;
 	import org.libspark.flartoolkit.core.raster.rgb.*;
 	import org.libspark.flartoolkit.markersystem.*;
 	import jp.nyatla.nyartoolkit.as3.core.rasterdriver.*;
-	import org.papervision3d.core.math.Number2D;
-	import org.papervision3d.view.Viewport3D;
-	import org.papervision3d.cameras.*;	
+	import away3d.cameras.*;
+	import away3d.cameras.lenses.*;
+	import away3d.core.math.*;
 	/**
 	 * ...
 	 * @author nyatla
 	 */
-	public class FLARPV3DMarkerSystem extends FLARMarkerSystem
+	public class FLARAway3DMarkerSystem extends FLARMarkerSystem
 	{
-		public static const AXIS_MODE_ORIGINAL:int = 0;
-		public static const AXIS_MODE_PV3D:int = 2;
 		private var _camera:FLARCamera3D;
 		private var _axix_mode:int;
 		
-		public function FLARPV3DMarkerSystem(i_config:INyARMarkerSystemConfig,i_axis_mode:int=AXIS_MODE_ORIGINAL)
+		public function FLARAway3DMarkerSystem(i_config:INyARMarkerSystemConfig)
 		{
 			super(i_config);
-			this._axix_mode = i_axis_mode;
 		}
 		protected override function initInstance(i_config:INyARMarkerSystemConfig):void
 		{
@@ -41,7 +37,7 @@ package org.libspark.flartoolkit.pv3d
 		 * AR映像向けにセットしたPaperVision3Dカメラを返します。
 		 * @return
 		 */
-		public function getPV3DCamera():Camera3D
+		public function getAway3DCamera():Camera3D
 		{
 			return this._camera;
 		}
@@ -56,28 +52,19 @@ package org.libspark.flartoolkit.pv3d
 		 * @param	i_id
 		 * @param	i_3d_object
 		 */
-		public function getPv3dMarkerMatrix(i_id:int,i_mat3d:org.papervision3d.core.math.Matrix3D):void
+		public function getAway3dMarkerMatrix(i_id:int,i_mat3d:MatrixAway3D):void
 		{
 			var r:NyARDoubleMatrix44 = this.getMarkerMatrix(i_id);
-			switch(this._axix_mode) {
-			case AXIS_MODE_PV3D:
-				i_mat3d.n11 =  r.m00;  i_mat3d.n12 =  r.m01;  i_mat3d.n13 = -r.m02;  i_mat3d.n14 =  r.m03;
-				i_mat3d.n21 = -r.m10;  i_mat3d.n22 = -r.m11;  i_mat3d.n23 =  r.m12;  i_mat3d.n24 = -r.m13;
-				i_mat3d.n31 =  r.m20;  i_mat3d.n32 =  r.m21;  i_mat3d.n33 = -r.m22;  i_mat3d.n34 =  r.m23;
-				break;
-			case AXIS_MODE_ORIGINAL:
-				i_mat3d.n11 =  r.m01;  i_mat3d.n12 =  r.m00;  i_mat3d.n13 =  r.m02;  i_mat3d.n14 =  r.m03;
-				i_mat3d.n21 = -r.m11;  i_mat3d.n22 = -r.m10;  i_mat3d.n23 = -r.m12;  i_mat3d.n24 = -r.m13;
-				i_mat3d.n31 =  r.m21;  i_mat3d.n32 =  r.m20;  i_mat3d.n33 =  r.m22;  i_mat3d.n34 =  r.m23;
-				break;
-			}
+			i_mat3d.sxx =  r.m00; i_mat3d.sxy =  r.m02; i_mat3d.sxz =  r.m01; i_mat3d.tx =  r.m03;
+			i_mat3d.syx = -r.m10; i_mat3d.syy = -r.m12; i_mat3d.syz = -r.m11; i_mat3d.ty = -r.m13;
+			i_mat3d.szx =  r.m20; i_mat3d.szy =  r.m22; i_mat3d.szz =  r.m21; i_mat3d.tz =  r.m23;
 		}
 		public override function getMarkerPlanePos(i_id:int, i_x:int, i_y:int, i_out:NyARDoublePoint3d):NyARDoublePoint3d
 		{
 			var p:NyARDoublePoint3d = super.getMarkerPlanePos(i_id, i_x, i_y, i_out);
-			var px:Number = p.x;
-			p.x = p.y;
-			p.y = px;
+			var pz:Number = p.z;
+			p.z = p.y;
+			p.y = pz;
 			return p;
 		}		
 	}

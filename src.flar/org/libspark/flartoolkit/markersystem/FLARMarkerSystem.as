@@ -127,14 +127,6 @@ package org.libspark.flartoolkit.markersystem
 			this.getMarkerPlaneImage(i_id,i_sensor,i_l+i_w-1,i_t+i_h-1,i_l,i_t+i_h-1,i_l,i_t,i_l+i_w-1,i_t,bmr);
 			return;
 		}
-		public override function getMarkerPlanePos(i_id:int, i_x:int, i_y:int, i_out:NyARDoublePoint3d):NyARDoublePoint3d
-		{
-			var p:NyARDoublePoint3d = super.getMarkerPlanePos(i_id, i_x, i_y, i_out);
-			var px:Number = p.x;
-			p.x = p.y;
-			p.y = px;
-			return p;
-		}
 	}
 }
 
