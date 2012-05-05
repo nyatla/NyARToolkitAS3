@@ -80,7 +80,7 @@ class ARLens extends LensBase
 		if (this._ref_param == i_param) {
 			return;
 		}
-		this._near = i_near;
+		this._near =i_near;
 		this._far = i_far;
 		this._ref_param = i_param;
 		invalidateMatrix();
@@ -92,11 +92,11 @@ class ARLens extends LensBase
 	{
 		var raw : Vector.<Number> = Matrix3DUtils.RAW_DATA_CONTAINER;
 		var s:NyARIntSize =this._ref_param.getScreenSize();
-		var fm:NyARFrustum = new NyARFrustum(this._ref_param.getPerspectiveProjectionMatrix(), s.w, s.h, near, far);
+		var fm:NyARFrustum = new NyARFrustum(this._ref_param.getPerspectiveProjectionMatrix(), s.w, s.h,near, far);
 		var f:NyARDoubleMatrix44 = fm.getMatrix();
 		this._matrix.copyRawDataFrom(Vector.<Number>([
-			f.m00,f.m10, f.m20, f.m30,
-			f.m01,f.m11, f.m21, f.m31,
+			f.m00,f.m10,f.m20, f.m30,
+			f.m01,f.m11,f.m21, f.m31,
 			f.m02,f.m12,-f.m22,-f.m32,
 			f.m03,f.m13,f.m23, f.m33,
 			]), 0);
@@ -125,56 +125,4 @@ class ARLens extends LensBase
 		_matrixInvalid = false;
 		invalidateMatrix();
 	}
-
-	
-/*	 
-	override protected function updateMatrix() : void
-	{
-		var raw : Vector.<Number> = Matrix3DUtils.RAW_DATA_CONTAINER;
-		var _yMax:Number = _near*_focalLengthInv;
-		var _xMax:Number = _yMax*_aspectRatio;
-
-		// assume symmetric frustum
-		raw[uint(0)] = _near/_xMax;
-		raw[uint(5)] = _near/_yMax;
-		raw[uint(10)] = (_near+_far)/(_far-_near);
-		raw[uint(11)] = 1;
-		raw[uint(1)] = raw[uint(2)] = raw[uint(3)] = raw[uint(4)] =
-		raw[uint(6)] = raw[uint(7)] = raw[uint(8)] = raw[uint(9)] =
-		raw[uint(12)] = raw[uint(13)] = raw[uint(15)] = 0;
-		raw[uint(14)] = -_near*raw[uint(10)];
-
-		_matrix.copyRawDataFrom(raw);
-
-		var yMaxFar : Number = _far*_focalLengthInv;
-		var xMaxFar : Number = yMaxFar*_aspectRatio;
-
-		_frustumCorners[0] = _frustumCorners[9] = -_xMax;
-		_frustumCorners[3] = _frustumCorners[6] = _xMax;
-		_frustumCorners[1] = _frustumCorners[4] = -_yMax;
-		_frustumCorners[7] = _frustumCorners[10] = _yMax;
-
-		_frustumCorners[12] = _frustumCorners[21] = -xMaxFar;
-		_frustumCorners[15] = _frustumCorners[18] = xMaxFar;
-		_frustumCorners[13] = _frustumCorners[16] = -yMaxFar;
-		_frustumCorners[19] = _frustumCorners[22] = yMaxFar;
-
-		_frustumCorners[2] = _frustumCorners[5] = _frustumCorners[8] = _frustumCorners[11] = _near;
-		_frustumCorners[14] = _frustumCorners[17] = _frustumCorners[20] = _frustumCorners[23] = _far;
-
-		_matrixInvalid = false;
-	}
-	public function setParam(param:NyARParam,i_near:Number=10,i_far:Number=10000):void
-	{
-		var s:NyARIntSize = param.getScreenSize();
-		var f:NyARFrustum = new NyARFrustum(param.getPerspectiveProjectionMatrix(), s.w,s.h, i_near, i_far);
-		var ap:NyARFrustum_PerspectiveParam = f.getPerspectiveParam(new NyARFrustum_PerspectiveParam());
-		this.fieldOfView = ap.fovy*180/Math.PI;
-		this._aspectRatio = ap.aspect;
-		this.near = ap.near;
-		this._far = ap.far;
-		this.updateMatrix();
-		invalidateMatrix();
-	}*/
-
 }
