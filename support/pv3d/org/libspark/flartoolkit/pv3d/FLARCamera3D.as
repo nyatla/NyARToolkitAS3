@@ -53,7 +53,8 @@ package org.libspark.flartoolkit.pv3d {
 			}
 		}
 		
-		public function setParam (param:NyARParam) :void {	
+		public function setParam (param:NyARParam , i_near:Number = 10, i_far:Number = 10000) :void
+		{	
 			var m_projection:Array = new Array(16);
 			var trans_mat:NyARMat = new NyARMat(3,4);
 			var icpara_mat:NyARMat = new NyARMat(3,4);
@@ -90,8 +91,8 @@ package org.libspark.flartoolkit.pv3d {
 			
 			q[2][0] = 0.0;
 			q[2][1] = 0.0;
-			q[2][2] = -(FAR_CLIP + NEAR_CLIP) / (NEAR_CLIP - FAR_CLIP);
-			q[2][3] = 2.0 * FAR_CLIP * NEAR_CLIP / (NEAR_CLIP - FAR_CLIP);
+			q[2][2] = -(i_far + i_near) / (i_near - i_far);
+			q[2][3] = 2.0 * i_far * i_near / (i_near - i_far);
 			
 			q[3][0] = 0.0;
 			q[3][1] = 0.0;
