@@ -46,7 +46,6 @@ package org.libspark.flartoolkit.processor
 	import org.libspark.flartoolkit.*;
 	import org.libspark.flartoolkit.core.param.*;
 	import org.libspark.flartoolkit.core.raster.rgb.*;
-	import org.libspark.flartoolkit.core.transmat.*;
 	import jp.nyatla.nyartoolkit.as3.core.analyzer.histogram.*;	
 	import jp.nyatla.nyartoolkit.as3.core.rasterdriver.*;
 	import jp.nyatla.nyartoolkit.as3.core.rasterfilter.rgb2gs.*;
@@ -191,14 +190,14 @@ package org.libspark.flartoolkit.processor
 			this._detectmarker.cf_threshold_exist=i_exist_cf;
 			this._detectmarker.cf_threshold_new=i_new_cf;
 		}
-		private var __NyARSquare_result:FLARTransMatResult = new FLARTransMatResult();
+		private var __NyARSquare_result:NyARTransMatResult = new NyARTransMatResult();
 
 		/**	オブジェクトのステータスを更新し、必要に応じてハンドル関数を駆動します。
 		 * 	戻り値は、「実際にマーカを発見する事ができたか」です。クラスの状態とは異なります。
 		 */
 		private function updateStatus(i_square:FLARSquare,i_code_index:int):Boolean
 		{
-			var result:FLARTransMatResult = this.__NyARSquare_result;
+			var result:NyARTransMatResult = this.__NyARSquare_result;
 			if (this._current_arcode_index < 0) {// 未認識中
 				if (i_code_index < 0) {// 未認識から未認識の遷移
 					// なにもしないよーん。
@@ -248,7 +247,7 @@ package org.libspark.flartoolkit.processor
 			throw new NyARException("onLeaveHandler not implemented.");
 		}
 
-		protected function onUpdateHandler(i_square:FLARSquare, result:FLARTransMatResult):void
+		protected function onUpdateHandler(i_square:FLARSquare, result:NyARTransMatResult):void
 		{
 			throw new NyARException("onUpdateHandler not implemented.");
 		}

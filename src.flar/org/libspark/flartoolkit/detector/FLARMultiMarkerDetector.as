@@ -44,7 +44,6 @@ package org.libspark.flartoolkit.detector
 	import org.libspark.flartoolkit.*;
 	import org.libspark.flartoolkit.core.param.*;
 	import org.libspark.flartoolkit.core.raster.rgb.*;
-	import org.libspark.flartoolkit.core.transmat.*;
 
 
 	public class FLARMultiMarkerDetector
@@ -145,7 +144,7 @@ package org.libspark.flartoolkit.detector
 		 * 結果値を受け取るオブジェクトを指定してください。
 		 * @throws NyARException
 		 */
-		public function getTransformMatrix(i_index:int,o_result:FLARTransMatResult):void
+		public function getTransformMatrix(i_index:int,o_result:NyARTransMatResult):void
 		{
 			var result:NyARDetectMarkerResult = NyARDetectMarkerResult(this._square_detect.result_stack.getItem(i_index));
 			// 一番一致したマーカーの位置とかその辺を計算
@@ -216,7 +215,6 @@ import org.libspark.flartoolkit.core.*;
 import org.libspark.flartoolkit.*;
 import org.libspark.flartoolkit.core.param.*;
 import org.libspark.flartoolkit.core.raster.rgb.*;
-import org.libspark.flartoolkit.core.transmat.*;
 
 
 class NyARDetectMarkerResult

@@ -4,8 +4,9 @@ package jp.nyatla.nyartoolkit.as3.rpf.mklib
 
 	import jp.nyatla.nyartoolkit.as3.core.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
-	import jp.nyatla.nyartoolkit.as3.core.rasterreader.*;	
 	import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
+	import jp.nyatla.nyartoolkit.as3.core.rasterfilter.rgb2gs.*;
+	import jp.nyatla.nyartoolkit.as3.core.rasterdriver.*;	
 	import jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk.*;
 	import jp.nyatla.nyartoolkit.as3.rpf.realitysource.nyartk.*;
 	/**
@@ -152,7 +153,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.mklib
 			//パターン抽出
 			var tmp_patt_result:NyARMatchPattResult=this.__tmp_patt_result;
 			var r:INyARPerspectiveCopy=i_rtsorce.refPerspectiveRasterReader();
-			r.copyPatt(i_target.refTargetVertex(),this._edge_x,this._edge_y,this._sample_per_pix,this._tmp_raster);
+			r.copyPatt_2(i_target.refTargetVertex(),this._edge_x,this._edge_y,this._sample_per_pix,this._tmp_raster);
 			//比較パターン生成
 			this._deviation_data.setRaster(this._tmp_raster);
 			var ret:int=-1;

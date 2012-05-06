@@ -31,7 +31,6 @@
 package org.libspark.flartoolkit.support.pv3d {
 	
 	import org.libspark.flartoolkit.core.param.FLARParam;
-	import org.libspark.flartoolkit.core.types.FLARIntSize;
 	import org.libspark.flartoolkit.utils.ArrayUtil;
 	import org.papervision3d.cameras.*;
 	import org.papervision3d.core.math.*;

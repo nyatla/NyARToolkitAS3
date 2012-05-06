@@ -3,6 +3,8 @@ package jp.nyatla.nyartoolkit.as3.rpf.mklib
 	import jp.nyatla.nyartoolkit.as3.nyidmarker.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
 	import jp.nyatla.nyartoolkit.as3.core.raster.*;
+	import jp.nyatla.nyartoolkit.as3.core.pixeldriver.*;
+	import jp.nyatla.nyartoolkit.as3.core.rasterfilter.*;
 	import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
 	import jp.nyatla.nyartoolkit.as3.nyidmarker.data.*;
 	import jp.nyatla.nyartoolkit.as3.rpf.realitysource.nyartk.*;
@@ -112,7 +114,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.mklib
 		public function identifyId(i_vertex:Vector.<NyARDoublePoint2d>,i_raster:INyARRgbRaster,o_result:RawbitSerialIdTable_IdentifyIdResult):Boolean
 		{
 			if(this._last_laster!=i_raster){
-				this._gs_pix_reader=NyARGsPixelDriverFactory.createDriver(i_raster);
+				this._gs_pix_reader=NyARGsPixelDriverFactory.createDriver_2(i_raster);
 				this._last_laster=i_raster;
 			}
 			if(!this._id_pickup.pickFromRaster(this._gs_pix_reader,i_vertex,this._temp_nyid_info,this._temp_nyid_param))

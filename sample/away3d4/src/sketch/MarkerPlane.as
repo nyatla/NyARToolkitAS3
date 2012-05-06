@@ -42,7 +42,7 @@ package sketch
 		private var marker_node:ObjectContainer3D;
 		private var light:LightNode;
 		
-		public function SimpleLite()
+		public function MarkerPlane()
 		{
 
 		}

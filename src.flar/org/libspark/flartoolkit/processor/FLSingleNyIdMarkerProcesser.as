@@ -43,7 +43,6 @@ package org.libspark.flartoolkit.processor
 	import jp.nyatla.nyartoolkit.as3.nyidmarker.*;
 	import jp.nyatla.as3utils.*;
 	import org.libspark.flartoolkit.core.types.*;
-	import org.libspark.flartoolkit.core.transmat.*;
 	import org.libspark.flartoolkit.core.squaredetect.*;
 	import org.libspark.flartoolkit.core.raster.*;
 	import jp.nyatla.nyartoolkit.as3.core.analyzer.histogram.*;
@@ -158,14 +157,14 @@ package org.libspark.flartoolkit.processor
 		}
 
 		
-		private var __NyARSquare_result:FLARTransMatResult = new FLARTransMatResult();
+		private var __NyARSquare_result:NyARTransMatResult = new NyARTransMatResult();
 
 		/**オブジェクトのステータスを更新し、必要に応じてハンドル関数を駆動します。
 		 */
 		private function updateStatus(i_square:FLARSquare,i_marker_data:INyIdMarkerData):Boolean
 		{
 			var is_id_found:Boolean=false;
-			var result:FLARTransMatResult = this.__NyARSquare_result;
+			var result:NyARTransMatResult = this.__NyARSquare_result;
 			if (!this._is_active) {// 未認識中
 				if (i_marker_data==null) {// 未認識から未認識の遷移
 					// なにもしないよーん。
@@ -214,7 +213,7 @@ package org.libspark.flartoolkit.processor
 		{
 			throw new NyARException("onLeaveHandler not implemented.");
 		}
-		protected function onUpdateHandler(i_square:FLARSquare, result:FLARTransMatResult):void
+		protected function onUpdateHandler(i_square:FLARSquare, result:NyARTransMatResult):void
 		{
 			throw new NyARException("onUpdateHandler not implemented.");
 		}

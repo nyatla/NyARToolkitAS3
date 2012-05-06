@@ -20,7 +20,6 @@ package
 	import org.libspark.flartoolkit.core.raster.rgb.*;
 	import org.libspark.flartoolkit.core.param.*;
 	import org.libspark.flartoolkit.core.*;
-	import org.libspark.flartoolkit.core.transmat.*;
 	import org.libspark.flartoolkit.core.types.*;
 	import org.libspark.flartoolkit.detector.*;
 	import org.libspark.flartoolkit.rpf.reality.nyartk.*;
@@ -28,6 +27,7 @@ package
 	import jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk.*;
 	import org.libspark.flartoolkit.support.pv3d.rpf.*;
 	import jp.nyatla.nyartoolkit.as3.rpf.mklib.*;
+	import jp.nyatla.nyartoolkit.as3.core.*;
 	import org.papervision3d.objects.*;
 	
 	public class NyIdView extends Sprite 
@@ -35,7 +35,7 @@ package
 		public static var inst:NyIdView;
         private var textbox:TextField = new TextField();
 		private var param:FLARParam;
-		private var code:FLARCode;
+		private var code:NyARCode;
 		public function msg(i_str:String):void
 		{
 			this.textbox.text = this.textbox.text + "\n" + i_str;
@@ -72,8 +72,8 @@ package
 				"../../../data/patt.hiro",URLLoaderDataFormat.TEXT,
 				function(data:String):void
 				{
-					code=new FLARCode(16, 16);
-					code.loadARPattFromFile(data);
+					code=new NyARCode(16, 16);
+					code.loadARPatt(data);
 				}
 			);
             //終了後mainに遷移するよ―に設定
@@ -95,7 +95,7 @@ package
 				
 				if(this._marker_tbl.identifyId_2(t,this._reality_src,r)){
 					//ここで既に認識しているターゲットを除外すれば、内側矩形の誤認識へ減るけど、マーカパターン変えた方が早いかも。
-					if(this._reality.changeTargetToKnown_1(t,r.artk_direction,r.marker_width)){
+					if(this._reality.changeTargetToKnown(t,r.artk_direction,r.marker_width)){
 						//遷移に成功したので、tagにBaseNodeを作っておく。（表示の時に使う。）
 						t.tag = new DisplayObject3D();
 						var wmat:WireframeMaterial = new WireframeMaterial(0xff0000, 1, 2); // with wireframe. / ワイヤーフレームで。
@@ -177,7 +177,6 @@ package
 
 }
 
-import org.libspark.flartoolkit.core.transmat.FLARTransMatResult;
 import org.libspark.flartoolkit.support.pv3d.FLARCamera3D;
 import org.libspark.flartoolkit.core.param.*;
 import org.papervision3d.render.LazyRenderEngine;

@@ -1,9 +1,9 @@
 ======================================================================
 NyARToolkitAS3
- version 3.0.0
+ version 4.0.0
 ======================================================================
 
-Copyright (C)2008-2010 Ryo Iizuka
+Copyright (C)2008-2012 Ryo Iizuka
 
 http://nyatla.jp/nyartoolkit/
 airmail(at)ebony.plala.or.jp
@@ -12,9 +12,9 @@ wm(at)nyatla.jp
 ----------------------------------------------------------------------
  About NyARToolkit
 ----------------------------------------------------------------------
- * NyARToolkitは、NyARToolKit 3.0.0のAPIを基盤としたARアプリケーション向けの
+ * NyARToolkitは、NyARToolKit 4.0.0のAPIを基盤としたARアプリケーション向けの
    クラスライブラリです。
- * Flash10以上に対応しています。
+ * Flash10以上(Stage3Dを使う場合は11以上)に対応しています。
  * ARToolKitの基本機能と、NyARToolKitオリジナルの拡張機能、フレームワーク
    で構成しています。
  * ライブラリは4部構成です。NyARTookitを純粋に移植したsrcモジュール、NyARToolkitの
@@ -35,17 +35,13 @@ NyARToolkitAS3の特徴
 NyARToolkitAS3の特徴を紹介します。
 
  * 入力画像、内部画像のフォーマットが、BitmapData形式です。
- * ロジックレベルでは、ARToolKitよりも高速です。
  * 次の項目について、高速な機能が利用できます。(ラべリング、姿勢最適化、
    画像処理、行列計算、方程式計算)
  * NyId規格のIDマーカが使用できます。
  * RPF(RealityPlatform - マーカ状態管理システム)が利用できます。
-
-注意点
-
- * RPFの不具合の為、RPFを使用してアプリケーションを作成すると、小さなマーカ
-   の認識率が低くなり、従来のNyARToolKitAS3よりも、約1.5倍負荷が増えてしまいます。
-   修正まで、しばらくお待ちください。
+ * MarkerSystemが使用できます。
+ * 簡易スケッチシステムがあります。MarkerSystemと組み合わせることで、
+   以前と比較して、コンパクトな実装ができます。
 
 
 ----------------------------------------------------------------------
@@ -83,12 +79,16 @@ http://www.flashdevelop.org/wikidocs/index.php?title=Main_Page
 ----------------------------------------------------------------------
  外部ライブラリ
 ----------------------------------------------------------------------
-NyARToolkitAS3のサンプルを動作させるには、PaperVision3dが必要です。
+NyARToolkitAS3のサンプルを動作させるには、PaperVision3d、またはAway3Dが
+必要です。
 
+PaperVision3D
 http://blog.papervision3d.org/
 
-新しいバージョンのものがあれば、そちらを使用してください。
+Away3D
+http://away3d.com/
 
+Away3Dについては、3.4以前と、4.0以降向けの２種類があります。
 
 ----------------------------------------------------------------------
  サンプルの概要
@@ -98,12 +98,16 @@ http://blog.papervision3d.org/
 
 Sample/nytest project
 
+ NyARToolkitのテストプログラムです。
+
  * Main.as
-   NyARToolkitの基本クラスのテストと、ベンチマークをします。テストした結果を、
-   コンソールに出力します。
+   NyARToolkitのテストプログラムです。
+   ベンチマークと、基本クラスのテストを実行して、結果を表示します。
    依存する外部ライブラリはありません。
 
 Sample/FLTest project
+
+ FLARToolkitのテストプログラムです。
 
  * Main.as
    NyARToolkitのFlash拡張部分のテストと、ベンチマークプログラムです。
@@ -115,7 +119,34 @@ Sample/FLTest project
    を使ってください。
 
  * NyIdView.as
-   RPFを使った、NyIdマーカの出力プログラムです。
+   RPFを使った、NyIdマーカの出力プログラムです。Idマーカを使ってください。
+
+Sample/Pv3d
+ paperVision3dを使ったサンプルプログラムです。sketchのサンプルのみとなります。
+
+  *IdMarker.as
+   IDマーカを認識するプログラムです。ID0のマーカを使ってください。
+  *ImagePickup.as
+   マーカ平面から画像を取得するプログラムです。Hiroマーカを使ってください。
+  *JpegInput.as
+   カメラ画像の変わりにJpeg画像を入力するプログラムです。
+  *MarkerPlane.as
+   マーカ平面とマウス座標の相互変換をするプログラムです。
+  *PngMarker.as
+   マーカパターンにPNG画像を使うプログラムです。
+  *SimpleLite.as
+   ARマーカに立方体を表示するプログラムです。Hiroマーカを使ってください。
+  *SimpleLiteM.as
+   複数のARマーカに立方体を表示するプログラムです。HiroマーカとKanjiマーカを
+   使ってください。
+
+Sample/Away3d
+ Away3D version 3.4以前向けのサンプルです。スクリーン制御に難があるため、640x480
+ 以外のサイズではうまく動きません。
+
+Sample/Away3D4
+ Away3D version 4.0.0 beta向けのデモです。
+ 
 
 ----------------------------------------------------------------------
  既知の不具合

@@ -72,6 +72,14 @@ package org.libspark.flartoolkit.markersystem
 			c.setRaster_2(tr);
 			return super.addARMarker(c,i_patt_edge_percentage,i_marker_size);
 		}
+		/**
+		 * Bitmap等を元に、ARマーカを登録します。
+		 * @param	i_img
+		 * @param	i_patt_resolution
+		 * @param	i_patt_edge_percentage
+		 * @param	i_marker_size
+		 * @return
+		 */
 		public function addARMarker_5(i_img:Object, i_patt_resolution:int, i_patt_edge_percentage:int, i_marker_size:Number):int
 		{
 			var bm:BitmapData = new BitmapData(i_img.width, i_img.height);

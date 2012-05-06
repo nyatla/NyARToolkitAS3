@@ -33,12 +33,14 @@ package{
 	import org.libspark.flartoolkit.core.raster.rgb.*;
 	import org.libspark.flartoolkit.core.param.*;
 	import org.libspark.flartoolkit.core.*;
-	import org.libspark.flartoolkit.core.transmat.*;
 	import org.libspark.flartoolkit.core.types.*;
 	import org.libspark.flartoolkit.detector.*;
 	import org.libspark.flartoolkit.rpf.reality.nyartk.*;
 	import org.libspark.flartoolkit.rpf.realitysource.nyartk.*;
 	import jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk.*;
+	import jp.nyatla.nyartoolkit.as3.core.*;
+	import jp.nyatla.nyartoolkit.as3.core.types.*;
+	import jp.nyatla.nyartoolkit.as3.core.transmat.*;
 	
 	public class Main extends Sprite 
 	{
@@ -47,7 +49,7 @@ package{
 		public var bitmap:Bitmap = new Bitmap(new BitmapData(320,240));
         private var textbox:TextField = new TextField();
 		private var param:FLARParam;
-		private var code:FLARCode;
+		private var code:NyARCode;
 		private var raster_bgra:FLARRgbRaster;
 		private var id_bgra:FLARRgbRaster;
 		public function msg(i_str:String):void
@@ -93,7 +95,7 @@ package{
 				"../../../data/patt.hiro",URLLoaderDataFormat.TEXT,
 				function(data:String):void
 				{
-					code=new FLARCode(16, 16);
+					code=new NyARCode(16, 16);
 					code.loadARPatt(data);
 				}
 			);
@@ -129,8 +131,8 @@ package{
 		}
 		private function testNyARSingleDetectMarker():void
 		{
-			var mat:FLARTransMatResult=new FLARTransMatResult();
-			var ang:FLARDoublePoint3d = new FLARDoublePoint3d();
+			var mat:NyARTransMatResult=new NyARTransMatResult();
+			var ang:NyARDoublePoint3d = new NyARDoublePoint3d();
 			var d:FLARSingleMarkerDetector=new FLARSingleMarkerDetector(this.param, this.code, 80.0);
 			d.detectMarkerLite(raster_bgra,100);
 			msg("cf=" + d.getConfidence());
@@ -158,9 +160,9 @@ package{
 		}
 		private function testNyARDetectMarker():void
 		{
-			var mat:FLARTransMatResult=new FLARTransMatResult();
-			var ang:FLARDoublePoint3d = new FLARDoublePoint3d();
-			var codes:Vector.<FLARCode>=new Vector.<FLARCode>();
+			var mat:NyARTransMatResult=new NyARTransMatResult();
+			var ang:NyARDoublePoint3d = new NyARDoublePoint3d();
+			var codes:Vector.<NyARCode>=new Vector.<NyARCode>();
 			var codes_width:Vector.<Number>=new Vector.<Number>();
 			codes[0]=code;
 			codes_width[0]=80.0;
@@ -182,7 +184,7 @@ package{
 		}
 		private function testSingleProcessor():void
 		{
-			var codes:Vector.<FLARCode>=new Vector.<FLARCode>();
+			var codes:Vector.<NyARCode>=new Vector.<NyARCode>();
 			var codes_width:Vector.<Number>=new Vector.<Number>();
 			codes[0]=code;
 			codes_width[0]=80.0;
@@ -215,22 +217,22 @@ package{
 			msg(reality.getNumberOfDead().toString());
 			var rt:Vector.<NyARRealityTarget>=new Vector.<NyARRealityTarget>(10);
 			reality.selectUnKnownTargets(rt);
-			reality.changeTargetToKnown(rt[1],2,80);
-			msg(rt[1]._transform_matrix.m00+","+rt[1]._transform_matrix.m01+","+rt[1]._transform_matrix.m02+","+rt[1]._transform_matrix.m03);
-			msg(rt[1]._transform_matrix.m10+","+rt[1]._transform_matrix.m11+","+rt[1]._transform_matrix.m12+","+rt[1]._transform_matrix.m13);
-			msg(rt[1]._transform_matrix.m20+","+rt[1]._transform_matrix.m21+","+rt[1]._transform_matrix.m22+","+rt[1]._transform_matrix.m23);
-			msg(rt[1]._transform_matrix.m30 + "," + rt[1]._transform_matrix.m31 + "," + rt[1]._transform_matrix.m32 + "," + rt[1]._transform_matrix.m33);
-			bitmap.bitmapData.setPixel(rt[1].refTargetVertex()[0].x, rt[1].refTargetVertex()[0].y, 0xffffff);
-			bitmap.bitmapData.setPixel(rt[1].refTargetVertex()[1].x, rt[1].refTargetVertex()[1].y, 0xffffff);
-			bitmap.bitmapData.setPixel(rt[1].refTargetVertex()[2].x, rt[1].refTargetVertex()[2].y, 0xffffff);
+			reality.changeTargetToKnown(rt[0],2,80);
+			msg(rt[0]._transform_matrix.m00+","+rt[0]._transform_matrix.m01+","+rt[0]._transform_matrix.m02+","+rt[0]._transform_matrix.m03);
+			msg(rt[0]._transform_matrix.m10+","+rt[0]._transform_matrix.m11+","+rt[0]._transform_matrix.m12+","+rt[0]._transform_matrix.m13);
+			msg(rt[0]._transform_matrix.m20+","+rt[0]._transform_matrix.m21+","+rt[0]._transform_matrix.m22+","+rt[0]._transform_matrix.m23);
+			msg(rt[0]._transform_matrix.m30 + "," + rt[0]._transform_matrix.m31 + "," + rt[0]._transform_matrix.m32 + "," + rt[0]._transform_matrix.m33);
+			bitmap.bitmapData.setPixel(rt[0].refTargetVertex()[0].x, rt[0].refTargetVertex()[0].y, 0xffffff);
+			bitmap.bitmapData.setPixel(rt[0].refTargetVertex()[1].x, rt[0].refTargetVertex()[1].y, 0xffffff);
+			bitmap.bitmapData.setPixel(rt[0].refTargetVertex()[2].x, rt[0].refTargetVertex()[2].y, 0xffffff);
 		}		
 		private function main(e:Event):void
 		{
 //			addChild(new Bitmap(BitmapData(this.id_bgra.getBufferReader().getBuffer())));
 			
 
-			var mat:FLARTransMatResult=new FLARTransMatResult();
-			var ang:FLARDoublePoint3d = new FLARDoublePoint3d();
+			var mat:NyARTransMatResult=new NyARTransMatResult();
+			var ang:NyARDoublePoint3d = new NyARDoublePoint3d();
 			msg(
 			"FLARToolKit check program.\n"+
 			"Copyright (C) 2010 nyatla\n"+
@@ -280,7 +282,7 @@ import org.libspark.flartoolkit.core.raster.*;
 import org.libspark.flartoolkit.core.raster.rgb.*;
 import org.libspark.flartoolkit.core.param.*;
 import org.libspark.flartoolkit.core.*;
-import org.libspark.flartoolkit.core.transmat.*;
+import jp.nyatla.nyartoolkit.as3.core.transmat.*;
 import org.libspark.flartoolkit.core.types.*;
 import org.libspark.flartoolkit.detector.*;
 import org.libspark.flartoolkit.processor.*;
@@ -291,7 +293,7 @@ import jp.nyatla.nyartoolkit.as3.nyidmarker.*;
 
 class SingleProcessor extends FLSingleARMarkerProcesser
 {
-	public var transmat:FLARTransMatResult=null;
+	public var transmat:NyARTransMatResult=null;
 	public var current_code:int=-1;
 	private var _parent:Main;
 	public function SingleProcessor(i_cparam:FLARParam,i_parent:Main)
@@ -311,7 +313,7 @@ class SingleProcessor extends FLSingleARMarkerProcesser
 	{
 	}
 
-	protected override function onUpdateHandler(i_square:FLARSquare,result:FLARTransMatResult):void
+	protected override function onUpdateHandler(i_square:FLARSquare,result:NyARTransMatResult):void
 	{
 		_parent.msg("onUpdateHandler:" + current_code);
 		_parent.msg(result.m00 + "," + result.m01 + "," + result.m02 + "," + result.m03);
@@ -323,7 +325,7 @@ class SingleProcessor extends FLSingleARMarkerProcesser
 
 class IdMarkerProcessor extends FLSingleNyIdMarkerProcesser
 {	
-	public var transmat:FLARTransMatResult=null;
+	public var transmat:NyARTransMatResult=null;
 	public var current_id:int=-1;
 	private var _parent:Main;
 	private var _encoder:NyIdMarkerDataEncoder_RawBit;
@@ -372,7 +374,7 @@ class IdMarkerProcessor extends FLSingleNyIdMarkerProcesser
 	/**
 	 * アプリケーションフレームワークのハンドラ（マーカ更新）
 	 */
-	protected override function onUpdateHandler(i_square:FLARSquare,result:FLARTransMatResult):void
+	protected override function onUpdateHandler(i_square:FLARSquare,result:NyARTransMatResult):void
 	{
 		_parent.msg("onUpdateHandler:"+this.current_id);
 		_parent.msg(result.m00 + "," + result.m01 + "," + result.m02 + "," + result.m03);

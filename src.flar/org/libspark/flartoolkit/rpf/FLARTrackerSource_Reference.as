@@ -81,7 +81,6 @@ import sketch.*;
 			//内部状態の同期
 			this._gs_graphics.copyTo(0,0,this._rob_resolution,this._rb_source);
 			this._rfilter.doFilter(this._rb_source, this._rbraster);
-DebugSketch.inst.bitmap.bitmapData.draw(BitmapData(this._rbraster.getBuffer()));
 			
 		}
 		/**

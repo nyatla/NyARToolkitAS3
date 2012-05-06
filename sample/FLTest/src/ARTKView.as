@@ -20,8 +20,8 @@ package
 	import org.libspark.flartoolkit.core.raster.rgb.*;
 	import org.libspark.flartoolkit.core.param.*;
 	import org.libspark.flartoolkit.core.*;
-	import org.libspark.flartoolkit.core.transmat.*;
-	import org.libspark.flartoolkit.core.types.*;
+	import jp.nyatla.nyartoolkit.as3.core.transmat.*;
+	import jp.nyatla.nyartoolkit.as3.core.*;
 	import org.libspark.flartoolkit.detector.*;
 	import org.libspark.flartoolkit.rpf.reality.nyartk.*;
 	import org.libspark.flartoolkit.rpf.realitysource.nyartk.*;
@@ -35,7 +35,7 @@ package
 		public static var inst:ARTKView;
         private var textbox:TextField = new TextField();
 		private var param:FLARParam;
-		private var code:FLARCode;
+		private var code:NyARCode;
 		public function msg(i_str:String):void
 		{
 			this.textbox.text = this.textbox.text + "\n" + i_str;
@@ -72,8 +72,8 @@ package
 				"../../../data/patt.hiro",URLLoaderDataFormat.TEXT,
 				function(data:String):void
 				{
-					code=new FLARCode(16, 16);
-					code.loadARPattFromFile(data);
+					code=new NyARCode(16, 16);
+					code.loadARPatt(data);
 				}
 			);
             //終了後mainに遷移するよ―に設定
@@ -98,7 +98,7 @@ package
 					if(r.confidence>0.6)
 					{
 						//ここで既に認識しているターゲットを除外すれば、内側矩形の誤認識へ減るけど、マーカパターン変えた方が早いかも。
-						if(this._reality.changeTargetToKnown_1(t,r.artk_direction,r.marker_width)){
+						if(this._reality.changeTargetToKnown(t,r.artk_direction,r.marker_width)){
 							//遷移に成功したので、tagにBaseNodeを作っておく。（表示の時に使う。）
 							t.tag = new DisplayObject3D();
 							var wmat:WireframeMaterial = new WireframeMaterial(0xff0000, 1, 2); // with wireframe. / ワイヤーフレームで。
@@ -163,7 +163,7 @@ package
 			this._reality_src = new FLARRealitySource_BitmapImage( -1, -1, null, 2, 100, this._controler._background.bitmapData);
 			//マーカデーブルの生成(登録数2,16x16,25%エッジ,解像度4)
 			this._marker_tbl = new ARTKMarkerTable(2, 16, 16, 25, 25, 4);
-			this._marker_tbl.addMarker_1(this.code, 1, "", 80, 80);
+			this._marker_tbl.addMarker(this.code, 1, "", 80, 80);
 			//カメラ
 			this._webcam = Camera.getCamera();
 			if (!this._webcam) {
@@ -181,7 +181,6 @@ package
 
 }
 
-import org.libspark.flartoolkit.core.transmat.FLARTransMatResult;
 import org.libspark.flartoolkit.support.pv3d.FLARCamera3D;
 import org.libspark.flartoolkit.core.param.*;
 import org.papervision3d.render.LazyRenderEngine;
