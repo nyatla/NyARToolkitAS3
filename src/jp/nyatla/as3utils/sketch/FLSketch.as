@@ -16,7 +16,7 @@ package jp.nyatla.as3utils.sketch
 	public class FLSketch extends Sprite
 	{
 		private var _loader:FilesLoader = new FilesLoader();
-		
+		public static const DATAFORMAT_AS_OBJECT:String = "AS_OBJECT";
 		public function FLSketch() 
 		{
 			//setup実行
@@ -29,12 +29,19 @@ package jp.nyatla.as3utils.sketch
 		}
 		public function setup():void
 		{
+			throw new NyARException("Must be ovgerride main()!");
 		}
 		/**
 		 * この関数はsetup関数の中で実行します。
 		 * @param	i_name
 		 * @param	i_url
 		 * @param	i_fmt
+		 * 3種類の定数を指定できます。
+		 * <ul>
+		 * <li>FLSketch.DATAFORMAT_AS_OBJECT - PNG/JPG/SWF等を読み込む時に使います。</li>
+		 * <li>URLLoaderDataFormat.BINARY　- バイナリデータをByteArrayで読み込む時に使います。</li>
+		 * <li>URLLoaderDataFormat.TEXT - テキストデータをStringへ読み込む時に使います。</li>
+		 * </ul>
 		 */
 		public function setSketchFile(i_url:String,i_fmt:String=URLLoaderDataFormat.VARIABLES):int
 		{
@@ -71,7 +78,7 @@ import flash.net.*;
 import flash.events.*;
 import jp.nyatla.as3utils.*;
 import jp.nyatla.nyartoolkit.as3.core.NyARException;
-
+import jp.nyatla.as3utils.sketch.*;
 
 /**
  * URLリストを登録して一括して実体化するファイルローダです。
@@ -93,7 +100,7 @@ class FilesLoader extends EventDispatcher
 	public function addTarget(i_fname:String,i_format:String):int
 	{
 		var item:NyURLLoader = new NyURLLoader();
-		if (i_format == "AS_OBJECT") {
+		if (i_format == FLSketch.DATAFORMAT_AS_OBJECT) {
 			item._is_img=true;
 			item.dataFormat = URLLoaderDataFormat.BINARY;
 		}else{

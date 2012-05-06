@@ -96,10 +96,10 @@ package org.libspark.flartoolkit.away3d4
 		public override function getMarkerPlanePos(i_id:int, i_x:int, i_y:int, i_out:NyARDoublePoint3d):NyARDoublePoint3d
 		{
 			var p:NyARDoublePoint3d = super.getMarkerPlanePos(i_id, i_x, i_y, i_out);
-			var pz:Number = p.z;
-			p.z = p.y;
-			p.y = pz;
+			var py:Number = p.y;
+			p.x = -p.x;
+			p.y = p.y;
 			return p;
-		}		
+		}
 	}
 }

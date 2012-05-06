@@ -72,6 +72,12 @@ package org.libspark.flartoolkit.markersystem
 			c.setRaster_2(tr);
 			return super.addARMarker(c,i_patt_edge_percentage,i_marker_size);
 		}
+		public function addARMarker_5(i_img:Object, i_patt_resolution:int, i_patt_edge_percentage:int, i_marker_size:Number):int
+		{
+			var bm:BitmapData = new BitmapData(i_img.width, i_img.height);
+			bm.draw(IBitmapDrawable(i_img));
+			return this.addARMarker_4(bm, i_patt_resolution, i_patt_edge_percentage, i_marker_size);
+		}
 		/**
 		 * マーカ平面の任意四角領域から画像を剥がして返します。
 		 * @param	i_id
