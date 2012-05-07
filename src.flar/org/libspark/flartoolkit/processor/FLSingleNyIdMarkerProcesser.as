@@ -42,7 +42,6 @@ package org.libspark.flartoolkit.processor
 	import jp.nyatla.nyartoolkit.as3.nyidmarker.data.*;
 	import jp.nyatla.nyartoolkit.as3.nyidmarker.*;
 	import jp.nyatla.as3utils.*;
-	import org.libspark.flartoolkit.core.types.*;
 	import org.libspark.flartoolkit.core.squaredetect.*;
 	import org.libspark.flartoolkit.core.raster.*;
 	import jp.nyatla.nyartoolkit.as3.core.analyzer.histogram.*;
