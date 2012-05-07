@@ -20,7 +20,6 @@ package
 	import org.libspark.flartoolkit.core.raster.rgb.*;
 	import org.libspark.flartoolkit.core.param.*;
 	import org.libspark.flartoolkit.core.*;
-	import org.libspark.flartoolkit.core.types.*;
 	import org.libspark.flartoolkit.detector.*;
 	import org.libspark.flartoolkit.rpf.reality.nyartk.*;
 	import org.libspark.flartoolkit.rpf.realitysource.nyartk.*;

@@ -15,7 +15,6 @@ package sketch
 	import org.libspark.flartoolkit.core.raster.rgb.*;
 	import org.libspark.flartoolkit.core.param.*;
 	import org.libspark.flartoolkit.core.*;
-	import org.libspark.flartoolkit.core.types.*;
 	import org.libspark.flartoolkit.detector.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.matrix.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
@@ -252,7 +251,6 @@ import org.libspark.flartoolkit.core.raster.rgb.*;
 import org.libspark.flartoolkit.core.param.*;
 import org.libspark.flartoolkit.core.*;
 import jp.nyatla.nyartoolkit.as3.core.transmat.*;
-import org.libspark.flartoolkit.core.types.*;
 import org.libspark.flartoolkit.detector.*;
 import org.libspark.flartoolkit.processor.*;
 import org.libspark.flartoolkit.core.squaredetect.*;
