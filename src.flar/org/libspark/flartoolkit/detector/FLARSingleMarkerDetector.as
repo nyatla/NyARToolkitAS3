@@ -31,6 +31,7 @@ package org.libspark.flartoolkit.detector
 	import flash.display.*;
 	import jp.nyatla.nyartoolkit.as3.core.*;
 	import jp.nyatla.nyartoolkit.as3.core.match.*;
+	import jp.nyatla.nyartoolkit.as3.core.param.*;
 	import jp.nyatla.nyartoolkit.as3.core.pickup.*;
 	import jp.nyatla.nyartoolkit.as3.core.squaredetect.*;
 	import jp.nyatla.nyartoolkit.as3.core.transmat.*;
@@ -43,7 +44,6 @@ package org.libspark.flartoolkit.detector
 	import org.libspark.flartoolkit.core.squaredetect.*;
 	import org.libspark.flartoolkit.core.*;
 	import org.libspark.flartoolkit.*;
-	import org.libspark.flartoolkit.core.param.*;
 	import org.libspark.flartoolkit.core.raster.rgb.*;
 	public class FLARSingleMarkerDetector
 	{	
@@ -118,7 +118,7 @@ package org.libspark.flartoolkit.detector
 		private var _offset:NyARRectOffset; 
 
 
-		public function FLARSingleMarkerDetector(i_ref_param:FLARParam,i_ref_code:NyARCode,i_marker_width:Number)
+		public function FLARSingleMarkerDetector(i_ref_param:NyARParam,i_ref_code:NyARCode,i_marker_width:Number)
 		{
 			var patt_inst:INyARColorPatt;
 			var sqdetect_inst:FLARDetector;
@@ -133,7 +133,7 @@ package org.libspark.flartoolkit.detector
 		protected function initInstance(
 			i_sqdetect_inst:FLARDetector,
 			i_transmat_inst:INyARTransMat,
-			i_ref_param:FLARParam,
+			i_ref_param:NyARParam,
 			i_ref_code:NyARCode,
 			i_marker_width:Number):void
 		{
@@ -282,7 +282,7 @@ import org.libspark.flartoolkit.detector.*;
  * Rleラ矩形Detectorのブリッジ
  *
  */
-class FLARDetector extends FLARSquareContourDetector  implements NyARSquareContourDetector_CbHandler
+class FLARDetector extends FLARSquareContourDetector_FlaFill  implements NyARSquareContourDetector_CbHandler
 {
 	private var _parent:FLARSingleMarkerDetector;
 	public function FLARDetector(i_parent:FLARSingleMarkerDetector,i_size:NyARIntSize):void

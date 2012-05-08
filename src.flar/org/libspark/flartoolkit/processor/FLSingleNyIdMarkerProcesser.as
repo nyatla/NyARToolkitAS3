@@ -160,7 +160,7 @@ package org.libspark.flartoolkit.processor
 
 		/**オブジェクトのステータスを更新し、必要に応じてハンドル関数を駆動します。
 		 */
-		private function updateStatus(i_square:FLARSquare,i_marker_data:INyIdMarkerData):Boolean
+		private function updateStatus(i_square:NyARSquare,i_marker_data:INyIdMarkerData):Boolean
 		{
 			var is_id_found:Boolean=false;
 			var result:NyARTransMatResult = this.__NyARSquare_result;
@@ -212,7 +212,7 @@ package org.libspark.flartoolkit.processor
 		{
 			throw new NyARException("onLeaveHandler not implemented.");
 		}
-		protected function onUpdateHandler(i_square:FLARSquare, result:NyARTransMatResult):void
+		protected function onUpdateHandler(i_square:NyARSquare, result:NyARTransMatResult):void
 		{
 			throw new NyARException("onUpdateHandler not implemented.");
 		}
@@ -236,10 +236,10 @@ import org.libspark.flartoolkit.core.squaredetect.*;
 /**
  * detectMarkerのコールバック関数
  */
-class FLDetector extends FLARSquareContourDetector implements NyARSquareContourDetector_CbHandler
+class FLDetector extends FLARSquareContourDetector_FlaFill implements NyARSquareContourDetector_CbHandler
 {
 	//公開プロパティ
-	public var square:FLARSquare=new FLARSquare();
+	public var square:NyARSquare=new NyARSquare();
 	public var marker_data:INyIdMarkerData;
 	public var threshold:int;
 

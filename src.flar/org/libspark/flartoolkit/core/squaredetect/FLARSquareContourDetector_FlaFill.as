@@ -41,7 +41,7 @@ package org.libspark.flartoolkit.core.squaredetect
 	import org.libspark.flartoolkit.core.labeling.*;
 	import org.libspark.flartoolkit.core.raster.*;
 	
-	public class FLARSquareContourDetector extends NyARSquareContourDetector
+	public class FLARSquareContourDetector_FlaFill extends NyARSquareContourDetector
 	{
 		private var _cpickup:NyARContourPickup = new NyARContourPickup();//FL依存部分
 		private var _width:int ; 
@@ -50,7 +50,7 @@ package org.libspark.flartoolkit.core.squaredetect
 		private var _overlap_checker:NyARLabelOverlapChecker = new NyARLabelOverlapChecker(32) ; 
 		private var _coord2vertex:NyARCoord2SquareVertexIndexes = new NyARCoord2SquareVertexIndexes(); 
 		private var _coord:NyARIntCoordinates ; 
-		public function FLARSquareContourDetector( i_size:NyARIntSize )
+		public function FLARSquareContourDetector_FlaFill( i_size:NyARIntSize )
 		{ 
 			//assert( ! (( NyARLabeling_Rle._sf_label_array_safe_reference ) ) );
 			this._width = i_size.w ;

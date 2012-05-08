@@ -44,7 +44,7 @@ package org.libspark.flartoolkit.processor
 	import org.libspark.flartoolkit.core.squaredetect.*;
 	import org.libspark.flartoolkit.core.*;
 	import org.libspark.flartoolkit.*;
-	import org.libspark.flartoolkit.core.param.*;
+	import jp.nyatla.nyartoolkit.as3.core.param.*;
 	import org.libspark.flartoolkit.core.raster.rgb.*;
 	import jp.nyatla.nyartoolkit.as3.core.analyzer.histogram.*;	
 	import jp.nyatla.nyartoolkit.as3.core.rasterdriver.*;
@@ -89,7 +89,7 @@ package org.libspark.flartoolkit.processor
 
 		private var _initialized:Boolean=false;
 
-		protected function initInstance(i_param:FLARParam):void
+		protected function initInstance(i_param:NyARParam):void
 		{
 			//初期化済？
 			NyAS3Utils.assert(this._initialized==false);
@@ -195,7 +195,7 @@ package org.libspark.flartoolkit.processor
 		/**	オブジェクトのステータスを更新し、必要に応じてハンドル関数を駆動します。
 		 * 	戻り値は、「実際にマーカを発見する事ができたか」です。クラスの状態とは異なります。
 		 */
-		private function updateStatus(i_square:FLARSquare,i_code_index:int):Boolean
+		private function updateStatus(i_square:NyARSquare,i_code_index:int):Boolean
 		{
 			var result:NyARTransMatResult = this.__NyARSquare_result;
 			if (this._current_arcode_index < 0) {// 未認識中
@@ -247,7 +247,7 @@ package org.libspark.flartoolkit.processor
 			throw new NyARException("onLeaveHandler not implemented.");
 		}
 
-		protected function onUpdateHandler(i_square:FLARSquare, result:NyARTransMatResult):void
+		protected function onUpdateHandler(i_square:NyARSquare, result:NyARTransMatResult):void
 		{
 			throw new NyARException("onUpdateHandler not implemented.");
 		}
@@ -268,10 +268,10 @@ import org.libspark.flartoolkit.core.squaredetect.*;
 /**
  * detectMarkerのコールバック関数
  */
-class DetectSquare extends FLARSquareContourDetector implements NyARSquareContourDetector_CbHandler
+class DetectSquare extends FLARSquareContourDetector_FlaFill implements NyARSquareContourDetector_CbHandler
 {
 	//公開プロパティ
-	public var square:FLARSquare=new FLARSquare();
+	public var square:NyARSquare=new NyARSquare();
 	public var confidence:Number=0.0;
 	public var code_index:int=-1;		
 	public var cf_threshold_new:Number = 0.50;

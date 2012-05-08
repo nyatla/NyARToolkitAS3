@@ -37,12 +37,12 @@ package org.libspark.flartoolkit.detector
 	import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
 	import jp.nyatla.nyartoolkit.as3.core.pickup.*;
+	import jp.nyatla.nyartoolkit.as3.core.param.*;
 	
 	import org.libspark.flartoolkit.core.raster.*;
 	import org.libspark.flartoolkit.core.squaredetect.*;
 	import org.libspark.flartoolkit.core.*;
 	import org.libspark.flartoolkit.*;
-	import org.libspark.flartoolkit.core.param.*;
 	import org.libspark.flartoolkit.core.raster.rgb.*;
 
 
@@ -71,13 +71,13 @@ package org.libspark.flartoolkit.detector
 		 * 入力ラスタのピクセルタイプを指定します。この値は、INyARBufferReaderインタフェイスのgetBufferTypeの戻り値を指定します。
 		 * @throws NyARException
 		 */
-		public function FLARMultiMarkerDetector(i_param:FLARParam, i_code:Vector.<NyARCode>, i_marker_width:Vector.<Number>, i_number_of_code:int)
+		public function FLARMultiMarkerDetector(i_param:NyARParam, i_code:Vector.<NyARCode>, i_marker_width:Vector.<Number>, i_number_of_code:int)
 		{
 			initInstance(i_param,i_code,i_marker_width,i_number_of_code);
 			return;
 		}
 		protected function initInstance(
-			i_ref_param:FLARParam,
+			i_ref_param:NyARParam,
 			i_ref_code:Vector.<NyARCode>,
 			i_marker_width:Vector.<Number>,
 			i_number_of_code:int):void
@@ -213,7 +213,6 @@ import org.libspark.flartoolkit.core.raster.*;
 import org.libspark.flartoolkit.core.squaredetect.*;
 import org.libspark.flartoolkit.core.*;
 import org.libspark.flartoolkit.*;
-import org.libspark.flartoolkit.core.param.*;
 import org.libspark.flartoolkit.core.raster.rgb.*;
 
 
@@ -221,7 +220,7 @@ class NyARDetectMarkerResult
 {
 	public var arcode_id:int;
 	public var confidence:Number;
-	public var square:FLARSquare=new FLARSquare();
+	public var square:NyARSquare=new NyARSquare();
 }
 
 
@@ -239,7 +238,7 @@ class NyARDetectMarkerResultStack extends NyARObjectStack
 	}	
 }	
 	
-class FLDetector extends FLARSquareContourDetector implements NyARSquareContourDetector_CbHandler
+class FLDetector extends FLARSquareContourDetector_FlaFill implements NyARSquareContourDetector_CbHandler
 {
 		private static const AR_SQUARE_MAX:int = 300;
 	
