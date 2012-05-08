@@ -34,7 +34,6 @@ package org.libspark.flartoolkit.pv3d {
 	import jp.nyatla.nyartoolkit.as3.core.param.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.NyARIntSize;
 	
-	import org.libspark.flartoolkit.core.param.FLARParam;
 	import org.libspark.flartoolkit.utils.ArrayUtil;
 	import org.papervision3d.cameras.Camera3D;
 	import org.papervision3d.core.math.Matrix3D;

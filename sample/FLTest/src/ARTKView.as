@@ -18,7 +18,7 @@ package
 	import flash.media.*;
 	import org.libspark.flartoolkit.core.raster.*;
 	import org.libspark.flartoolkit.core.raster.rgb.*;
-	import org.libspark.flartoolkit.core.param.*;
+	import jp.nyatla.nyartoolkit.as3.core.param.*;
 	import org.libspark.flartoolkit.core.*;
 	import jp.nyatla.nyartoolkit.as3.core.transmat.*;
 	import jp.nyatla.nyartoolkit.as3.core.*;
@@ -34,7 +34,7 @@ package
 	{
 		public static var inst:ARTKView;
         private var textbox:TextField = new TextField();
-		private var param:FLARParam;
+		private var param:NyARParam;
 		private var code:NyARCode;
 		public function msg(i_str:String):void
 		{
@@ -64,7 +64,7 @@ package
 				"../../../data/camera_para.dat",URLLoaderDataFormat.BINARY,
 				function(data:ByteArray):void
 				{
- 		            param=new FLARParam();
+ 		            param=new NyARParam();
             		param.loadARParam(data);
             		param.changeScreenSize(320,240);
 				});
@@ -182,7 +182,7 @@ package
 }
 
 import org.libspark.flartoolkit.support.pv3d.FLARCamera3D;
-import org.libspark.flartoolkit.core.param.*;
+import jp.nyatla.nyartoolkit.as3.core.param.*;
 import org.papervision3d.render.LazyRenderEngine;
 import org.papervision3d.scenes.Scene3D;
 import org.papervision3d.view.Viewport3D;

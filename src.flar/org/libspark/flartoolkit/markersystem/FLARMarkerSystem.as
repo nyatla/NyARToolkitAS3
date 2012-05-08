@@ -162,11 +162,11 @@ import org.libspark.flartoolkit.markersystem.*;
 
 class FLDetector implements INyARMarkerSystemSquareDetect
 {
-	private var _sd:FLARSquareContourDetector;
+	private var _sd:FLARSquareContourDetector_FlaFill;
 	private var gs2bin:FLARGs2BinFilter;
 	public function FLDetector(i_config:INyARMarkerSystemConfig)
 	{
-		this._sd=new FLARSquareContourDetector(i_config.getScreenSize());
+		this._sd=new FLARSquareContourDetector_FlaFill(i_config.getScreenSize());
 	}
 	public function detectMarkerCb(i_sensor:NyARSensor,i_th:int,i_handler:NyARSquareContourDetector_CbHandler):void
 	{

@@ -31,7 +31,7 @@ package{
     import flash.utils.*;
 	import org.libspark.flartoolkit.core.raster.*;
 	import org.libspark.flartoolkit.core.raster.rgb.*;
-	import org.libspark.flartoolkit.core.param.*;
+	import jp.nyatla.nyartoolkit.as3.core.param.*;
 	import org.libspark.flartoolkit.core.*;
 	import org.libspark.flartoolkit.detector.*;
 	import org.libspark.flartoolkit.rpf.reality.nyartk.*;
@@ -47,7 +47,7 @@ package{
 		public static var inst:Main;
 		public var bitmap:Bitmap = new Bitmap(new BitmapData(320,240));
         private var textbox:TextField = new TextField();
-		private var param:FLARParam;
+		private var param:NyARParam;
 		private var code:NyARCode;
 		private var raster_bgra:FLARRgbRaster;
 		private var id_bgra:FLARRgbRaster;
@@ -86,7 +86,7 @@ package{
 				"../../../data/camera_para.dat",URLLoaderDataFormat.BINARY,
 				function(data:ByteArray):void
 				{
- 		            param=new FLARParam();
+ 		            param=new NyARParam();
             		param.loadARParam(data);
             		param.changeScreenSize(320,240);
 				});
@@ -279,12 +279,12 @@ package{
 
 import org.libspark.flartoolkit.core.raster.*;
 import org.libspark.flartoolkit.core.raster.rgb.*;
-import org.libspark.flartoolkit.core.param.*;
+import jp.nyatla.nyartoolkit.as3.core.param.*;
 import org.libspark.flartoolkit.core.*;
 import jp.nyatla.nyartoolkit.as3.core.transmat.*;
 import org.libspark.flartoolkit.detector.*;
 import org.libspark.flartoolkit.processor.*;
-import org.libspark.flartoolkit.core.squaredetect.*;
+import jp.nyatla.nyartoolkit.as3.core.squaredetect.*;
 
 import jp.nyatla.nyartoolkit.as3.nyidmarker.data.*;
 import jp.nyatla.nyartoolkit.as3.nyidmarker.*;
@@ -294,7 +294,7 @@ class SingleProcessor extends FLSingleARMarkerProcesser
 	public var transmat:NyARTransMatResult=null;
 	public var current_code:int=-1;
 	private var _parent:Main;
-	public function SingleProcessor(i_cparam:FLARParam,i_parent:Main)
+	public function SingleProcessor(i_cparam:NyARParam,i_parent:Main)
 	{
 		super();
 		this._parent=i_parent;
@@ -311,7 +311,7 @@ class SingleProcessor extends FLSingleARMarkerProcesser
 	{
 	}
 
-	protected override function onUpdateHandler(i_square:FLARSquare,result:NyARTransMatResult):void
+	protected override function onUpdateHandler(i_square:NyARSquare,result:NyARTransMatResult):void
 	{
 		_parent.msg("onUpdateHandler:" + current_code);
 		_parent.msg(result.m00 + "," + result.m01 + "," + result.m02 + "," + result.m03);
@@ -328,7 +328,7 @@ class IdMarkerProcessor extends FLSingleNyIdMarkerProcesser
 	private var _parent:Main;
 	private var _encoder:NyIdMarkerDataEncoder_RawBit;
 
-	public function IdMarkerProcessor(i_cparam:FLARParam,i_parent:Main)
+	public function IdMarkerProcessor(i_cparam:NyARParam,i_parent:Main)
 	{
 		//アプリケーションフレームワークの初期化
 		super();
@@ -372,7 +372,7 @@ class IdMarkerProcessor extends FLSingleNyIdMarkerProcesser
 	/**
 	 * アプリケーションフレームワークのハンドラ（マーカ更新）
 	 */
-	protected override function onUpdateHandler(i_square:FLARSquare,result:NyARTransMatResult):void
+	protected override function onUpdateHandler(i_square:NyARSquare,result:NyARTransMatResult):void
 	{
 		_parent.msg("onUpdateHandler:"+this.current_id);
 		_parent.msg(result.m00 + "," + result.m01 + "," + result.m02 + "," + result.m03);
