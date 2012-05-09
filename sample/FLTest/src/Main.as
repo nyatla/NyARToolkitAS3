@@ -102,7 +102,7 @@ package{
 				"../../../data/320x240ABGR.raw",URLLoaderDataFormat.BINARY,
 				function(data:ByteArray):void
 				{
-					var r:FLARRgbRaster = new FLARRgbRaster(320,240,true);
+					var r:FLARRgbRaster = new FLARRgbRaster(320,240);
 					var b:BitmapData =	r.getBitmapData();
 					data.endian = Endian.LITTLE_ENDIAN;
 					for (var i:int = 0; i < 320 * 240; i++) {
@@ -115,7 +115,7 @@ package{
 				"../../../data/320x240NyId.raw",URLLoaderDataFormat.BINARY,
 				function(data:ByteArray):void
 				{
-					var r:FLARRgbRaster = new FLARRgbRaster(320, 240,true);
+					var r:FLARRgbRaster = new FLARRgbRaster(320, 240);
 					var b:BitmapData =	r.getBitmapData();
 					data.endian = Endian.LITTLE_ENDIAN;
 					for (var i:int = 0; i < 320 * 240; i++) {

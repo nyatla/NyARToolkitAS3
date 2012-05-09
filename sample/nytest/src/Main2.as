@@ -12,13 +12,13 @@ package
 	import jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk.*;
 	import jp.nyatla.nyartoolkit.as3.rpf.realitysource.nyartk.*;
 	import jp.nyatla.nyartoolkit.as3.markersystem.*;
-	import jp.nyatla.nyartoolkit.as3.pro.*;
+//	import jp.nyatla.nyartoolkit.as3.pro.*;
 	import flash.net.*;
 	import flash.text.*;
     import flash.display.*; 
     import flash.events.*;
     import flash.utils.*;
-	import jp.nyatla.nyartoolkit.as3.pro.icp.*;
+//	import jp.nyatla.nyartoolkit.as3.pro.icp.*;
 	/**
 	 * ...
 	 * @author 
@@ -60,7 +60,7 @@ package
 				{
  		            param=new NyARParam();
             		param.loadARParam(data);
-            		param.changeScreenSize_1(320,240);
+            		param.changeScreenSize(320,240);
 				});
 			mf.addTarget(
 				"../../../data/patt.hiro",URLLoaderDataFormat.TEXT,
@@ -104,7 +104,7 @@ package
 		{
 			var mat:NyARTransMatResult=new NyARTransMatResult();
 			var ang:NyARDoublePoint3d = new NyARDoublePoint3d();
-			var d:NyARSingleDetectMarkerPro=new NyARSingleDetectMarkerPro(this.param, this.code, 80.0,NyARIcpTransMat.AL_POINT_ROBUST);
+			var d:NyARSingleDetectMarker=new NyARSingleDetectMarker(this.param, this.code, 80.0,NyARSingleDetectMarker.PF_NYARTOOLKIT);
 			d.detectMarkerLite(raster_bgra,100);
 			msg("cf=" + d.getConfidence());
 			{
