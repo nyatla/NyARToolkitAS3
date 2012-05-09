@@ -25,7 +25,6 @@
 package jp.nyatla.nyartoolkit.as3.core.pixeldriver
 {
 
-	import jp.nyatla.nyartoolkit.*;
 	import jp.nyatla.nyartoolkit.as3.core.NyARException;
 	import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
 	import jp.nyatla.nyartoolkit.as3.core.raster.*;

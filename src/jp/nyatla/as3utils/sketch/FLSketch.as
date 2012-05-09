@@ -6,7 +6,6 @@ package jp.nyatla.as3utils.sketch
     import flash.events.*;
     import flash.utils.*;
 	import jp.nyatla.as3utils.*;
-	import jp.nyatla.nyartoolkit.as3.core.NyARException;
 	import flash.display.*;
 	
 	/**
@@ -29,7 +28,7 @@ package jp.nyatla.as3utils.sketch
 		}
 		public function setup():void
 		{
-			throw new NyARException("Must be ovgerride main()!");
+			throw new Error("Must be ovgerride main()!");
 		}
 		/**
 		 * この関数はsetup関数の中で実行します。
@@ -54,7 +53,7 @@ package jp.nyatla.as3utils.sketch
 		}
 		public function main():void
 		{
-			throw new NyARException("Must be ovgerride main()!");
+			throw new Error("Must be ovgerride main()!");
 		}
 		/**
 		 * この関数は、mainの中で実行します。
@@ -77,7 +76,6 @@ import flash.display.*;
 import flash.net.*;
 import flash.events.*;
 import jp.nyatla.as3utils.*;
-import jp.nyatla.nyartoolkit.as3.core.NyARException;
 import jp.nyatla.as3utils.sketch.*;
 
 /**
@@ -163,7 +161,7 @@ class FilesLoader extends EventDispatcher
 	}
 	private function onError(e:Event):void
 	{
-		throw new NyARException("Error on loading" + e.toString());
+		throw new Error("Error on loading" + e.toString());
 	}
 	/**
 	 * Completeイベントのハンドラ

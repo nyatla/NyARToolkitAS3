@@ -154,7 +154,7 @@ package org.libspark.flartoolkit.core.labeling.fllabeling
 				}
 			}
 			//あれ？見つからないよ？
-			throw new FLARException();
+			throw new NyARException();
 		}
 		public function setAreaRange(i_max:int, i_min:int):void
 		{

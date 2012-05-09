@@ -102,7 +102,7 @@ package org.libspark.flartoolkit.detector
 			for (i = 0; i < 4; i++) {
 				//直線同士の交点計算
 				if(!sq.line[i].crossPos(sq.line[(i + 3) % 4],sq.sqvertex[i])){
-					throw new FLARException();//ここのエラー復帰するならダブルバッファにすればOK
+					throw new NyARException();//ここのエラー復帰するならダブルバッファにすればOK
 				}
 			}
 		}
