@@ -64,21 +64,22 @@ package org.libspark.flartoolkit.core.raster
 		}
 		public override function createInterface(i_iid:Class):Object
 		{
-			if(i_iid==NyARLabeling_Rle_IRasterDriver){
-				return new NyARRlePixelDriver_ASBmp(this);
-			}
-			if(i_iid==INyARHistogramFromRaster){
-				return new NyARHistogramFromRaster_AnyGs(this);
-			}
-			if(i_iid==NyARContourPickup_IRasterDriver){
-				return FLARContourPickupFactory.createDriver(this);
-			}
-			if (i_iid == FLARGs2BinFilter) {
-                if (this.isEqualBufferType(NyARBufferType.OBJECT_AS3_BitmapData)) {
+			if (this.isEqualBufferType(NyARBufferType.OBJECT_AS3_BitmapData))
+			{
+				if(i_iid==NyARLabeling_Rle_IRasterDriver){
+					return new NyARRlePixelDriver_ASBmp(this);
+				}
+				if(i_iid==INyARHistogramFromRaster){
+					return new NyARHistogramFromRaster_AnyGs(this);
+				}
+				if(i_iid==NyARContourPickup_IRasterDriver){
+					return FLARContourPickupFactory.createDriver(this);
+				}
+				if (i_iid == FLARGs2BinFilter) {
 					return new FLARGs2BinFilter(this);
 				}
-			}			
-			throw new NyARException();
+			}
+			return this.createInterface(i_iid);
 		}
 		public function getBitmapData():BitmapData
 		{

@@ -132,7 +132,7 @@ package org.libspark.flartoolkit.core.raster.rgb
                     this._is_attached_buffer = i_is_alloc;
                     break;
                 default:
-					throw new NyARException();
+					return super.initInstance(i_size, i_raster_type, i_is_alloc);
             }
             //readerの構築
             return true;
@@ -151,33 +151,33 @@ package org.libspark.flartoolkit.core.raster.rgb
 
         public override function createInterface(iIid:Class):Object
         {
-            if (iIid == INyARPerspectiveCopy)
-            {
-                return this.isEqualBufferType(NyARBufferType.OBJECT_AS3_BitmapData) ? new PerspectiveCopy_AsBitmap(this) : NyARPerspectiveCopyFactory.createDriver(this);
-            }
-            if (iIid == NyARMatchPattDeviationColorData_IRasterDriver)
-            {
-                return NyARMatchPattDeviationColorData_RasterDriverFactory.createDriver(this);
-            }
-            if (iIid == INyARRgb2GsFilter)
-            {
-                return this.isEqualBufferType(NyARBufferType.OBJECT_AS3_BitmapData) ? new NyARRgb2GsFilterRgbAve_AsBitmap(this) : NyARRgb2GsFilterFactory.createRgbAveDriver(this);
-            }
-            else if (iIid == INyARRgb2GsFilterRgbAve)
-            {
-                return this.isEqualBufferType(NyARBufferType.OBJECT_AS3_BitmapData) ? new NyARRgb2GsFilterRgbAve_AsBitmap(this) : NyARRgb2GsFilterFactory.createRgbAveDriver(this);
-            }
+			if (this.isEqualBufferType(NyARBufferType.OBJECT_AS3_BitmapData)) {
+				if (iIid == INyARPerspectiveCopy)
+				{
+					return new PerspectiveCopy_AsBitmap(this);
+				}
+				if (iIid == NyARMatchPattDeviationColorData_IRasterDriver)
+				{
+					return NyARMatchPattDeviationColorData_RasterDriverFactory.createDriver(this);
+				}
+				if (iIid == INyARRgb2GsFilter)
+				{
+					return new NyARRgb2GsFilterRgbAve_AsBitmap(this);
+				}
+				else if (iIid == INyARRgb2GsFilterRgbAve)
+				{
+					return new NyARRgb2GsFilterRgbAve_AsBitmap(this);
+				}
 
-            if (iIid == INyARRgb2GsFilterArtkTh)
-            {
-                return this.isEqualBufferType(NyARBufferType.OBJECT_AS3_BitmapData) ? new NyARRgb2GsFilterArtkTh_AsBitmap(this) : NyARRgb2GsFilterArtkThFactory.createDriver(this);
-            }
-			if (iIid == FLARRgb2GsFilter) {
-                if (this.isEqualBufferType(NyARBufferType.OBJECT_AS3_BitmapData)) {
+				if (iIid == INyARRgb2GsFilterArtkTh)
+				{
+					return new NyARRgb2GsFilterArtkTh_AsBitmap(this);
+				}
+				if (iIid == FLARRgb2GsFilter){
 					return new FLARRgb2GsFilter(this);
 				}
 			}
-            throw new NyARException();
+			return super.createInterface(iIid);
         }
         private var _bm_cache:BitmapData;
 
