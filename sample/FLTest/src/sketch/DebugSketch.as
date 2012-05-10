@@ -10,7 +10,6 @@ package sketch
     import flash.utils.*;
 	import org.libspark.flartoolkit.core.raster.*;
 	import org.libspark.flartoolkit.core.raster.rgb.*;
-	import org.libspark.flartoolkit.core.param.*;
 	import org.libspark.flartoolkit.core.*;
 	import org.libspark.flartoolkit.detector.*;
 	import org.libspark.flartoolkit.rpf.reality.nyartk.*;

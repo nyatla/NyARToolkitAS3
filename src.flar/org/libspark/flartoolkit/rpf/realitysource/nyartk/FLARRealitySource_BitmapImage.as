@@ -6,6 +6,7 @@ package org.libspark.flartoolkit.rpf.realitysource.nyartk
 	import jp.nyatla.nyartoolkit.as3.core.param.*;
 	import jp.nyatla.nyartoolkit.as3.rpf.realitysource.nyartk.*;
 	import jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk.*;
+	import org.libspark.flartoolkit.rpf.tracker.nyartk.*;
 	import org.libspark.flartoolkit.rpf.*;
 	import jp.nyatla.as3utils.*;
 	import jp.nyatla.nyartoolkit.as3.core.rasterfilter.rgb2gs.*;

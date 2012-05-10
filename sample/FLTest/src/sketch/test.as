@@ -13,10 +13,10 @@ package sketch
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
 	import org.libspark.flartoolkit.core.raster.*;
 	import org.libspark.flartoolkit.core.raster.rgb.*;
-	import org.libspark.flartoolkit.core.param.*;
 	import org.libspark.flartoolkit.core.*;
 	import org.libspark.flartoolkit.detector.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.matrix.*;
+	import jp.nyatla.nyartoolkit.as3.core.param.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
 	import jp.nyatla.nyartoolkit.as3.core.transmat.*;
 	import org.libspark.flartoolkit.rpf.reality.nyartk.*;
@@ -40,7 +40,9 @@ package sketch
 		}
 		public override function main():void
 		{
-			param=new FLARParam(this.getSketchFile(0),320,240);
+			param = new NyARParam();
+			param.loadARParam(this.getSketchFile(0));
+			param.changeScreenSize(320, 240);
 			code=new NyARCode(16, 16);
 			code.loadARPatt(this.getSketchFile(1));
 			
@@ -109,10 +111,10 @@ package sketch
 			
 			
 		}
-		private	var param:FLARParam;
+		private	var param:NyARParam;
 		private	var code:NyARCode;
-		private	var arimg:FLARRgbRaster = new FLARRgbRaster(320,240,true);
-		private	var idimg:FLARRgbRaster = new FLARRgbRaster(320,240,true);
+		private	var arimg:FLARRgbRaster = new FLARRgbRaster(320,240);
+		private	var idimg:FLARRgbRaster = new FLARRgbRaster(320,240);
 		private function testFLARMarkerSystem():void
 		{
 			var ss:FLARSensor = new FLARSensor(new NyARIntSize(320, 240));
@@ -245,15 +247,14 @@ package sketch
 	}
 }
 
-import org.libspark.flartoolkit.core.*;
 import org.libspark.flartoolkit.core.raster.*;
 import org.libspark.flartoolkit.core.raster.rgb.*;
-import org.libspark.flartoolkit.core.param.*;
+import jp.nyatla.nyartoolkit.as3.core.param.*;
 import org.libspark.flartoolkit.core.*;
 import jp.nyatla.nyartoolkit.as3.core.transmat.*;
 import org.libspark.flartoolkit.detector.*;
 import org.libspark.flartoolkit.processor.*;
-import org.libspark.flartoolkit.core.squaredetect.*;
+import jp.nyatla.nyartoolkit.as3.core.squaredetect.*;
 
 import jp.nyatla.nyartoolkit.as3.nyidmarker.data.*;
 import jp.nyatla.nyartoolkit.as3.nyidmarker.*;
@@ -264,7 +265,7 @@ class SingleProcessor extends FLSingleARMarkerProcesser
 	public var transmat:NyARTransMatResult=null;
 	public var current_code:int=-1;
 	private var _parent:test;
-	public function SingleProcessor(i_cparam:FLARParam,i_parent:test)
+	public function SingleProcessor(i_cparam:NyARParam,i_parent:test)
 	{
 		super();
 		this._parent=i_parent;
@@ -281,7 +282,7 @@ class SingleProcessor extends FLSingleARMarkerProcesser
 	{
 	}
 
-	protected override function onUpdateHandler(i_square:FLARSquare,result:NyARTransMatResult):void
+	protected override function onUpdateHandler(i_square:NyARSquare,result:NyARTransMatResult):void
 	{
 		_parent.msg("onUpdateHandler:" + current_code);
 		_parent.msg(result.m00 + "," + result.m01 + "," + result.m02 + "," + result.m03);
@@ -298,7 +299,7 @@ class IdMarkerProcessor extends FLSingleNyIdMarkerProcesser
 	private var _parent:test;
 	private var _encoder:NyIdMarkerDataEncoder_RawBit;
 
-	public function IdMarkerProcessor(i_cparam:FLARParam,i_parent:test)
+	public function IdMarkerProcessor(i_cparam:NyARParam,i_parent:test)
 	{
 		//アプリケーションフレームワークの初期化
 		super();
@@ -342,7 +343,7 @@ class IdMarkerProcessor extends FLSingleNyIdMarkerProcesser
 	/**
 	 * アプリケーションフレームワークのハンドラ（マーカ更新）
 	 */
-	protected override function onUpdateHandler(i_square:FLARSquare,result:NyARTransMatResult):void
+	protected override function onUpdateHandler(i_square:NyARSquare,result:NyARTransMatResult):void
 	{
 		_parent.msg("onUpdateHandler:"+this.current_id);
 		_parent.msg(result.m00 + "," + result.m01 + "," + result.m02 + "," + result.m03);

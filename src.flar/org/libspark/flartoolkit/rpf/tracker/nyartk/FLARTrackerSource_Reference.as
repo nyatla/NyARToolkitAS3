@@ -1,4 +1,4 @@
-package org.libspark.flartoolkit.rpf
+package org.libspark.flartoolkit.rpf.tracker.nyartk
 {
 
 import sketch.*;
@@ -9,6 +9,7 @@ import sketch.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.NyARBufferType;
 	import jp.nyatla.nyartoolkit.as3.rpf.realitysource.nyartk.*;
 	import jp.nyatla.nyartoolkit.as3.rpf.sampler.lrlabel.*;
+	import org.libspark.flartoolkit.rpf.tracker.nyartk.*;
 	import jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk.*;
 	import org.libspark.flartoolkit.core.raster .*;
 	import org.libspark.flartoolkit.rpf.sampler.lrlabel.*;
