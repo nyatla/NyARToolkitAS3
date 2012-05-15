@@ -32,7 +32,7 @@ package jp.nyatla.nyartoolkit.as3.core.raster
 {
 	import jp.nyatla.nyartoolkit.as3.core.rasterreader.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
-	import jp.nyatla.nyartoolkit.as3.*;
+	import jp.nyatla.nyartoolkit.as3.core.*;
 	import jp.nyatla.as3utils.*;
 	/**このクラスは、単機能のNyARRasterです。
 	 *

@@ -40,7 +40,7 @@ package jp.nyatla.nyartoolkit.as3.utils
 	 * 比較的負荷が大きいので、連続してパターンを取得し続ける用途には向いていません。
 	 *
 	 */
-	public class TransformedBitmapPickup extends NyARColorPatt_Perspective_O2
+	public class TransformedBitmapPickup extends NyARColorPatt_Perspective
 	{
 		private var _work_points:Vector.<NyARIntPoint2d> = NyARIntPoint2d.createArray(4);
 

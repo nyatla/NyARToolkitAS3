@@ -1,5 +1,7 @@
 package jp.nyatla.nyartoolkit.as3.core.squaredetect 
 {
+	import jp.nyatla.nyartoolkit.as3.core.types.*;
+
 	public interface INyARSquareContourDetectorHandler 
 	{
 		/**

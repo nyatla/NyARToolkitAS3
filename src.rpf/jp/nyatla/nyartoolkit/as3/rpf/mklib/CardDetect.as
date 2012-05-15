@@ -1,5 +1,7 @@
 package jp.nyatla.nyartoolkit.as3.rpf.mklib 
 {
+	import jp.nyatla.nyartoolkit.as3.core.types.*;
+	import jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk.*;
 	/**
 	 * 未知の矩形を認識するサンプル。
 	 * 絶対的な寸法は求められないので、矩形の辺比率を推定して返します。

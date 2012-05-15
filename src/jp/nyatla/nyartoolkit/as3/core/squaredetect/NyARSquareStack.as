@@ -35,9 +35,10 @@ package jp.nyatla.nyartoolkit.as3.core.squaredetect
 	{
 		public function NyARSquareStack(i_length:int)
 		{
-			super(i_length);
+			super();
+			super.initInstance(i_length);
 		}
-		protected override function createArray(i_length:int):Vector.<Object>
+		protected function createArray(i_length:int):Vector.<Object>
 		{
 			var ret:Vector.<Object>= new Vector.<Object>(i_length);
 			for (var i:int =0; i < i_length; i++){

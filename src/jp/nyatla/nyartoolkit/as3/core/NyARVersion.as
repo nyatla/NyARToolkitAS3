@@ -28,7 +28,7 @@
  *	<airmail(at)ebony.plala.or.jp> or <nyatla(at)nyatla.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.as3.core;
+package jp.nyatla.nyartoolkit.as3.core
 {
 	/**
 	 * このクラスは、NyARToolkitライブラリのバージョン情報を保持します。
