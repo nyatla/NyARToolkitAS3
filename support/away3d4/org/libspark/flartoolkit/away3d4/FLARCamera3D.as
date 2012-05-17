@@ -77,9 +77,6 @@ class ARLens extends LensBase
 	}
 	public function setParam(i_param:NyARParam,i_near:int,i_far:int):void
 	{
-		if (this._ref_param == i_param) {
-			return;
-		}
 		this._near =i_near;
 		this._far = i_far;
 		this._ref_param = i_param;
