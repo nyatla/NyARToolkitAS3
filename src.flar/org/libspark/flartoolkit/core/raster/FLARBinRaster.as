@@ -40,7 +40,7 @@ package org.libspark.flartoolkit.core.raster
 	/**
 	 * このRasterは、明点を0xffffff,暗点を0xff000000であらわします。
 	 */
-	public final class FLARBinRaster extends NyARBinRaster
+	public class FLARBinRaster extends NyARBinRaster
 	{
 		public function FLARBinRaster(i_width:int,i_height:int)
 		{
