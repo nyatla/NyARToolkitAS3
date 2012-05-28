@@ -73,6 +73,10 @@ package jp.nyatla.nyartoolkit.as3.core.types
 	
 		public static const BYTE1D_X8B8G8R8_32:int = T_BYTE1D|0x0103;
 
+        /**　byte[]のYUV420形式
+         */
+        public static const BYTE1D_YUV420SP:int = T_BYTE1D | 0x0301;
+
 		/**
 		 * byte[]で、RGB565の16ビット(little/big endian)で画素が格納されている。
 		 */
@@ -141,7 +145,10 @@ package jp.nyatla.nyartoolkit.as3.core.types
 		 * JavaのBufferedImageを格納するラスタ
 		 */
 		public static const OBJECT_Java_BufferedImage:int= OBJECT_Java|0x01;
-		
+        /**
+         * AndroidのBitmap型オブジェクト
+         */
+        public static const OBJECT_And_Bitmap:int= OBJECT_Java|0x11;		
 		
 		/**
 		 * ActionScript3のBitmapDataを格納するラスタ

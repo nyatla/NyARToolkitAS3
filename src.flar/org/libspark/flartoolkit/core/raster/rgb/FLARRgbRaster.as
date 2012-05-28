@@ -113,7 +113,7 @@ package org.libspark.flartoolkit.core.raster.rgb
          * 初期化が成功すると、trueです。
          * @ 
          */
-        protected override function initInstance(i_size:NyARIntSize,i_raster_type:int,i_is_alloc:Boolean):Boolean
+        protected override function initInstance(i_size:NyARIntSize,i_raster_type:int,i_is_alloc:Boolean):void
         {
             //バッファの構築
             switch (i_raster_type)
@@ -132,10 +132,10 @@ package org.libspark.flartoolkit.core.raster.rgb
                     this._is_attached_buffer = i_is_alloc;
                     break;
                 default:
-					return super.initInstance(i_size, i_raster_type, i_is_alloc);
+					super.initInstance(i_size, i_raster_type, i_is_alloc);
             }
             //readerの構築
-            return true;
+			return;
         }
         /**
          * この関数は、ラスタに外部参照バッファをセットします。

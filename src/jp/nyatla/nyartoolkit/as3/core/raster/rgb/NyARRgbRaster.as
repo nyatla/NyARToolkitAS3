@@ -53,9 +53,7 @@ package jp.nyatla.nyartoolkit.as3.core.raster.rgb
 		protected function overload_NyARRgbRaster_2ii(i_width:int,i_height:int):void
 		{
 			super.overload_NyARRgbRaster_BasicClass(i_width,i_height,NyARBufferType.INT1D_X8R8G8B8_32);
-			if(!initInstance(this._size,NyARBufferType.INT1D_X8R8G8B8_32,true)){
-				throw new NyARException();
-			}
+			this.initInstance(this._size, NyARBufferType.INT1D_X8R8G8B8_32, true);
 		}		
 		/**
 		 * 
@@ -69,9 +67,7 @@ package jp.nyatla.nyartoolkit.as3.core.raster.rgb
 		protected function overload_NyARRgbRaster_4iiib(i_width:int,i_height:int,i_raster_type:int,i_is_alloc:Boolean):void
 		{
 			super.overload_NyARRgbRaster_BasicClass(i_width,i_height,i_raster_type);
-			if(!initInstance(this._size,i_raster_type,i_is_alloc)){
-				throw new NyARException();
-			}
+			this.initInstance(this._size, i_raster_type, i_is_alloc);
 		}
 		/**
 		 * 
@@ -84,9 +80,7 @@ package jp.nyatla.nyartoolkit.as3.core.raster.rgb
 		protected function overload_NyARRgbRaster_3iii(i_width:int, i_height:int, i_raster_type:int):void
 		{
 			super.overload_NyARRgbRaster_BasicClass(i_width,i_height,i_raster_type);
-			if(!initInstance(this._size,i_raster_type,true)){
-				throw new NyARException();
-			}
+			this.initInstance(this._size, i_raster_type, true);
 		}
 		
 		/**
@@ -97,7 +91,7 @@ package jp.nyatla.nyartoolkit.as3.core.raster.rgb
 		 * @param i_is_alloc
 		 * @return
 		 */
-		protected function initInstance(i_size:NyARIntSize,i_raster_type:int,i_is_alloc:Boolean):Boolean
+		protected function initInstance(i_size:NyARIntSize,i_raster_type:int,i_is_alloc:Boolean):void
 		{
 			//バッファの構築
 			switch(i_raster_type)
@@ -106,12 +100,12 @@ package jp.nyatla.nyartoolkit.as3.core.raster.rgb
 					this._buf=i_is_alloc?new Vector.<int>(i_size.w*i_size.h):null;
 					break;
 				default:
-					return false;
+					throw new NyARException();
 			}
 			//readerの構築
 			this._rgb_pixel_driver=NyARRgbPixelDriverFactory.createDriver(this);
 			this._is_attached_buffer=i_is_alloc;
-			return true;
+			return;
 		}
 		public override function getRgbPixelDriver():INyARRgbPixelDriver
 		{

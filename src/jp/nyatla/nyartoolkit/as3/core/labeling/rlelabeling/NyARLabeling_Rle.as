@@ -56,7 +56,8 @@ package jp.nyatla.nyartoolkit.as3.core.labeling.rlelabeling
 		protected function initInstance(i_width:int,i_height:int):void
 		{
 			this._raster_size.setValue(i_width,i_height);
-			var t:int=(int)((Number(i_width))*i_height*2048/(320*240)+32);//full HD support
+            //120KB/QVGA +4K
+            var t:int = (int)(Number(i_width) * i_height * 3000 / (320 * 240) + 100);//full HD support
 			this._rlestack=new RleInfoStack(t);
 			this._rle1 = NyARLabeling_Rle_RleElement.createArray(i_width/2+1);
 			this._rle2 = NyARLabeling_Rle_RleElement.createArray(i_width/2+1);
@@ -108,10 +109,10 @@ package jp.nyatla.nyartoolkit.as3.core.labeling.rlelabeling
 		 * 敷居値を指定します。2値画像の場合は、0を指定してください。
 		 * @throws NyARException
 		 */
-		public function labeling(i_raster:INyARGrayscaleRaster,i_th:int):void
+		public function labeling(i_raster:INyARGrayscaleRaster,i_th:int):Boolean
 		{
 			var size:NyARIntSize=i_raster.getSize();
-			this.imple_labeling(i_raster,i_th,0,0,size.w,size.h);
+			return this.imple_labeling(i_raster,i_th,0,0,size.w,size.h);
 		}
 		/**
 		 * この関数は、ラスタを敷居値i_thで2値化して、ラベリングします。
@@ -124,15 +125,15 @@ package jp.nyatla.nyartoolkit.as3.core.labeling.rlelabeling
 		 * 敷居値
 		 * @throws NyARException
 		 */
-		public function labeling_2(i_raster:INyARGrayscaleRaster,i_area:NyARIntRect,i_th:int):void
+		public function labeling_2(i_raster:INyARGrayscaleRaster,i_area:NyARIntRect,i_th:int):Boolean
 		{
-			this.imple_labeling(i_raster,0,i_area.x,i_area.y,i_area.w,i_area.h);
+			return this.imple_labeling(i_raster,0,i_area.x,i_area.y,i_area.w,i_area.h);
 		}		
 
 		private var _last_input_raster:INyARRaster=null;
 		private var _image_driver:NyARLabeling_Rle_IRasterDriver;
 		
-		private function imple_labeling(i_raster:INyARRaster,i_th:int,i_left:int,i_top:int,i_width:int,i_height:int):void
+		private function imple_labeling(i_raster:INyARRaster,i_th:int,i_left:int,i_top:int,i_width:int,i_height:int):Boolean
 		{			
 			//assert(i_raster.getSize().isEqualSize(this._raster_size));
 			//ラスタドライバのチェック
@@ -154,7 +155,6 @@ package jp.nyatla.nyartoolkit.as3.core.labeling.rlelabeling
 			var in_buf:Vector.<int> = (Vector.<int>)(i_raster.getBuffer());
 
 			var id_max:int = 0;
-			var label_count:int = 0;
 			var rle_top_index:int=i_left+row_stride*i_top;
 			
 			var ypos:int=i_top;
@@ -166,8 +166,8 @@ package jp.nyatla.nyartoolkit.as3.core.labeling.rlelabeling
 				// フラグメントID=フラグメント初期値、POS=Y値、RELインデクス=行
 				if(addFragment(rle_prev[i], id_max, i_top,rlestack)){
 					id_max++;
-					// nofの最大値チェック
-					label_count++;
+				}else{
+					return false;
 				}
 			}
 			var f_array:Vector.<Object> = Vector.<Object>(rlestack.getArray());
@@ -192,7 +192,8 @@ package jp.nyatla.nyartoolkit.as3.core.labeling.rlelabeling
 							// prevがcur右方にある→独立フラグメント
 							if(addFragment(rle_current[i], id_max, y,rlestack)){
 								id_max++;
-								label_count++;
+							}else{
+								return false;
 							}
 							// 次のindexをしらべる
 							continue SCAN_CUR;
@@ -230,7 +231,6 @@ package jp.nyatla.nyartoolkit.as3.core.labeling.rlelabeling
 							var prev_id:int =rle_prev[index_prev].fid;
 							var prev_ptr:NyARRleLabelFragmentInfo = NyARRleLabelFragmentInfo(f_array[prev_id]);
 							if (id != prev_id){
-								label_count--;
 								//prevとcurrentのフラグメントidを書き換える。
 								var i2:int;
 								for(i2=index_prev;i2<len_prev;i2++){
@@ -291,7 +291,8 @@ package jp.nyatla.nyartoolkit.as3.core.labeling.rlelabeling
 					if (id < 0){
 						if(addFragment(rle_current[i], id_max, y,rlestack)){
 							id_max++;
-							label_count++;
+						}else{
+							return false;
 						}
 					}
 				}
@@ -319,6 +320,7 @@ package jp.nyatla.nyartoolkit.as3.core.labeling.rlelabeling
 				//コールバック関数コール
 				this.onLabelFound(src_info);		
 			}
+			return true;
 		}
 		/**
 		 * ハンドラ関数です。継承先クラスでオーバライドしてください。
