@@ -8,7 +8,6 @@ package org.libspark.flartoolkit.rpf.tracker.nyartk
 	import jp.nyatla.nyartoolkit.as3.core.types.NyARBufferType;
 	import jp.nyatla.nyartoolkit.as3.rpf.realitysource.nyartk.*;
 	import jp.nyatla.nyartoolkit.as3.rpf.sampler.lrlabel.*;
-	import org.libspark.flartoolkit.rpf.tracker.nyartk.*;
 	import jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk.*;
 	import org.libspark.flartoolkit.core.raster .*;
 	import org.libspark.flartoolkit.rpf.sampler.lrlabel.*;
@@ -48,16 +47,16 @@ package org.libspark.flartoolkit.rpf.tracker.nyartk
 		 */
 		public function FLARTrackerSource_Reference(i_number_of_sample:int, i_ref_raster_distortion:NyARCameraDistortionFactor, i_width:int, i_height:int, i_depth:int, i_is_alloc:Boolean)
 		{
-			super((int)(Math.pow(2,i_depth)));
+			super(int(Math.pow(2,i_depth)));
 			//		assert(i_depth>0);
 			var div:int=this._rob_resolution;
 			//主GSラスタ
-			this._base_raster=new FLARGrayscaleRaster(i_width,i_height,i_is_alloc);
+			this._base_raster=new FLARGrayscaleRaster(i_width,i_height,NyARBufferType.OBJECT_AS3_BitmapData,i_is_alloc);
 			this._gs_graphics=new NyARGsRasterGraphics_ASBitmap(FLARGrayscaleRaster(this._base_raster));
 			//Roberts変換ラスタ
-			this._rb_source=new FLARGrayscaleRaster(i_width/div,i_height/div, true);
+			this._rb_source=new FLARGrayscaleRaster(i_width/div,i_height/div,NyARBufferType.OBJECT_AS3_BitmapData, true);
 			//Robertsラスタは最も解像度の低いラスタと同じ
-			this._rbraster=new FLARGrayscaleRaster(i_width/div,i_height/div, true);
+			this._rbraster=new FLARGrayscaleRaster(i_width/div,i_height/div,NyARBufferType.OBJECT_AS3_BitmapData, true);
 			this._vec_reader=new FLARVectorReader_Bitmapdata(FLARGrayscaleRaster(this._base_raster),i_ref_raster_distortion,this._rbraster);
 			//samplerとsampleout
 			this._sampler=new FLARLowResolutionLabelingSampler(i_width, i_height,(int)(Math.pow(2,i_depth)));

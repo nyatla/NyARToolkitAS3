@@ -69,7 +69,7 @@ package org.libspark.flartoolkit.markersystem
 		protected override function initResource(s:NyARIntSize):void
 		{
 			//グレースケール変換
-			this._gs_raster = new FLARGrayscaleRaster(s.w, s.h);
+			this._gs_raster = new FLARGrayscaleRaster(s.w, s.h,NyARBufferType.OBJECT_AS3_BitmapData);
 			this._bin_raster = new FLARBinRaster(s.w, s.h);
 			this._gstobin = FLARGs2BinFilter(this._gs_raster.createInterface(FLARGs2BinFilter));
 		}
