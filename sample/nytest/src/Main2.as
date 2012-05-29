@@ -104,7 +104,7 @@ package
 		{
 			var mat:NyARTransMatResult=new NyARTransMatResult();
 			var ang:NyARDoublePoint3d = new NyARDoublePoint3d();
-			var d:NyARSingleDetectMarker=new NyARSingleDetectMarker(this.param, this.code, 80.0,NyARSingleDetectMarker.PF_NYARTOOLKIT);
+			var d:NyARSingleDetectMarker=NyARSingleDetectMarker.createInstance(this.param, this.code, 80.0,NyARSingleDetectMarker.PF_NYARTOOLKIT);
 			d.detectMarkerLite(raster_bgra,100);
 			msg("cf=" + d.getConfidence());
 			{

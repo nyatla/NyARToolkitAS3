@@ -69,7 +69,7 @@ package jp.nyatla.nyartoolkit.as3.markersystem
 		 */
 		protected function initResource(s:NyARIntSize):void
 		{
-			this._gs_raster=new NyARGrayscaleRaster(s.w,s.h,NyARBufferType.INT1D_GRAY_8,true);
+			this._gs_raster=new NyARGrayscaleRaster(s.w,s.h,NyARBufferType.INT1D_GRAY_8);
 		}
 		/**
 		 * 
