@@ -26,32 +26,31 @@ package jp.nyatla.nyartoolkit.as3.markersystem.utils
 {
 
 	import jp.nyatla.nyartoolkit.as3.core.*;
+	import jp.nyatla.nyartoolkit.as3.core.match.*;
+
 
 	/**
-	 * このクラスは、NyIdマーカの検出結果を保存するデータクラスです。
+	 * このクラスは、ARマーカの検出結果を保存するデータクラスです。
 	 */
-	public class MarkerInfoNyId extends TMarkerData
+	public class ARMarkerList_Item extends TMarkerData
 	{
-		/** MK_NyIdの情報。 反応するidの開始レンジ*/
-		public var nyid_range_s:Number;
-		/** MK_NyIdの情報。 反応するidの終了レンジ*/
-		public var nyid_range_e:Number;
-		/** MK_NyIdの情報。 実際のid値*/
-		public var nyid:Number;
-		public var dir:int;
-		/**
-		 * コンストラクタです。初期値から、Idマーカのインスタンスを生成します。
-		 * @param i_range_s
-		 * @param i_range_e
-		 * @param i_patt_size
-		 * @throws NyARException
-		 */
-		public function MarkerInfoNyId(i_nyid_range_s:Number,i_nyid_range_e:Number,i_patt_size:Number)
+		/** MK_ARの情報。比較のための、ARToolKitマーカを格納します。*/
+		public var matchpatt:NyARMatchPatt_Color_WITHOUT_PCA;
+		/** MK_ARの情報。検出した矩形の格納変数。マーカの一致度を格納します。*/
+		public var cf:Number;
+		public var patt_w:int;
+		public var patt_h:int;
+		/** MK_ARの情報。パターンのエッジ割合。*/
+		public var patt_edge_percentage:int;
+		/** */
+		public function ARMarkerList_Item(i_patt:NyARCode,i_patt_edge_percentage:int,i_patt_size:Number)
 		{
 			super();
+			this.matchpatt=new NyARMatchPatt_Color_WITHOUT_PCA(i_patt);
+			this.patt_edge_percentage=i_patt_edge_percentage;
 			this.marker_offset.setSquare(i_patt_size);
-			this.nyid_range_s=i_nyid_range_s;
-			this.nyid_range_e=i_nyid_range_e;
+			this.patt_w=i_patt.getWidth();
+			this.patt_h=i_patt.getHeight();
 			return;
 		}		
 	}

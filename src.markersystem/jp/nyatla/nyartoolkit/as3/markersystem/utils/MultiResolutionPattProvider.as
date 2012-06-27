@@ -47,7 +47,7 @@ package jp.nyatla.nyartoolkit.as3.markersystem.utils
 		 * [readonly]マーカにマッチした{@link NyARMatchPattDeviationColorData}インスタンスを得る。
 		 * @throws NyARException 
 		 */
-		public function getDeviationColorData(i_marker:MarkerInfoARMarker,i_pix_drv:INyARPerspectiveCopy,i_vertex:Vector.<NyARIntPoint2d>):NyARMatchPattDeviationColorData
+		public function getDeviationColorData(i_marker:ARMarkerList_Item,i_pix_drv:INyARPerspectiveCopy,i_vertex:Vector.<NyARIntPoint2d>):NyARMatchPattDeviationColorData
 		{
 			var mk_edge:int=i_marker.patt_edge_percentage;
 			for(var i:int=this.items.length-1;i>=0;i--)
