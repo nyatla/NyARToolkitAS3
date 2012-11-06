@@ -27,6 +27,7 @@ package jp.nyatla.nyartoolkit.as3.markersystem.utils
 
 	import jp.nyatla.nyartoolkit.as3.core.transmat.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
+	import jp.nyatla.nyartoolkit.as3.core.types.matrix.*;
 
 	/**
 	 * このクラスは、マーカ情報を格納するためのクラスです。
@@ -41,10 +42,12 @@ package jp.nyatla.nyartoolkit.as3.markersystem.utils
 		public var life:int;
 		/** MK情報。マーカのオフセット位置。*/
 		public var marker_offset:NyARRectOffset=new NyARRectOffset();			
-		/** 検出した矩形の格納変数。理想形二次元座標を格納します。*/
+		/** 検出した矩形の格納変数。理想形二次元座標を格納します。*/		
 		public var sq:SquareStack_Item;
 		/** 検出した矩形の格納変数。マーカの姿勢行列を格納します。*/
-		public var tmat:NyARTransMatResult=new NyARTransMatResult();
+		public var tmat:NyARDoubleMatrix44=new NyARDoubleMatrix44();
+		/** */
+		public var last_param:NyARTransMatResultParam =new NyARTransMatResultParam();
 		/** 矩形の検出状態の格納変数。 連続して見失った回数を格納します。*/
 		public var lost_count:int=int.MAX_VALUE;
 		/** トラッキングログ用の領域*/

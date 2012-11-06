@@ -31,6 +31,7 @@
 package jp.nyatla.nyartoolkit.as3.core.transmat
 {
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
+	import jp.nyatla.nyartoolkit.as3.core.types.matrix.*;
 	import jp.nyatla.nyartoolkit.as3.core.squaredetect.*;
 	/**
 	 * This class calculates ARMatrix from square information. -- 変換行列を計算するクラス。
@@ -45,7 +46,7 @@ package jp.nyatla.nyartoolkit.as3.core.transmat
 		 * @param o_result
 		 * @throws NyARException
 		 */
-		function transMat(i_square:NyARSquare,i_offset:NyARRectOffset,o_result:NyARTransMatResult):Boolean;
+		function transMat(i_square:NyARSquare, i_offset:NyARRectOffset, o_result:NyARDoubleMatrix44, o_param:NyARTransMatResultParam):Boolean;
 		/**
 		 * 理想座標系の四角系から、i_offsetのパラメタで示される矩形を(0,0,0)の点から移動するための行列式を計算し、o_resultへ格納します。
 		 * i_prev_resultにある過去の情報を参照するため、変移が少ない場合はより高精度な値を返します。
@@ -57,6 +58,6 @@ package jp.nyatla.nyartoolkit.as3.core.transmat
 		 * 結果を格納するオブジェクトです。
 		 * @throws NyARException
 		 */
-		function transMatContinue(i_square:NyARSquare,i_offset:NyARRectOffset,i_prev_result:NyARTransMatResult,o_result:NyARTransMatResult):Boolean;
+		function transMatContinue(i_square:NyARSquare, i_offset:NyARRectOffset, i_prev_result:NyARDoubleMatrix44, i_prev_err:Number, o_result:NyARDoubleMatrix44, o_param:NyARTransMatResultParam):Boolean;
 	}
 }

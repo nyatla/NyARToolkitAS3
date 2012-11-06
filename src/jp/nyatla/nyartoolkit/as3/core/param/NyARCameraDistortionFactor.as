@@ -93,16 +93,7 @@ package jp.nyatla.nyartoolkit.as3.core.param
 		 */
 		public function ideal2Observ(i_in:NyARDoublePoint2d,o_out:NyARDoublePoint2d):void
 		{
-			var x:Number = (i_in.x - this._f0) * this._f3;
-			var y:Number = (i_in.y - this._f1) * this._f3;
-			if (x == 0.0 && y == 0.0) {
-				o_out.x = this._f0;
-				o_out.y = this._f1;
-			} else {
-				var d:Number = 1.0 - this._f2 / 100000000.0 * (x * x + y * y);
-				o_out.x = x * d + this._f0;
-				o_out.y = y * d + this._f1;
-			}
+			this.ideal2Observ_4(i_in.x,i_in.y, o_out);
 			return;
 		}
 
@@ -116,7 +107,27 @@ package jp.nyatla.nyartoolkit.as3.core.param
 			this.ideal2Observ_3(i_in.x,i_in.y,o_out);
 			return;
 		}
-		
+		/**
+		 * この関数は、座標点を理想座標系から観察座標系へ変換します。
+		 * @param i_in
+		 * 変換元の座標
+		 * @param o_out
+		 * 変換後の座標を受け取るオブジェクト
+		 */
+		public function ideal2Observ_4(i_x:Number,i_y:Number,o_out:NyARDoublePoint2d):void
+		{
+			var x:Number = (i_x - this._f0) * this._f3;
+			var y:Number = (i_y - this._f1) * this._f3;
+			if (x == 0.0 && y == 0.0) {
+				o_out.x = this._f0;
+				o_out.y = this._f1;
+			} else {
+				var d:Number = 1.0 - this._f2 / 100000000.0 * (x * x + y * y);
+				o_out.x = x * d + this._f0;
+				o_out.y = y * d + this._f1;
+			}
+			return;
+		}		
 		/**
 		 * 理想座標から、観察座標系へ変換します。
 		 * @param i_x
@@ -202,7 +213,7 @@ package jp.nyatla.nyartoolkit.as3.core.param
 		 * @param iy
 		 * @param o_point
 		 */
-		public function observ2Ideal(ix:Number,iy:Number,o_point:NyARDoublePoint2d):void 
+		public function observ2Ideal_3(ix:Number,iy:Number,o_point:NyARDoublePoint2d):void 
 		{
 			var z02:Number, z0:Number, p:Number, q:Number, z:Number, px:Number, py:Number, opttmp_1:Number;
 			var d0:Number = this._f0;
@@ -222,8 +233,7 @@ package jp.nyatla.nyartoolkit.as3.core.param
 					px = px * z / z0;
 					py = py * z / z0;
 				} else {
-					px = 0.0;
-					py = 0.0;
+					px = py=0.0;
 					break;
 				}
 				if (i == PD_LOOP) {
@@ -238,43 +248,26 @@ package jp.nyatla.nyartoolkit.as3.core.param
 		}
 
 		/**
-		 * {@link #observ2Ideal(double, double, NyARDoublePoint2d)}の出力型違い。o_veclinearのx,yフィールドに値を出力する。
-		 * @param ix
-		 * @param iy
-		 * @param o_veclinear
-		 */
-		public function observ2Ideal_2(ix:Number,iy:Number,o_veclinear:NyARVecLinear2d):void
+		 * {@link #observ2Ideal(double, double, NyARDoublePoint2d)}のラッパーです。
+		 * i_inとo_pointには、同じオブジェクトを指定できます。
+		 * @param i_in
+		 * @param o_point
+		 */	
+		public function observ2Ideal_2(i_in:NyARDoublePoint2d,o_point:NyARDoublePoint2d):void
 		{
-			var z02:Number, z0:Number, p:Number, q:Number, z:Number, px:Number, py:Number, opttmp_1:Number;
-			var d0:Number = this._f0;
-			var d1:Number = this._f1;
-
-			px = ix - d0;
-			py = iy - d1;
-			p = this._f2 / 100000000.0;
-			z02 = px * px + py * py;
-			q = z0 = Math.sqrt(z02);// Optimize//q = z0 = Math.sqrt(px*px+ py*py);
-
-			for (var i:int = 1;; i++) {
-				if (z0 != 0.0) {
-					// Optimize opttmp_1
-					opttmp_1 = p * z02;
-					z = z0 - ((1.0 - opttmp_1) * z0 - q) / (1.0 - 3.0 * opttmp_1);
-					px = px * z / z0;
-					py = py * z / z0;
-				} else {
-					px = 0.0;
-					py = 0.0;
-					break;
-				}
-				if (i == PD_LOOP) {
-					break;
-				}
-				z02 = px * px + py * py;
-				z0 = Math.sqrt(z02);// Optimize//z0 = Math.sqrt(px*px+ py*py);
+			this.observ2Ideal_3(i_in.x,i_in.y,o_point);
+		}
+		/**
+		 * 座標配列全てに対して、{@link #observ2Ideal(double, double, NyARDoublePoint2d)}を適応します。
+		 * @param i_in
+		 * @param o_out
+		 * @param i_size
+		 */
+		public function observ2IdealBatch(i_in:Vector.<NyARDoublePoint2d>,o_out: Vector.<NyARDoublePoint2d>,i_size:int):void
+		{
+			for(var i:int=i_size-1;i>=0;i--){
+				this.observ2Ideal_3(i_in[i].x,i_in[i].y,o_out[i]);
 			}
-			o_veclinear.x = px / this._f3 + d0;
-			o_veclinear.y = py / this._f3 + d1;
 			return;
 		}
 	}

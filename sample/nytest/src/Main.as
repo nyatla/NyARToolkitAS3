@@ -57,16 +57,14 @@ package
 				"../../../data/camera_para.dat",URLLoaderDataFormat.BINARY,
 				function(data:ByteArray):void
 				{
- 		            param=new NyARParam();
-            		param.loadARParam(data);
+ 		            param = NyARParam.createFromARParamFile(data);
             		param.changeScreenSize(320,240);
 				});
 			mf.addTarget(
 				"../../../data/patt.hiro",URLLoaderDataFormat.TEXT,
 				function(data:String):void
 				{
-					code=new NyARCode(16, 16);
-					code.loadARPatt(data);
+					code=NyARCode.createFromARPattFile(data,16, 16);
 				}
 			);
 			mf.addTarget(
@@ -101,7 +99,7 @@ package
 		}
 		private function testNyARSingleDetectMarker():void
 		{
-			var mat:NyARTransMatResult=new NyARTransMatResult();
+			var mat:NyARDoubleMatrix44=new NyARDoubleMatrix44();
 			var ang:NyARDoublePoint3d = new NyARDoublePoint3d();
 			var d:NyARSingleDetectMarker=NyARSingleDetectMarker.createInstance_2(this.param, this.code, 80.0);
 			d.detectMarkerLite(raster_bgra,100);
@@ -130,7 +128,7 @@ package
 		}
 		private function testNyARDetectMarker():void
 		{
-			var mat:NyARTransMatResult=new NyARTransMatResult();
+			var mat:NyARDoubleMatrix44=new NyARDoubleMatrix44();
 			var ang:NyARDoublePoint3d = new NyARDoublePoint3d();
 			var codes:Vector.<NyARCode>=new Vector.<NyARCode>();
 			var codes_width:Vector.<Number>=new Vector.<Number>();
@@ -229,7 +227,7 @@ package
 		}		
 		private function main(e:Event):void
 		{
-			var mat:NyARTransMatResult=new NyARTransMatResult();
+			var mat:NyARDoubleMatrix44=new NyARDoubleMatrix44();
 			var ang:NyARDoublePoint3d = new NyARDoublePoint3d();
 			msg("NyARToolkitAS3 check program.");
 			msg("(c)2010 nyatla.");
@@ -271,10 +269,11 @@ import jp.nyatla.nyartoolkit.as3.nyidmarker.*;
 import jp.nyatla.nyartoolkit.as3.nyidmarker.data.*;
 import jp.nyatla.nyartoolkit.as3.core.squaredetect.*;
 import jp.nyatla.nyartoolkit.as3.core.param.*;
+import jp.nyatla.nyartoolkit.as3.core.types.matrix.*;
 
 class SingleProcessor extends SingleARMarkerProcesser
 {
-	public var transmat:NyARTransMatResult=null;
+	public var transmat:NyARDoubleMatrix44=null;
 	public var current_code:int=-1;
 	private var _parent:Main;
 	public function SingleProcessor(i_cparam:NyARParam,i_raster_format:int,i_parent:Main)
@@ -294,7 +293,7 @@ class SingleProcessor extends SingleARMarkerProcesser
 	{
 	}
 
-	protected override function onUpdateHandler(i_square:NyARSquare,result:NyARTransMatResult):void
+	protected override function onUpdateHandler(i_square:NyARSquare,result:NyARDoubleMatrix44):void
 	{
 		_parent.msg("onUpdateHandler:" + current_code);
 		_parent.msg(result.m00 + "," + result.m01 + "," + result.m02 + "," + result.m03);
@@ -306,7 +305,7 @@ class SingleProcessor extends SingleARMarkerProcesser
 
 class IdMarkerProcessor extends SingleNyIdMarkerProcesser
 {	
-	public var transmat:NyARTransMatResult=null;
+	public var transmat:NyARDoubleMatrix44=null;
 	public var current_id:int=-1;
 	private var _parent:Main;
 	private var _encoder:NyIdMarkerDataEncoder_RawBit;
@@ -355,7 +354,7 @@ class IdMarkerProcessor extends SingleNyIdMarkerProcesser
 	/**
 	 * アプリケーションフレームワークのハンドラ（マーカ更新）
 	 */
-	protected override function onUpdateHandler(i_square:NyARSquare,result:NyARTransMatResult):void
+	protected override function onUpdateHandler(i_square:NyARSquare,result:NyARDoubleMatrix44):void
 	{
 		_parent.msg("onUpdateHandler:"+this.current_id);
 		_parent.msg(result.m00 + "," + result.m01 + "," + result.m02 + "," + result.m03);

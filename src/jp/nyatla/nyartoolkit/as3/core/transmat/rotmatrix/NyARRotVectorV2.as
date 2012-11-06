@@ -94,7 +94,7 @@ package jp.nyatla.nyartoolkit.as3.core.transmat.rotmatrix
 		 * 終了位置？
 		 * @throws NyARException
 		 */
-		public function checkVectorByVertex(i_start_vertex:NyARDoublePoint2d, i_end_vertex:NyARDoublePoint2d):void
+		public function checkVectorByVertex(i_start_vertex:NyARDoublePoint2d, i_end_vertex:NyARDoublePoint2d):Boolean
 		{
 			var h:Number;
 			var inv_cpara:NyARDoubleMatrix44 = this._inv_cpara;
@@ -110,7 +110,7 @@ package jp.nyatla.nyartoolkit.as3.core.transmat.rotmatrix
 			var cmat:NyARPerspectiveProjectionMatrix= this._projection_mat_ref;
 			h = cmat.m20 * world0 + cmat.m21 * world1 + cmat.m22 * world2;
 			if (h == 0.0) {
-				throw new NyARException();
+				return false;
 			}
 			var camera0:Number = (cmat.m00 * world0 + cmat.m01 * world1 + cmat.m02 * world2) / h;
 			var camera1:Number = (cmat.m10 * world0 + cmat.m11 * world1 + cmat.m12 * world2) / h;
@@ -118,7 +118,7 @@ package jp.nyatla.nyartoolkit.as3.core.transmat.rotmatrix
 			//h = cpara[2 * 4 + 0] * world3 + cpara[2 * 4 + 1] * world4 + cpara[2 * 4 + 2] * world5;
 			h = cmat.m20 * world3 + cmat.m21 * world4 + cmat.m22 * world5;
 			if (h == 0.0) {
-				throw new NyARException();
+				return false;
 			}
 			var camera2:Number = (cmat.m00 * world3 + cmat.m01 * world4 + cmat.m02 * world5) / h;
 			var camera3:Number = (cmat.m10 * world3 + cmat.m11 * world4 + cmat.m12 * world5) / h;
@@ -129,6 +129,7 @@ package jp.nyatla.nyartoolkit.as3.core.transmat.rotmatrix
 				this.v2 = -this.v2;
 				this.v3 = -this.v3;
 			}
+			return true;
 		}
 	}
 }

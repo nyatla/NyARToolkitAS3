@@ -127,8 +127,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.mklib
 			if(d==null){
 				return false;
 			}
-			var c:NyARCode=new NyARCode(this._resolution_width,this._resolution_height);
-			c.loadARPatt(i_stream);
+			var c:NyARCode=NyARCode.createFromARPattFile(i_stream,this._resolution_width,this._resolution_height);			c.loadARPatt(i_stream);
 			d.setValue(c,i_id,i_name,i_width,i_height);
 			return true;
 		}	

@@ -42,6 +42,7 @@ package jp.nyatla.nyartoolkit.as3.processor
 	import jp.nyatla.nyartoolkit.as3.core.*;
 	import jp.nyatla.nyartoolkit.as3.core.rasterfilter.rgb2gs.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
+	import jp.nyatla.nyartoolkit.as3.core.types.matrix.*;
 	import jp.nyatla.nyartoolkit.as3.*;
 	import jp.nyatla.nyartoolkit.as3.core.analyzer.histogram.*;
 	import jp.nyatla.as3utils.*;
@@ -177,14 +178,14 @@ package jp.nyatla.nyartoolkit.as3.processor
 			this._detectmarker.cf_threshold_exist=i_exist_cf;
 			this._detectmarker.cf_threshold_new=i_new_cf;
 		}
-		private var __NyARSquare_result:NyARTransMatResult = new NyARTransMatResult();
+		private var _transmat_result:NyARDoubleMatrix44 = new NyARDoubleMatrix44();
+		private var _last_result_param:NyARTransMatResultParam = new NyARTransMatResultParam();
 
 		/**	オブジェクトのステータスを更新し、必要に応じてハンドル関数を駆動します。
 		 * 	戻り値は、「実際にマーカを発見する事ができたか」です。クラスの状態とは異なります。
 		 */
 		private function updateStatus(i_square:NyARSquare,i_code_index:int):Boolean
 		{
-			var result:NyARTransMatResult = this.__NyARSquare_result;
 			if (this._current_arcode_index < 0) {// 未認識中
 				if (i_code_index < 0) {// 未認識から未認識の遷移
 					// なにもしないよーん。
@@ -195,9 +196,9 @@ package jp.nyatla.nyartoolkit.as3.processor
 					// OnEnter
 					this.onEnterHandler(i_code_index);
 					// 変換行列を作成
-					this._transmat.transMat(i_square, this._offset, result);
+					this._transmat.transMat(i_square, this._offset, this._transmat_result,this._last_result_param);
 					// OnUpdate
-					this.onUpdateHandler(i_square, result);
+					this.onUpdateHandler(i_square, this._transmat_result);
 					this._lost_delay_count = 0;
 					return true;
 				}
@@ -213,9 +214,11 @@ package jp.nyatla.nyartoolkit.as3.processor
 				} else if (i_code_index == this._current_arcode_index) {// 同じARCodeの再認識
 					// イベント生成
 					// 変換行列を作成
-					this._transmat.transMatContinue(i_square, this._offset, result,result);
+					if(!this._transmat.transMatContinue(i_square,  this._offset, this._transmat_result, this._last_result_param.last_error, this._transmat_result, this._last_result_param)){
+						this._transmat.transMat(i_square, this._offset,this._transmat_result,this._last_result_param);
+					}
 					// OnUpdate
-					this.onUpdateHandler(i_square, result);
+					this.onUpdateHandler(i_square, this._transmat_result);
 					this._lost_delay_count = 0;
 					return true;
 				} else {// 異なるコードの認識→今はサポートしない。
@@ -233,8 +236,7 @@ package jp.nyatla.nyartoolkit.as3.processor
 		{
 			throw new NyARException("onLeaveHandler not implemented.");
 		}
-
-		protected function onUpdateHandler(i_square:NyARSquare, result:NyARTransMatResult):void
+		protected function onUpdateHandler(i_square:NyARSquare,o_result:NyARDoubleMatrix44): void
 		{
 			throw new NyARException("onUpdateHandler not implemented.");
 		}

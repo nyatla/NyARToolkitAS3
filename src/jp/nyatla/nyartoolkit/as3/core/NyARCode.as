@@ -44,7 +44,14 @@ package jp.nyatla.nyartoolkit.as3.core
 		private var _bw_pat:Vector.<NyARMatchPattDeviationBlackWhiteData>=new Vector.<NyARMatchPattDeviationBlackWhiteData>(4);
 		private var _width:int;
 		private var _height:int;
-		
+	
+		public static function createFromARPattFile(i_stream:String,i_width:int,i_height:int):NyARCode
+		{
+			//ラスタにパターンをロードする。
+			var ret:NyARCode=new NyARCode(i_width,i_height);
+			NyARCodeFileReader.loadFromARToolKitFormFile(i_stream,ret);
+			return ret;
+		}		
 		public function getColorData(i_index:int):NyARMatchPattDeviationColorData
 		{
 			return this._color_pat[i_index];
@@ -71,11 +78,6 @@ package jp.nyatla.nyartoolkit.as3.core
 				this._color_pat[i]=new NyARMatchPattDeviationColorData(i_width,i_height);
 				this._bw_pat[i]=new NyARMatchPattDeviationBlackWhiteData(i_width,i_height);
 			}
-			return;
-		}
-		public function loadARPatt(i_stream:String):void
-		{
-			NyARCodeFileReader.loadFromARToolKitFormFile(i_stream,this);
 			return;
 		}
 		/**

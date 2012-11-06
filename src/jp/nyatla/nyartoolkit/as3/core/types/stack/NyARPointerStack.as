@@ -146,6 +146,14 @@ package jp.nyatla.nyartoolkit.as3.core.types.stack
 		{
 			this._length = 0;
 		}
+		/**
+		 * 配列の長さを変更します。
+		 * @param i_length
+		 */
+		public function setLength(i_length:int):void
+		{
+			this._length=i_length;
+		}
 	}
 
 }

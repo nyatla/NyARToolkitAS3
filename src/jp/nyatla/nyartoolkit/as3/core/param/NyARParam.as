@@ -15,27 +15,27 @@ package jp.nyatla.nyartoolkit.as3.core.param
 		private static const SIZE_OF_PARAM_SET:int = 4 + 4 + (3 * 4 * 8) + (4 * 8);
 		private var _dist:NyARCameraDistortionFactor =new NyARCameraDistortionFactor();
 		private var _projection_matrix:NyARPerspectiveProjectionMatrix =new NyARPerspectiveProjectionMatrix();
-		public function loadDefaultParameter():void
+		/**
+		 * テストパラメータを格納したインスタンスを生成します。
+		 * @return
+		 */
+		public static function createDefaultParameter():NyARParam
 		{
-			var tmp:Vector.<Number>=Vector.<Number>([318.5,263.5,26.2,1.0127565206658486]);
-			this._screen_size.setValue(640,480);
-			this._dist.setValue(tmp);
-			this._projection_matrix.m00=700.9514702992245;
-			this._projection_matrix.m01=0;
-			this._projection_matrix.m02=316.5;
-			this._projection_matrix.m03=0;
-			this._projection_matrix.m10=0;
-			this._projection_matrix.m11=726.0941816535367;
-			this._projection_matrix.m12=241.5;
-			this._projection_matrix.m13=0.0;
-			this._projection_matrix.m20=0.0;
-			this._projection_matrix.m21=0.0;
-			this._projection_matrix.m22=1.0;
-			this._projection_matrix.m23=0.0;
-			this._projection_matrix.m30=0.0;
-			this._projection_matrix.m31=0.0;
-			this._projection_matrix.m32=0.0;
-			this._projection_matrix.m33=1.0;
+			var ret:NyARParam=new NyARParam();
+			ret.initByDefaultParametor();
+			return ret;
+		}
+		/**
+		 * i_streamからARToolkitのカメラパラメータを読み出して、格納したインスタンスを生成します。
+		 * @param i_stream
+		 * @return
+		 * @throws NyARException
+		 */
+		public static function createFromARParamFile(i_stream:ByteArray):NyARParam
+		{
+			var ret:NyARParam=new NyARParam();
+			ret.initByARParam(i_stream);
+			return ret;
 		}
 		public function getScreenSize():NyARIntSize
 		{
@@ -103,7 +103,40 @@ package jp.nyatla.nyartoolkit.as3.core.param
 			this._projection_matrix.makeCameraFrustumRH(this._screen_size.w, this._screen_size.h, i_dist_min, i_dist_max, o_frustum);
 			return;
 		}
-		public function loadARParam(i_stream:ByteArray):void
+		/**
+		 * テストに使用するための、カメラパラメータ値をロードします。
+		 * このパラメータは、ARToolKit2.7に付属しているカメラパラメータファイルの値です。
+		 */
+		protected function initByDefaultParametor():void
+		{
+			var tmp:Vector.<Number>=Vector.<Number>([318.5,263.5,26.2,1.0127565206658486]);
+			this._screen_size.setValue(640,480);
+			this._dist.setValue(tmp);
+			this._projection_matrix.m00=700.9514702992245;
+			this._projection_matrix.m01=0;
+			this._projection_matrix.m02=316.5;
+			this._projection_matrix.m03=0;
+			this._projection_matrix.m10=0;
+			this._projection_matrix.m11=726.0941816535367;
+			this._projection_matrix.m12=241.5;
+			this._projection_matrix.m13=0.0;
+			this._projection_matrix.m20=0.0;
+			this._projection_matrix.m21=0.0;
+			this._projection_matrix.m22=1.0;
+			this._projection_matrix.m23=0.0;
+			this._projection_matrix.m30=0.0;
+			this._projection_matrix.m31=0.0;
+			this._projection_matrix.m32=0.0;
+			this._projection_matrix.m33=1.0;
+		}
+		/**
+		 * この関数は、ストリームからARToolKit形式のカメラパラメーを1個目の設定をロードします。
+		 * 
+		 * @param i_stream
+		 * 読み込むストリームです。
+		 * @throws Exception
+		 */
+		protected function initByARParam(i_stream:ByteArray):void
 		{
 			var tmp:Vector.<Number> = new Vector.<Number>(16);//new double[12];
 

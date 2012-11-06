@@ -126,7 +126,7 @@ package jp.nyatla.nyartoolkit.as3.core.transmat
 		 * @return
 		 * @throws NyARException
 		 */
-		public function transMat(i_square:NyARSquare,i_offset:NyARRectOffset,o_result:NyARTransMatResult):Boolean
+		public function transMat(i_square:NyARSquare,i_offset:NyARRectOffset,o_result:NyARDoubleMatrix44,o_param:NyARTransMatResultParam):Boolean
 		{
 			var trans:NyARDoublePoint3d=this.__transMat_trans;
 			var err_threshold:Number=makeErrThreshold(i_square.sqvertex);
@@ -145,14 +145,20 @@ package jp.nyatla.nyartoolkit.as3.core.transmat
 
 
 			//回転行列を計算
-			this._rotmatrix.initRotBySquare(i_square.line,i_square.sqvertex);
+			if(!this._rotmatrix.initRotBySquare(i_square.line,i_square.sqvertex)){
+				return false;
+			}
 			//回転後の3D座標系から、平行移動量を計算
 			var vertex_3d:Vector.<NyARDoublePoint3d>=this.__transMat_vertex_3d;
 			this._rotmatrix.getPoint3dBatch(i_offset.vertex,vertex_3d,4);
 			this._transsolver.solveTransportVector(vertex_3d,trans);
 			
 			//計算結果の最適化(平行移動量と回転行列の最適化)
-			this.optimize(this._rotmatrix, trans, this._transsolver,i_offset.vertex, vertex_2d,err_threshold,o_result);
+			var err:Number=this.optimize(this._rotmatrix, trans, this._transsolver,i_offset.vertex, vertex_2d,err_threshold,o_result);
+			//必要なら計算パラメータを返却
+			if(o_param!=null){
+				o_param.last_error=err;
+			}
 			return true;
 		}
 
@@ -160,15 +166,9 @@ package jp.nyatla.nyartoolkit.as3.core.transmat
 		 * (non-Javadoc)
 		 * @see jp.nyatla.nyartoolkit.core.transmat.INyARTransMat#transMatContinue(jp.nyatla.nyartoolkit.core.NyARSquare, int, double, jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult)
 		 */
-		public function transMatContinue(i_square:NyARSquare,i_offset:NyARRectOffset,i_prev_result:NyARTransMatResult,o_result:NyARTransMatResult):Boolean
+		public function transMatContinue(i_square:NyARSquare,i_offset:NyARRectOffset,i_prev_result:NyARDoubleMatrix44,i_prev_err:Number,o_result:NyARDoubleMatrix44,o_param:NyARTransMatResultParam):Boolean
 		{
 			var trans:NyARDoublePoint3d=this.__transMat_trans;
-			// io_result_convが初期値なら、transMatで計算する。
-			if (!i_prev_result.has_value) {
-				return this.transMat(i_square,i_offset, o_result);
-			}
-			//過去のエラーレートを記録(ここれやるのは、i_prev_resultとo_resultに同じインスタンスを指定できるようにするため)
-			var last_error:Number=i_prev_result.last_error;
 			
 			//最適化計算の閾値を決定
 			var err_threshold:Number=makeErrThreshold(i_square.sqvertex);
@@ -194,11 +194,11 @@ package jp.nyatla.nyartoolkit.as3.core.transmat
 			this._transsolver.solveTransportVector(vertex_3d,trans);
 
 			//現在のエラーレートを計算
-			var min_err:Number=errRate(this._rotmatrix,trans,i_offset.vertex, vertex_2d,4,vertex_3d);
-			//結果をストア
-			o_result.setValue_3(rot,trans,min_err);
+			var min_err:Number=errRate(rot,trans,i_offset.vertex, vertex_2d,4,vertex_3d);
 			//エラーレートの判定
-			if(min_err<last_error+err_threshold){
+			if(min_err<i_prev_err+err_threshold){
+				//save initial result
+				o_result.setValue_3(rot,trans);
 	//			System.out.println("TR:ok");
 				//最適化してみる。
 				for (var i:int = 0;i<5; i++) {
@@ -211,31 +211,27 @@ package jp.nyatla.nyartoolkit.as3.core.transmat
 						break;
 					}
 					this._transsolver.solveTransportVector(vertex_3d, trans);				
-					o_result.setValue_3(rot,trans,err);
+					o_result.setValue_3(rot,trans);
 					min_err=err;
 				}
-			}else{
-	//			System.out.println("TR:again");
-				//回転行列を計算
-				rot.initRotBySquare(i_square.line,i_square.sqvertex);
-				
-				//回転後の3D座標系から、平行移動量を計算
-				rot.getPoint3dBatch(i_offset.vertex,vertex_3d,4);
-				this._transsolver.solveTransportVector(vertex_3d,trans);
-				
-				//計算結果の最適化(平行移動量と回転行列の最適化)
-				this.optimize(rot,trans, this._transsolver,i_offset.vertex, vertex_2d,err_threshold,o_result);
+				//継続計算成功
+				if(o_param!=null){
+					o_param.last_error=min_err;
+				}
+				return true;
 			}
-			return true;
+			//継続計算失敗
+			return false;
+
 		}
 		private var __rot:NyARDoubleMatrix33=new NyARDoubleMatrix33();
-		private function optimize(iw_rotmat:NyARRotMatrix,iw_transvec:NyARDoublePoint3d,i_solver:INyARTransportVectorSolver,i_offset_3d:Vector.<NyARDoublePoint3d>,i_2d_vertex:Vector.<NyARDoublePoint2d>,i_err_threshold:Number,o_result:NyARTransMatResult):void
+		private function optimize(iw_rotmat:NyARRotMatrix,iw_transvec:NyARDoublePoint3d,i_solver:INyARTransportVectorSolver,i_offset_3d:Vector.<NyARDoublePoint3d>,i_2d_vertex:Vector.<NyARDoublePoint2d>,i_err_threshold:Number,o_result:NyARDoubleMatrix44):Number
 		{
 			//System.out.println("START");
 			var vertex_3d:Vector.<NyARDoublePoint3d>=this.__transMat_vertex_3d;
 			//初期のエラー値を計算
 			var min_err:Number=errRate(iw_rotmat, iw_transvec, i_offset_3d, i_2d_vertex,4,vertex_3d);
-			o_result.setValue_3(iw_rotmat,iw_transvec,min_err);
+			o_result.setValue_3(iw_rotmat,iw_transvec);
 
 			for (var i:int = 0;i<5; i++) {
 				//変換行列の最適化
@@ -247,11 +243,11 @@ package jp.nyatla.nyartoolkit.as3.core.transmat
 					break;
 				}
 				i_solver.solveTransportVector(vertex_3d,iw_transvec);
-				o_result.setValue_3(iw_rotmat,iw_transvec,err);
+				o_result.setValue_3(iw_rotmat,iw_transvec);
 				min_err=err;
 			}
 			//System.out.println("END");
-			return;
+			return min_err;
 		}
 		
 		//エラーレート計算機

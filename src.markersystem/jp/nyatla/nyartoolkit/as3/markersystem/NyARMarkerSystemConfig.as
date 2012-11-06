@@ -89,8 +89,7 @@ package jp.nyatla.nyartoolkit.as3.markersystem
 		 */
 		protected function NyARMarkerSystemConfig_3oii(i_ar_param_stream:ByteArray,i_width:int,i_height:int):void
 		{
-			this._param=new NyARParam();
-			this._param.loadARParam(i_ar_param_stream);
+			this._param=NyARParam.createFromARParamFile(i_ar_param_stream);			
 			this._param.changeScreenSize(i_width,i_height);
 		}
 		/**
@@ -104,8 +103,7 @@ package jp.nyatla.nyartoolkit.as3.markersystem
 		 */
 		protected function NyARMarkerSystemConfig_2ii(i_width:int,i_height:int):void
 		{
-			this._param=new NyARParam();
-			this._param.loadDefaultParameter();
+			this._param=NyARParam.createDefaultParameter();
 			this._param.changeScreenSize(i_width,i_height);		
 		}
 		/**

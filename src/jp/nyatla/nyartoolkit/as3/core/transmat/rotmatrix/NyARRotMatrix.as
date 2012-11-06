@@ -57,7 +57,7 @@ package jp.nyatla.nyartoolkit.as3.core.transmat.rotmatrix
 		 * NyARTransMatResultの内容からNyARRotMatrixを復元します。
 		 * @param i_prev_result
 		 */
-		public function initRotByPrevResult(i_prev_result:NyARTransMatResult):void
+		public function initRotByPrevResult(i_prev_result:NyARDoubleMatrix44):void
 		{
 
 			this.m00=i_prev_result.m00;
@@ -79,7 +79,7 @@ package jp.nyatla.nyartoolkit.as3.core.transmat.rotmatrix
 		 * @param i_sqvertex
 		 * @throws NyARException
 		 */
-		public function initRotBySquare(i_linear:Vector.<NyARLinear>, i_sqvertex:Vector.<NyARDoublePoint2d>):void
+		public function initRotBySquare(i_linear:Vector.<NyARLinear>, i_sqvertex:Vector.<NyARDoublePoint2d>):Boolean
 		{
 			var vec1:NyARRotVectorV2=this.__initRot_vec1;
 			var vec2:NyARRotVectorV2=this.__initRot_vec2;
@@ -88,14 +88,21 @@ package jp.nyatla.nyartoolkit.as3.core.transmat.rotmatrix
 			
 			//軸１
 			vec1.exteriorProductFromLinear(i_linear[0], i_linear[2]);
-			vec1.checkVectorByVertex(i_sqvertex[0], i_sqvertex[1]);
+			if(!vec1.checkVectorByVertex(i_sqvertex[0], i_sqvertex[1])){
+				return false;
+			}
+
 
 			//軸２
 			vec2.exteriorProductFromLinear(i_linear[1], i_linear[3]);
-			vec2.checkVectorByVertex(i_sqvertex[3], i_sqvertex[0]);
+			if(!vec2.checkVectorByVertex(i_sqvertex[3], i_sqvertex[0])){
+				return false;
+			}
 
 			//回転の最適化？
-			NyARRotVector.checkRotation(vec1,vec2);
+			if(!NyARRotVector.checkRotation(vec1,vec2)){
+				return false;
+			}
 
 			this.m00 =vec1.v1;
 			this.m10 =vec1.v2;
@@ -112,7 +119,7 @@ package jp.nyatla.nyartoolkit.as3.core.transmat.rotmatrix
 			this.m02 = w02/w;
 			this.m12 = w12/w;
 			this.m22 = w22/w;
-			return;
+			return true;
 		}
 		public function initRotByAngle(i_angle:NyARDoublePoint3d):void
 		{

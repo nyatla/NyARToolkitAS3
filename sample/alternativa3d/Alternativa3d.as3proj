@@ -20,6 +20,7 @@
     <class path="..\..\src.markersystem" />
     <class path="..\..\src.flar" />
     <class path="..\..\support\alternativa3d" />
+    <class path="..\..\src.rpf" />
   </classpaths>
   <!-- Build options -->
   <build>

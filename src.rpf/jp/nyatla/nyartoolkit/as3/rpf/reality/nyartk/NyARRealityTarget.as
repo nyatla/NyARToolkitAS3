@@ -5,8 +5,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk
 	import jp.nyatla.nyartoolkit.as3.core.INyARDisposable;
 	import jp.nyatla.nyartoolkit.as3.core.raster.rgb.INyARRgbRaster;
 	import jp.nyatla.nyartoolkit.as3.core.squaredetect.NyARSquare;
-	import jp.nyatla.nyartoolkit.as3.core.transmat.NyARRectOffset;
-	import jp.nyatla.nyartoolkit.as3.core.transmat.NyARTransMatResult;
+	import jp.nyatla.nyartoolkit.as3.core.transmat.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.matrix.NyARDoubleMatrix44;
 	import jp.nyatla.nyartoolkit.as3.core.utils.NyARManagedObject;
@@ -76,8 +75,9 @@ package jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk
 
 		/** 内部向けの公開メンバ変数です。{@link #getSerialId}を使ってください。*/
 		public var _serial:Number;
-		/** 内部向けの公開メンバ変数です。{@link #refTransformMatrix}を使ってください。*/
-		public var _transform_matrix:NyARTransMatResult=new NyARTransMatResult();
+		/** 内部向けのメンバ変数です。{@link #refTransformMatrix}を使ってください。*/
+		public var _transform_matrix:NyARDoubleMatrix44=new NyARDoubleMatrix44();
+		public var _result_param:NyARTransMatResultParam=new NyARTransMatResultParam();
 
 		/** ターゲットの種類。未知のターゲット。*/
 		public static const RT_UNKNOWN:int   =0;
@@ -105,7 +105,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk
 		 * この値は変更しないでください。（編集するときは、コピーを作ってください。）
 		 * @return
 		 */
-		public function refTransformMatrix():NyARTransMatResult
+		public function refTransformMatrix():NyARDoubleMatrix44
 		{
 			//assert(this._target_type==RT_KNOWN);
 			return this._transform_matrix;

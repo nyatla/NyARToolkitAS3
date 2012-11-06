@@ -39,6 +39,7 @@ package jp.nyatla.nyartoolkit.as3.detector
 	import jp.nyatla.nyartoolkit.as3.core.raster.*;
 	import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
+	import jp.nyatla.nyartoolkit.as3.core.types.matrix.*;
 	import jp.nyatla.nyartoolkit.as3.core.pickup.*;
 
 
@@ -149,15 +150,22 @@ package jp.nyatla.nyartoolkit.as3.detector
 		 * 結果値を受け取るオブジェクトを指定してください。
 		 * @throws NyARException
 		 */
-		public function getTransmationMatrix(i_index:int, o_result:NyARTransMatResult):void
+		public function getTransmationMatrix(i_index:int,o_result:NyARDoubleMatrix44):void
 		{
+			//Debug.Assert(o_result!=null);
 			var result:NyARDetectMarkerResult = NyARDetectMarkerResult(this._square_detect.result_stack.getItem(i_index));
 			// 一番一致したマーカーの位置とかその辺を計算
-			if (_is_continue) {
-				_transmat.transMatContinue(result.square, this._offset[result.arcode_id], o_result,o_result);
-			} else {
-				_transmat.transMat(result.square, this._offset[result.arcode_id], o_result);
+			if (this._is_continue){
+				//履歴が使えそうか判定
+				if(result.ref_last_input_matrix==o_result){
+					if(this._transmat.transMatContinue(result.square, this._offset[result.arcode_id],o_result, result.last_result_param.last_error,o_result, result.last_result_param)){
+						return;
+					}
+				}
 			}
+			//履歴使えないor継続認識失敗
+			this._transmat.transMat(result.square, this._offset[result.arcode_id],o_result,result.last_result_param);
+			result.ref_last_input_matrix=o_result;
 			return;
 		}
 
@@ -316,12 +324,15 @@ class RleDetector extends NyARSquareContourDetector_Rle implements NyARSquareCon
 		
 	}
 }
-
+import jp.nyatla.nyartoolkit.as3.core.types.matrix.*;
+import jp.nyatla.nyartoolkit.as3.core.transmat.*;
 
 class NyARDetectMarkerResult
 {
 	public var arcode_id:int;
 	public var confidence:Number;
+	public var ref_last_input_matrix:NyARDoubleMatrix44;
+	public var last_result_param:NyARTransMatResultParam=new NyARTransMatResultParam();
 
 	public var square:NyARSquare=new NyARSquare();
 }

@@ -47,14 +47,10 @@ package jp.nyatla.nyartoolkit.as3.markersystem
 	 * このクラスは、ARToolKit固有の座標系を出力します。他の座標系を出力するときには、継承クラスで変換してください。
 	 * レンダリングシステム毎にクラスを派生させて使います。Javaの場合には、OpenGL用の{@link NyARGlMarkerSystem}クラスがあります。
 	 */
-	public class NyARMarkerSystem
+	public class NyARMarkerSystem extends NyARSingleCameraSystem
 	{
 		/**　定数値。自動敷居値を示す値です。　*/
 		public const THLESHOLD_AUTO:int=0x7fffffff;
-		/** 定数値。視錐台のFARパラメータの初期値[mm]です。*/
-		public const FRUSTUM_DEFAULT_FAR_CLIP:Number=10000;
-		/** 定数値。視錐台のNEARパラメータの初期値[mm]です。*/
-		public const FRUSTUM_DEFAULT_NEAR_CLIP:Number=10;
 		/** マーカ消失時の、消失までのﾃﾞｨﾚｲ(フレーム数)の初期値です。*/
 		public const LOST_DELAY_DEFAULT:int=5;
 		
@@ -66,8 +62,6 @@ package jp.nyatla.nyartoolkit.as3.markersystem
 		private const IDTYPE_PSID:int=0x00002000;
 
 		protected var _sqdetect:INyARMarkerSystemSquareDetect;
-		protected var _ref_param:NyARParam;
-		protected var _frustum:NyARFrustum;
 		private var _last_gs_th:int;
 		private var _bin_threshold:int=THLESHOLD_AUTO;
 
@@ -88,10 +82,8 @@ package jp.nyatla.nyartoolkit.as3.markersystem
 		 */
 		public function NyARMarkerSystem(i_config:INyARMarkerSystemConfig)
 		{
-			this._ref_param=i_config.getNyARParam();
-			this._frustum=new NyARFrustum();
+			super(i_config.getNyARParam());			
 			this.initInstance(i_config);
-			this.setProjectionMatrixClipping(FRUSTUM_DEFAULT_NEAR_CLIP, FRUSTUM_DEFAULT_FAR_CLIP);
 			
 			this._armk_list=new ARMarkerList();
 			this._idmk_list = new NyIdList();
@@ -107,36 +99,6 @@ package jp.nyatla.nyartoolkit.as3.markersystem
 		{
 			this._sqdetect=new SquareDetect(i_ref_config);
 			this._hist_th=i_ref_config.createAutoThresholdArgorism();
-		}
-		/**
-		 * 現在のフラスタムオブジェクトを返します。
-		 * @return
-		 * [readonly]
-		 */
-		public function getFrustum():NyARFrustum
-		{
-			return this._frustum;
-		}
-		/**
-		 * 現在のカメラパラメータオブジェクトを返します。
-		 * @return
-		 * [readonly]
-		 */
-		public function getARParam():NyARParam
-		{
-			return this._ref_param;
-		}	
-		/**
-		 * 視錐台パラメータを設定します。
-		 * @param i_near
-		 * 新しいNEARパラメータ
-		 * @param i_far
-		 * 新しいFARパラメータ
-		 */
-		public function setProjectionMatrixClipping(i_near:Number,i_far:Number):void
-		{
-			var s:NyARIntSize=this._ref_param.getScreenSize();
-			this._frustum.setValue_2(this._ref_param.getPerspectiveProjectionMatrix(),s.w,s.h,i_near,i_far);
 		}
 		/**
 		 * この関数は、1個のIdマーカをシステムに登録して、検出可能にします。
@@ -253,8 +215,7 @@ package jp.nyatla.nyartoolkit.as3.markersystem
 		 */
 		public function addARMarker_2(i_stream:String,i_patt_resolution:int,i_patt_edge_percentage:int,i_marker_size:Number):int
 		{
-			var c:NyARCode=new NyARCode(i_patt_resolution,i_patt_resolution);
-			c.loadARPatt(i_stream);
+			var c:NyARCode=NyARCode.createFromARPattFile(i_stream,i_patt_resolution,i_patt_resolution);			
 			return this.addARMarker(c, i_patt_edge_percentage, i_marker_size);
 		}
 		/**
@@ -276,6 +237,7 @@ package jp.nyatla.nyartoolkit.as3.markersystem
 		 */
 		public function addARMarker_3(i_raster:INyARRgbRaster, i_patt_resolution:int, i_patt_edge_percentage:int, i_marker_size:Number):int
 		{
+			
 			var c:NyARCode=new NyARCode(i_patt_resolution,i_patt_resolution);
 			var s:NyARIntSize=i_raster.getSize();
 			//ラスタからマーカパターンを切り出す。
@@ -284,8 +246,7 @@ package jp.nyatla.nyartoolkit.as3.markersystem
 			pc.copyPatt_3(0,0,s.w,0,s.w,s.h,0,s.h,i_patt_edge_percentage, i_patt_edge_percentage,4, tr);
 			//切り出したパターンをセット
 			c.setRaster_2(tr);
-			this.addARMarker(c,i_patt_edge_percentage,i_marker_size);
-			return 0;
+			return this.addARMarker(c, i_patt_edge_percentage, i_marker_size);
 		}
 		
 		
@@ -632,6 +593,14 @@ package jp.nyatla.nyartoolkit.as3.markersystem
 				var item:TMarkerData=TMarkerData(this._tracking_list.getItem(i));
 				if(item.lost_count>this.lost_th){
 					item.life=0;//活性off
+				}else if(item.life>1){
+					//トラッキング中
+					if(!this._transmat.transMatContinue(item.sq,item.marker_offset,item.tmat,item.last_param.last_error,item.tmat,item.last_param))
+					{
+						if(!this._transmat.transMat(item.sq,item.marker_offset,item.tmat,item.last_param)){
+							item.life=0;//活性off
+						}
+					}
 				}
 			}
 			//各ターゲットの更新
@@ -639,21 +608,33 @@ package jp.nyatla.nyartoolkit.as3.markersystem
 				var target1:TMarkerData=TMarkerData(this._armk_list.getItem(i));
 				if(target1.lost_count==0){
 					target1.time_stamp=time_stamp;
-					this._transmat.transMatContinue(target1.sq,target1.marker_offset,target1.tmat,target1.tmat);
+					//lifeが1(開始時検出のときのみ)
+					if(target1.life!=1){
+						continue;
+					}
+					this._transmat.transMat(target1.sq,target1.marker_offset,target1.tmat,target1.last_param);
 				}
 			}
 			for(i=this._idmk_list.size()-1;i>=0;i--){
 				var target2:TMarkerData=TMarkerData(this._idmk_list.getItem(i));
 				if(target2.lost_count==0){
 					target2.time_stamp=time_stamp;
-					this._transmat.transMatContinue(target2.sq,target2.marker_offset,target2.tmat,target2.tmat);
+					//lifeが1(開始時検出のときのみ)
+					if(target2.life!=1){
+						continue;
+					}
+					this._transmat.transMat(target2.sq,target2.marker_offset,target2.tmat,target2.last_param);
 				}
 			}
 			for(i=this._psmk_list.size()-1;i>=0;i--){
 				var target3:TMarkerData =TMarkerData(this._psmk_list.getItem(i));
 				if(target3.lost_count==0){
 					target3.time_stamp=time_stamp;
-					this._transmat.transMatContinue(target3.sq,target3.marker_offset,target3.tmat,target3.tmat);
+					//lifeが1(開始時検出のときのみ)
+					if(target3.life!=1){
+						continue;
+					}
+					this._transmat.transMat(target3.sq,target3.marker_offset,target3.tmat,target3.last_param);
 				}
 			}
 			//タイムスタンプを更新

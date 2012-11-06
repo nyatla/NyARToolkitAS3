@@ -59,6 +59,8 @@ package org.libspark.flartoolkit.rpf.tracker.nyartk
 			super(i_ref_raster,i_ref_raster_distortion,i_ref_rob_raster,new NyARContourPickup());
 			//assert (i_ref_raster.getBufferType() == NyARBufferType.INT1D_GRAY_8);
 		}
+		private var __tmp:NyARDoublePoint2d=new NyARDoublePoint2d();
+		
 		/**
 		 * RECT範囲内の画素ベクトルの合計値と、ベクトルのエッジ中心を取得します。 320*240の場合、
 		 * RECTの範囲は(x>=0 && x<319 x+w>=0 && x+w<319),(y>=0 && y<239 x+w>=0 && x+w<319)となります。
@@ -130,7 +132,9 @@ package org.libspark.flartoolkit.rpf.tracker.nyartk
 			}
 			//必要なら歪みを解除
 			if(this._factor!=null){
-				this._factor.observ2Ideal_2(xx, yy, o_posvec);
+				this._factor.observ2Ideal_3(xx, yy,this.__tmp);
+				o_posvec.x=this.__tmp.x;
+				o_posvec.y=this.__tmp.y;
 			}else{
 				o_posvec.x=xx;
 				o_posvec.y=yy;
@@ -197,7 +201,9 @@ package org.libspark.flartoolkit.rpf.tracker.nyartk
 			}
 			//必要なら歪みを解除
 			if(this._factor!=null){
-				this._factor.observ2Ideal_2(xx, yy, o_posvec);
+				this._factor.observ2Ideal_3(xx, yy,this.__tmp);
+				o_posvec.x=this.__tmp.x;
+				o_posvec.y=this.__tmp.y;
 			}else{
 				o_posvec.x=xx;
 				o_posvec.y=yy;

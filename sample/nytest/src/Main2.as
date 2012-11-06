@@ -6,6 +6,7 @@ package
 	import jp.nyatla.nyartoolkit.as3.core.param.*;
 	import jp.nyatla.nyartoolkit.as3.core.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
+	import jp.nyatla.nyartoolkit.as3.core.types.matrix.NyARDoubleMatrix44;
 	import jp.nyatla.nyartoolkit.as3.detector.*;
 	import jp.nyatla.nyartoolkit.as3.core.raster.rgb.*;
 	import jp.nyatla.nyartoolkit.as3.core.transmat.*;
@@ -58,16 +59,14 @@ package
 				"../../../data/camera_para.dat",URLLoaderDataFormat.BINARY,
 				function(data:ByteArray):void
 				{
- 		            param=new NyARParam();
-            		param.loadARParam(data);
+ 		            param=NyARParam.createFromARParamFile(data);
             		param.changeScreenSize(320,240);
 				});
 			mf.addTarget(
 				"../../../data/patt.hiro",URLLoaderDataFormat.TEXT,
 				function(data:String):void
 				{
-					code=new NyARCode(16, 16);
-					code.loadARPatt(data);
+					code=NyARCode.createFromARPattFile(data,16, 16);
 				}
 			);
 			mf.addTarget(
@@ -102,7 +101,7 @@ package
 		}
 		private function testNyARSingleDetectMarker():void
 		{
-			var mat:NyARTransMatResult=new NyARTransMatResult();
+			var mat:NyARDoubleMatrix44=new NyARDoubleMatrix44();
 			var ang:NyARDoublePoint3d = new NyARDoublePoint3d();
 			var d:NyARSingleDetectMarker=NyARSingleDetectMarker.createInstance(this.param, this.code, 80.0,NyARSingleDetectMarker.PF_NYARTOOLKIT);
 			d.detectMarkerLite(raster_bgra,100);
@@ -132,7 +131,7 @@ package
 
 		private function main(e:Event):void
 		{
-			var mat:NyARTransMatResult=new NyARTransMatResult();
+			var mat:NyARDoubleMatrix44=new NyARDoubleMatrix44();
 			var ang:NyARDoublePoint3d = new NyARDoublePoint3d();
 			msg("NyARToolkitAS3 check program.");
 			msg("(c)2010 nyatla.");
