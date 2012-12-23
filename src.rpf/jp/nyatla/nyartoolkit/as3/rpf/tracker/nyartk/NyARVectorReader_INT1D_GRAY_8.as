@@ -26,7 +26,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk
 {
 
 	import jp.nyatla.nyartoolkit.as3.core.*;
-	import jp.nyatla.nyartoolkit.as3.core.param.NyARCameraDistortionFactor;
+	import jp.nyatla.nyartoolkit.as3.core.param.*;
 	import jp.nyatla.nyartoolkit.as3.core.raster.NyARGrayscaleRaster;
 	import jp.nyatla.nyartoolkit.as3.core.squaredetect.NyARContourPickup;
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
@@ -49,7 +49,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk
 		 * エッジ探索用のROB画像
 		 * @param 
 		 */
-		public function NyARVectorReader_INT1D_GRAY_8(i_ref_raster:NyARGrayscaleRaster,i_ref_raster_distortion:NyARCameraDistortionFactor,i_ref_rob_raster:NyARGrayscaleRaster)
+		public function NyARVectorReader_INT1D_GRAY_8(i_ref_raster:NyARGrayscaleRaster,i_ref_raster_distortion:INyARCameraDistortionFactor,i_ref_rob_raster:NyARGrayscaleRaster)
 		{
 			super(i_ref_raster,i_ref_raster_distortion,i_ref_rob_raster, new NyARContourPickup());
 			//assert (i_ref_raster.getBufferType() == NyARBufferType.INT1D_GRAY_8);

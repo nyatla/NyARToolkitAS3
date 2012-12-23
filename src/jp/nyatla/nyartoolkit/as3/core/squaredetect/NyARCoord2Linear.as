@@ -50,7 +50,7 @@ package jp.nyatla.nyartoolkit.as3.core.squaredetect
 		 * カメラ歪みを補正する場合のパラメータを指定します。
 		 * nullの場合、補正マップを使用しません。
 		 */
-		public function NyARCoord2Linear(i_size:NyARIntSize,i_distfactor:NyARCameraDistortionFactor)
+		public function NyARCoord2Linear(i_size:NyARIntSize,i_distfactor:INyARCameraDistortionFactor)
 		{
 			if(i_distfactor!=null){
 				this._dist_factor = new NyARObserv2IdealMap(i_distfactor,i_size);

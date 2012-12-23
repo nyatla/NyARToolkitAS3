@@ -1,7 +1,7 @@
 package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk 
 {
 	import jp.nyatla.nyartoolkit.as3.core.*;
-	import jp.nyatla.nyartoolkit.as3.core.param.NyARCameraDistortionFactor;
+	import jp.nyatla.nyartoolkit.as3.core.param.*;
 	import jp.nyatla.nyartoolkit.as3.core.raster.NyARGrayscaleRaster;
 	import jp.nyatla.nyartoolkit.as3.core.squaredetect.NyARContourPickup;
 	import jp.nyatla.nyartoolkit.as3.core.types.*;

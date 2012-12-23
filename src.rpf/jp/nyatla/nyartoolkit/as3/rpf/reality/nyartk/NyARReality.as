@@ -2,10 +2,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk
 {
 
 	import jp.nyatla.nyartoolkit.as3.core.*;
-	import jp.nyatla.nyartoolkit.as3.core.param.NyARCameraDistortionFactor;
-	import jp.nyatla.nyartoolkit.as3.core.param.NyARFrustum;
-	import jp.nyatla.nyartoolkit.as3.core.param.NyARParam;
-	import jp.nyatla.nyartoolkit.as3.core.param.NyARPerspectiveProjectionMatrix;
+	import jp.nyatla.nyartoolkit.as3.core.param.*;
 	import jp.nyatla.nyartoolkit.as3.core.raster.rgb.INyARRgbRaster;
 	import jp.nyatla.nyartoolkit.as3.core.squaredetect.NyARSquare;
 	import jp.nyatla.nyartoolkit.as3.core.transmat.INyARTransMat;
@@ -97,9 +94,9 @@ package jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk
 				}
 				break;
 			case 7:
-				if ((args[0] is NyARIntSize) && (args[1] is Number) && (args[2] is Number) && (args[3] is NyARPerspectiveProjectionMatrix) && ((args[4] is NyARCameraDistortionFactor) || (args[4] == null)) && (args[5] is int) && (args[6] is int))
+				if ((args[0] is NyARIntSize) && (args[1] is Number) && (args[2] is Number) && (args[3] is NyARPerspectiveProjectionMatrix) && ((args[4] is INyARCameraDistortionFactor) || (args[4] == null)) && (args[5] is int) && (args[6] is int))
 				{
-					override_NyARReality_2(NyARIntSize(args[0]), Number(args[1]), Number(args[2]), NyARPerspectiveProjectionMatrix(args[3]), NyARCameraDistortionFactor(args[4]), int(args[5]), int(args[6]));
+					override_NyARReality_2(NyARIntSize(args[0]), Number(args[1]), Number(args[2]), NyARPerspectiveProjectionMatrix(args[3]), INyARCameraDistortionFactor(args[4]), int(args[5]), int(args[6]));
 					return;
 				}
 			default:
@@ -151,7 +148,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk
 		 * {@link #NyARReality(NyARParam i_param,double i_near,double i_far,int i_max_known_target,int i_max_unknown_target)}を参照
 		 * @throws NyARException
 		 */
-		protected function override_NyARReality_2(i_screen:NyARIntSize,i_near:Number,i_far:Number,i_prjmat:NyARPerspectiveProjectionMatrix,i_dist_factor:NyARCameraDistortionFactor,i_max_known_target:int,i_max_unknown_target:int):void
+		protected function override_NyARReality_2(i_screen:NyARIntSize,i_near:Number,i_far:Number,i_prjmat:NyARPerspectiveProjectionMatrix,i_dist_factor:INyARCameraDistortionFactor,i_max_known_target:int,i_max_unknown_target:int):void
 		{
 			this.MAX_LIMIT_KNOWN=i_max_known_target;
 			this.MAX_LIMIT_UNKNOWN=i_max_unknown_target;
@@ -163,7 +160,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk
 		 * @param i_prjmat
 		 * @throws NyARException
 		 */
-		protected function initInstance(i_screen:NyARIntSize,i_near:Number,i_far:Number,i_prjmat:NyARPerspectiveProjectionMatrix,i_dist_factor:NyARCameraDistortionFactor):void
+		protected function initInstance(i_screen:NyARIntSize,i_near:Number,i_far:Number,i_prjmat:NyARPerspectiveProjectionMatrix,i_dist_factor:INyARCameraDistortionFactor):void
 		{
 			var number_of_reality_target:int=this.MAX_LIMIT_KNOWN+this.MAX_LIMIT_UNKNOWN;
 			//演算インスタンス

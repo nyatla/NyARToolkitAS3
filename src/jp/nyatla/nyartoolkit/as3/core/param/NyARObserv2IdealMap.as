@@ -36,7 +36,7 @@ package jp.nyatla.nyartoolkit.as3.core.param
 		protected var _stride:int;
 		protected var _mapx:Vector.<Number>;
 		protected var _mapy:Vector.<Number>;
-		public function NyARObserv2IdealMap(i_distfactor:NyARCameraDistortionFactor,i_screen_size:NyARIntSize)
+		public function NyARObserv2IdealMap(i_distfactor:INyARCameraDistortionFactor,i_screen_size:NyARIntSize)
 		{
 			var opoint:NyARDoublePoint2d=new NyARDoublePoint2d();
 			this._mapx=new Vector.<Number>(i_screen_size.w*i_screen_size.h);

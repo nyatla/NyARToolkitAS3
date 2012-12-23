@@ -52,7 +52,7 @@ package jp.nyatla.nyartoolkit.as3.core.transmat
 		protected var _mat_optimize:NyARPartialDifferentiationOptimize;
 
 
-		private var _ref_dist_factor:NyARCameraDistortionFactor;
+		private var _ref_dist_factor:INyARCameraDistortionFactor;
 
 		/**
 		 * この関数は、コンストラクタから呼び出してください。
@@ -61,7 +61,7 @@ package jp.nyatla.nyartoolkit.as3.core.transmat
 		 * @param i_projmat
 		 * @throws NyARException
 		 */
-		private function initInstance(i_distfactor:NyARCameraDistortionFactor,i_projmat:NyARPerspectiveProjectionMatrix):void
+		private function initInstance(i_distfactor:INyARCameraDistortionFactor,i_projmat:NyARPerspectiveProjectionMatrix):void
 		{
 			this._transsolver=new NyARTransportVectorSolver(i_projmat,4);
 			//互換性が重要な時は、NyARRotMatrix_ARToolKitを使うこと。
@@ -84,9 +84,9 @@ package jp.nyatla.nyartoolkit.as3.core.transmat
 				}
 				break;
 			case 2:
-				{	//NyARTransMat(NyARCameraDistortionFactor i_ref_distfactor,NyARPerspectiveProjectionMatrix i_ref_projmat)
+				{	//NyARTransMat(INyARCameraDistortionFactor i_ref_distfactor,NyARPerspectiveProjectionMatrix i_ref_projmat)
 					//最適化定数の計算	
-					this.initInstance(NyARCameraDistortionFactor(args[0]),NyARPerspectiveProjectionMatrix(args[1]));
+					this.initInstance(INyARCameraDistortionFactor(args[0]),NyARPerspectiveProjectionMatrix(args[1]));
 					return;				
 				}
 				break;

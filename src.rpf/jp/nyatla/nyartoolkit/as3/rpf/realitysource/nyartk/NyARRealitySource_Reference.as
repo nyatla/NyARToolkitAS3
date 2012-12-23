@@ -31,7 +31,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.realitysource.nyartk
 		 * ラスタタイプ
 		 * @throws NyARException
 		 */
-		public function NyARRealitySource_Reference(i_width:int, i_height:int , i_ref_raster_distortion:NyARCameraDistortionFactor , i_depth:int , i_number_of_sample:int , i_raster_type:int )
+		public function NyARRealitySource_Reference(i_width:int, i_height:int , i_ref_raster_distortion:INyARCameraDistortionFactor , i_depth:int , i_number_of_sample:int , i_raster_type:int )
 		{
 			this._rgb_source = new NyARRgbRaster(i_width, i_height, i_raster_type);
 			this._filter=INyARRgb2GsFilter(this._rgb_source.createInterface(INyARRgb2GsFilter));

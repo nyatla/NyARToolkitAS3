@@ -26,7 +26,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk
 {
 
 	import jp.nyatla.nyartoolkit.as3.core.*;
-	import jp.nyatla.nyartoolkit.as3.core.param.NyARCameraDistortionFactor;
+	import jp.nyatla.nyartoolkit.as3.core.param.*;
 	import jp.nyatla.nyartoolkit.as3.core.raster.NyARGrayscaleRaster;
 	import jp.nyatla.nyartoolkit.as3.core.squaredetect.NyARContourPickup;
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
@@ -44,18 +44,18 @@ package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk
 		private var _rob_resolution:int;
 		protected var _ref_base_raster:NyARGrayscaleRaster;
 		private var _ref_rob_raster:NyARGrayscaleRaster;
-		protected var _factor:NyARCameraDistortionFactor;
+		protected var _factor:INyARCameraDistortionFactor;
 		/**
 		 * 
 		 * @param i_ref_raster
 		 * 基本画像
-		 * @param i_ref_raster_distortion
+		 * @param i_ref_raster
 		 * 歪み解除オブジェクト(nullの場合歪み解除を省略)
 		 * @param i_ref_rob_raster
 		 * エッジ探索用のROB画像
 		 * @param 
 		 */
-		public function NyARVectorReader_Basic(i_ref_raster:NyARGrayscaleRaster,i_ref_raster_distortion:NyARCameraDistortionFactor,i_ref_rob_raster:NyARGrayscaleRaster,i_contur_pickup:NyARContourPickup)
+		public function NyARVectorReader_Basic(i_ref_raster:NyARGrayscaleRaster,i_ref_raster_distortion:INyARCameraDistortionFactor,i_ref_rob_raster:NyARGrayscaleRaster,i_contur_pickup:NyARContourPickup)
 		{
 			this._rob_resolution=i_ref_raster.getWidth()/i_ref_rob_raster.getWidth();
 			this._ref_rob_raster=i_ref_rob_raster;

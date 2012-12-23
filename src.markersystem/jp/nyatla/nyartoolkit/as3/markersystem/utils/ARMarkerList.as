@@ -45,6 +45,7 @@ package jp.nyatla.nyartoolkit.as3.markersystem.utils
 		public function ARMarkerList()
 		{
 			this._mkmap=new ARMarkerSortList();//初期値1マーカ
+			//sqはtrackingでnull初期化済み
 			return;
 		}
 		/**

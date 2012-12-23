@@ -36,13 +36,13 @@ package jp.nyatla.nyartoolkit.as3.core
 	public class NyARVersion
 	{
 		/**モジュール名*/
-		public static const MODULE_NAME:String="NyARToolkit-pre";
+		public static const MODULE_NAME:String="NyARToolkit";
 		/**メジャーバージョン*/
 		public static const VERSION_MAJOR:int= 4;
 		/**マイナバージョン*/
 		public static const VERSION_MINOR:int=1;
 		/**タグ*/
-		public static const VERSION_TAG:int=0;
+		public static const VERSION_TAG:int=1;
 		/**バージョン文字列*/
 		public static const VERSION_STRING:String=MODULE_NAME+"/"+VERSION_MAJOR+"."+VERSION_MINOR+"."+VERSION_TAG;
 	}

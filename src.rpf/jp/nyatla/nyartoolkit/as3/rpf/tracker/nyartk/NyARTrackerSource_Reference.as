@@ -2,7 +2,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk
 {
 
 	import jp.nyatla.nyartoolkit.as3.core.*;
-	import jp.nyatla.nyartoolkit.as3.core.param.NyARCameraDistortionFactor;
+	import jp.nyatla.nyartoolkit.as3.core.param.*;
 	import jp.nyatla.nyartoolkit.as3.core.raster.NyARGrayscaleRaster;
 	import jp.nyatla.nyartoolkit.as3.core.types.NyARBufferType;
 	import jp.nyatla.nyartoolkit.as3.rpf.sampler.lrlabel.*;
@@ -39,7 +39,7 @@ package jp.nyatla.nyartoolkit.as3.rpf.tracker.nyartk
 		 * trueの場合、バッファは内部に確保され、{@link #wrapBuffer}関数が使用できなくなります。
 		 * @throws NyARException
 		 */
-		public function NyARTrackerSource_Reference(i_number_of_sample:int, i_ref_raster_distortion:NyARCameraDistortionFactor, i_width:int, i_height:int, i_depth:int, i_is_alloc:Boolean)
+		public function NyARTrackerSource_Reference(i_number_of_sample:int, i_ref_raster_distortion:INyARCameraDistortionFactor, i_width:int, i_height:int, i_depth:int, i_is_alloc:Boolean)
 		{
 			super((int)(Math.pow(2,i_depth)));
 			//		assert(i_depth>0);

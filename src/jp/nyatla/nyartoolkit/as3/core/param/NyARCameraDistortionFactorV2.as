@@ -1,5 +1,5 @@
 /* 
- * PROJECT: NyARToolkitAS3
+ * PROJECT: NyARToolkit
  * --------------------------------------------------------------------------------
  * This work is based on the original ARToolKit developed by
  *   Hirokazu Kato
@@ -7,8 +7,8 @@
  *   HITLab, University of Washington, Seattle
  * http://www.hitl.washington.edu/artoolkit/
  *
- * The NyARToolkitAS3 is AS3 edition ARToolKit class library.
- * Copyright (C)2010 Ryo Iizuka
+ * The NyARToolkit is Java edition ARToolKit class library.
+ * Copyright (C)2008-2009 Ryo Iizuka
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,38 +28,54 @@
  *	<airmail(at)ebony.plala.or.jp> or <nyatla(at)nyatla.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.as3.core.param
+package jp.nyatla.nyartoolkit.as3.core.param 
 {
+	import jp.nyatla.as3utils.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
+	import jp.nyatla.nyartoolkit.as3.core.*;
+	import jp.nyatla.nyartoolkit.as3.core.types.matrix.*;
+
+
+
 	/**
-	 * カメラの歪み成分を格納するクラスと、補正関数群
+	 * ARToolKit Version2の樽型歪みを使った歪み補正クラスです。
+	 * <p>アルゴリズム - 
+	 * このクラスでは、歪み矯正前の座標を観察座標系、歪み矯正後の座標を理想座標系と呼びます。
+	 * パラメータと理論については、以下の資料、11pageを参照してください。
 	 * http://www.hitl.washington.edu/artoolkit/Papers/ART02-Tutorial.pdf
-	 * 11ページを読むといいよ。
-	 * 
+	 * <pre>
 	 * x=x(xi-x0),y=s(yi-y0)
 	 * d^2=x^2+y^2
 	 * p=(1-fd^2)
 	 * xd=px+x0,yd=py+y0
+	 * </pre>
+	 * </p>
 	 */
-	public class NyARCameraDistortionFactor
+	public class NyARCameraDistortionFactorV2 implements INyARCameraDistortionFactor
 	{
+		public static const NUM_OF_FACTOR:int=4;
 		private static const PD_LOOP:int = 3;
 		private var _f0:Number;//x0
 		private var _f1:Number;//y0
-		private var _f2:Number;//100000000.0*ｆ
+		private var _f2:Number;//100000000.0*f
 		private var _f3:Number;//s
-		public function copyFrom(i_ref:NyARCameraDistortionFactor):void
+		
+		
+		/**
+		 *  コピー元のオブジェクト。{@link NyARCameraDistortionFactorV2}クラスである必要があります。
+		 */
+		public function copyFrom(i_ref:INyARCameraDistortionFactor):void
 		{
-			this._f0=i_ref._f0;
-			this._f1=i_ref._f1;
-			this._f2=i_ref._f2;
-			this._f3=i_ref._f3;
+			var inst:NyARCameraDistortionFactorV2=NyARCameraDistortionFactorV2(i_ref);
+			this._f0=inst._f0;
+			this._f1=inst._f1;
+			this._f2=inst._f2;
+			this._f3=inst._f3;
 			return;
 		}
+
 		/**
-		 * 配列の値をファクタ値としてセットする。
-		 * @param i_factor
-		 * 4要素以上の配列
+		 * 歪みパラメータ値を格納した配列。4要素である必要があります。
 		 */
 		public function setValue(i_factor:Vector.<Number>):void
 		{
@@ -69,6 +85,10 @@ package jp.nyatla.nyartoolkit.as3.core.param
 			this._f3=i_factor[3];
 			return;
 		}
+		
+		/**
+		 * 歪みパラメータ値の出力先配列。4要素である必要があります。
+		 */
 		public function getValue(o_factor:Vector.<Number>):void
 		{
 			o_factor[0]=this._f0;
@@ -76,35 +96,14 @@ package jp.nyatla.nyartoolkit.as3.core.param
 			o_factor[2]=this._f2;
 			o_factor[3]=this._f3;
 			return;
-		}	
-		public function changeScale(i_scale:Number):void
-		{
-			this._f0=this._f0*i_scale;// newparam->dist_factor[0] =source->dist_factor[0] *scale;
-			this._f1=this._f1*i_scale;// newparam->dist_factor[1] =source->dist_factor[1] *scale;
-			this._f2=this._f2/ (i_scale * i_scale);// newparam->dist_factor[2]=source->dist_factor[2]/ (scale*scale);
-			//this.f3=this.f3;// newparam->dist_factor[3] =source->dist_factor[3];
-			return;
 		}
-		/**
-		 * int arParamIdeal2Observ( const double dist_factor[4], const double ix,const double iy,double *ox, double *oy ) 関数の代替関数
-		 * 
-		 * @param i_in
-		 * @param o_out
-		 */
-		public function ideal2Observ(i_in:NyARDoublePoint2d,o_out:NyARDoublePoint2d):void
-		{
-			this.ideal2Observ_4(i_in.x,i_in.y, o_out);
-			return;
-		}
+		
 
-		/**
-		 * 理想座標から、観察座標系へ変換します。
-		 * @param i_in
-		 * @param o_out
-		 */
-		public function ideal2Observ_2(i_in:NyARDoublePoint2d,o_out:NyARIntPoint2d):void
+		public function changeScale(i_x_scale:Number,i_y_scale:Number):void
 		{
-			this.ideal2Observ_3(i_in.x,i_in.y,o_out);
+			this._f0=this._f0*i_x_scale;//X
+			this._f1=this._f1*i_y_scale;//Y
+			this._f2=this._f2/ (i_x_scale * i_y_scale);
 			return;
 		}
 		/**
@@ -113,6 +112,24 @@ package jp.nyatla.nyartoolkit.as3.core.param
 		 * 変換元の座標
 		 * @param o_out
 		 * 変換後の座標を受け取るオブジェクト
+		 */
+		public function ideal2Observ(i_in:NyARDoublePoint2d,o_out:NyARDoublePoint2d):void
+		{
+			this.ideal2Observ_4(i_in.x,i_in.y, o_out);
+			return;
+		}
+		
+		/**
+		 * この関数は、座標点を理想座標系から観察座標系へ変換します。
+		 */
+		public function ideal2Observ_2(i_in:NyARDoublePoint2d,o_out:NyARIntPoint2d):void
+		{
+			this.ideal2Observ_3(i_in.x,i_in.y,o_out);
+			return;
+		}
+		
+		/**
+		 * この関数は、座標点を理想座標系から観察座標系へ変換します。
 		 */
 		public function ideal2Observ_4(i_x:Number,i_y:Number,o_out:NyARDoublePoint2d):void
 		{
@@ -127,12 +144,10 @@ package jp.nyatla.nyartoolkit.as3.core.param
 				o_out.y = y * d + this._f1;
 			}
 			return;
-		}		
+		}	
+		
 		/**
-		 * 理想座標から、観察座標系へ変換します。
-		 * @param i_x
-		 * @param i_y
-		 * @param o_out
+		 * この関数は、座標点を理想座標系から観察座標系へ変換します。
 		 */
 		public function ideal2Observ_3(i_x:Number,i_y:Number,o_out:NyARIntPoint2d):void
 		{
@@ -149,16 +164,13 @@ package jp.nyatla.nyartoolkit.as3.core.param
 			return;
 		}
 		
-
 		/**
-		 * 理想座標から、観察座標系へ変換します。
-		 * @param i_in
-		 * @param o_out
-		 * @param i_size
+		 * この関数は、複数の座標点を、一括して理想座標系から観察座標系へ変換します。
+		 * i_inとo_outには、同じインスタンスを指定できます。
 		 */
-		public function ideal2ObservBatch(i_in:Vector.<NyARDoublePoint2d>,o_out:Vector.<NyARDoublePoint2d>,i_size:int):void
+		public function ideal2ObservBatch(i_in:Vector.<NyARDoublePoint2d>, o_out:Vector.<NyARDoublePoint2d>,i_size:int):void
 		{
-			var x:Number,y:Number;
+			var x:Number, y:Number;
 			var d0:Number = this._f0;
 			var d1:Number = this._f1;
 			var d3:Number = this._f3;
@@ -170,7 +182,7 @@ package jp.nyatla.nyartoolkit.as3.core.param
 					o_out[i].x = d0;
 					o_out[i].y = d1;
 				} else {
-					var d:Number = 1.0 - d2_w * (x * x + y * y);
+					var d :Number= 1.0 - d2_w * (x * x + y * y);
 					o_out[i].x = x * d + d0;
 					o_out[i].y = y * d + d1;
 				}
@@ -179,12 +191,10 @@ package jp.nyatla.nyartoolkit.as3.core.param
 		}
 
 		/**
-		 * 複数の座標点について、観察座標から、理想座標系へ変換します。
-		 * @param i_in
-		 * @param o_out
-		 * @param i_size
+		 * この関数は、複数の座標点を、一括して理想座標系から観察座標系へ変換します。
+		 * i_inとo_outには、同じインスタンスを指定できます。
 		 */
-		public final function ideal2ObservBatch_2(i_in:Vector.<NyARDoublePoint2d>, o_out:Vector.<NyARIntPoint2d>,i_size:int):void
+		public function ideal2ObservBatch_2(i_in:Vector.<NyARDoublePoint2d>, o_out:Vector.<NyARIntPoint2d>, i_size:int):void
 		{
 			var x:Number, y:Number;
 			var d0:Number = this._f0;
@@ -195,25 +205,21 @@ package jp.nyatla.nyartoolkit.as3.core.param
 				x = (i_in[i].x - d0) * d3;
 				y = (i_in[i].y - d1) * d3;
 				if (x == 0.0 && y == 0.0) {
-					o_out[i].x = (int)(d0);
-					o_out[i].y = (int)(d1);
+					o_out[i].x = int(d0);
+					o_out[i].y = int(d1);
 				} else {
 					var d:Number = 1.0 - d2_w * (x * x + y * y);
-					o_out[i].x = (int)(x * d + d0);
-					o_out[i].y = (int)(y * d + d1);
+					o_out[i].x = int(x * d + d0);
+					o_out[i].y = int(y * d + d1);
 				}
 			}
 			return;
 		}
 		
 		/**
-		 * ARToolKitの観察座標から、理想座標系への変換です。
-		 * 樽型歪みを解除します。
-		 * @param ix
-		 * @param iy
-		 * @param o_point
+		 * この関数は、座標を観察座標系から理想座標系へ変換します。
 		 */
-		public function observ2Ideal_3(ix:Number,iy:Number,o_point:NyARDoublePoint2d):void 
+		public function observ2Ideal_3(ix:Number , iy:Number, o_point:NyARDoublePoint2d ):void
 		{
 			var z02:Number, z0:Number, p:Number, q:Number, z:Number, px:Number, py:Number, opttmp_1:Number;
 			var d0:Number = this._f0;
@@ -224,7 +230,6 @@ package jp.nyatla.nyartoolkit.as3.core.param
 			p = this._f2 / 100000000.0;
 			z02 = px * px + py * py;
 			q = z0 = Math.sqrt(z02);// Optimize//q = z0 = Math.sqrt(px*px+ py*py);
-
 			for (var i:int = 1;; i++) {
 				if (z0 != 0.0) {
 					// Optimize opttmp_1
@@ -233,7 +238,7 @@ package jp.nyatla.nyartoolkit.as3.core.param
 					px = px * z / z0;
 					py = py * z / z0;
 				} else {
-					px = py=0.0;
+					px = py= 0.0;
 					break;
 				}
 				if (i == PD_LOOP) {
@@ -246,24 +251,17 @@ package jp.nyatla.nyartoolkit.as3.core.param
 			o_point.y = py / this._f3 + d1;
 			return;
 		}
-
 		/**
 		 * {@link #observ2Ideal(double, double, NyARDoublePoint2d)}のラッパーです。
-		 * i_inとo_pointには、同じオブジェクトを指定できます。
-		 * @param i_in
-		 * @param o_point
 		 */	
-		public function observ2Ideal_2(i_in:NyARDoublePoint2d,o_point:NyARDoublePoint2d):void
+		public function observ2Ideal_2(i_in:NyARDoublePoint2d, o_point:NyARDoublePoint2d ):void
 		{
 			this.observ2Ideal_3(i_in.x,i_in.y,o_point);
 		}
 		/**
 		 * 座標配列全てに対して、{@link #observ2Ideal(double, double, NyARDoublePoint2d)}を適応します。
-		 * @param i_in
-		 * @param o_out
-		 * @param i_size
 		 */
-		public function observ2IdealBatch(i_in:Vector.<NyARDoublePoint2d>,o_out: Vector.<NyARDoublePoint2d>,i_size:int):void
+		public function observ2IdealBatch(i_in:Vector.<NyARDoublePoint2d>, o_out:Vector.<NyARDoublePoint2d>, i_size:int):void
 		{
 			for(var i:int=i_size-1;i>=0;i--){
 				this.observ2Ideal_3(i_in[i].x,i_in[i].y,o_out[i]);

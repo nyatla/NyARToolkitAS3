@@ -11,7 +11,6 @@ package org.libspark.flartoolkit.alternativa3d
 	import jp.nyatla.as3utils.sketch.*;
 	import jp.nyatla.as3utils.*;
 	import jp.nyatla.nyartoolkit.as3.core.types.*;
-	import jp.nyatla.nyartoolkit.as3.markersystem.utils.MarkerInfoARMarker;
 	import org.libspark.flartoolkit.core.*;
 	import org.libspark.flartoolkit.markersystem.*;
 	import org.libspark.flartoolkit.alternativa3d.*;

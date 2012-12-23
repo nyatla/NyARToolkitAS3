@@ -48,13 +48,8 @@ package jp.nyatla.nyartoolkit.as3.markersystem.utils
 		}
 		public function prepare():void
 		{
-			for(var i:int=this.size()-1;i>=0;i--){
-				var target:NyIdList_Item=NyIdList_Item(this.getItem(i));//get(i);
-				if(target.life>0){
-					target.lost_count++;
-				}
-				target.sq=null;
-			}
+			//nothing to do
+			//sqはtrackingでnull初期化済み
 		}
 		public function update(i_raster:INyARGrayscaleRaster,i_sq:SquareStack_Item):Boolean
 		{

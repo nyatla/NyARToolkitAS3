@@ -23,6 +23,7 @@ package sketch
 	import org.libspark.flartoolkit.rpf.realitysource.nyartk.*;
 	import jp.nyatla.nyartoolkit.as3.rpf.reality.nyartk.*;	
 	import org.libspark.flartoolkit.markersystem.*;
+	import jp.nyatla.nyartoolkit.as3.core.utils.*;
 
 	/**
 	 * ...
@@ -43,7 +44,6 @@ package sketch
 			param = NyARParam.createFromARParamFile(this.getSketchFile(0));
 			param.changeScreenSize(320, 240);
 			code=NyARCode.createFromARPattFile(this.getSketchFile(1),16, 16);
-			
 			var b:BitmapData;
 			var data:ByteArray;
 			var i:int;
