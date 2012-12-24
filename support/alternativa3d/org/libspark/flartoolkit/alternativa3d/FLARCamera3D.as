@@ -43,21 +43,21 @@ package org.libspark.flartoolkit.alternativa3d
 		public function FLARCamera3D(param:NyARParam = null)
 		{
 			super(NEAR_CLIP, FAR_CLIP);
-			if (param) {
+			if (!param) {
 				this.setParam(param,NEAR_CLIP,FAR_CLIP);
 			}else {
-				this.setParam(this._ref_param, NEAR_CLIP, FAR_CLIP);
+				this.setParam(NyARParam.createDefaultParameter(), NEAR_CLIP, FAR_CLIP);
 			}
 			this.x = 0;
 			this.y = 0;
 			this.z = 0;
 		}
-		private var _ref_param:NyARParam = new NyARParam();
+		private var _ref_param:NyARParam;
 		private var _frustum:NyARFrustum = new NyARFrustum();
 		public function setParam(param:NyARParam,i_near:int,i_far:int):void
 		{
-			var s:NyARIntSize = this._ref_param.getScreenSize();
-			this._frustum.setValue_2(this._ref_param.getPerspectiveProjectionMatrix(), s.w, s.h,i_near,i_far);
+			var s:NyARIntSize = param.getScreenSize();
+			this._frustum.setValue_2(param.getPerspectiveProjectionMatrix(), s.w, s.h,i_near,i_far);
 			var ap:NyARFrustum_PerspectiveParam = this._frustum.getPerspectiveParam(new NyARFrustum_PerspectiveParam());
 			this._ref_param = param;
 			this.nearClipping = i_near;

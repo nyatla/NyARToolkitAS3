@@ -54,13 +54,9 @@ package org.libspark.flartoolkit.away3d4
 		public function FLARAway3DMarkerSystem(i_config:INyARMarkerSystemConfig)
 		{
 			super(i_config);
-		}
-		protected override function initInstance(i_config:INyARMarkerSystemConfig):void
-		{
-			//super part
-			super.initInstance(i_config);
 			//next part
 			this._camera = new FLARCamera3D(this._ref_param);
+			this.addObserver(new Observer(this._camera));
 		}
 		/**
 		 * AR映像向けにセットしたPaperVision3Dカメラを返します。
@@ -69,11 +65,6 @@ package org.libspark.flartoolkit.away3d4
 		public function getAway3DCamera():Camera3D
 		{
 			return this._camera;
-		}
-		public override function setProjectionMatrixClipping(i_near:Number,i_far:Number):void
-		{
-			super.setProjectionMatrixClipping(i_near, i_far);
-			this._camera.setParam(this._ref_param,i_near,i_far);
 		}
 		/**
 		 * この関数は、i_idの姿勢変換行列をi_3d_objectへセットします。
@@ -101,5 +92,20 @@ package org.libspark.flartoolkit.away3d4
 			p.y = p.y;
 			return p;
 		}
+	}
+}
+import jp.nyatla.nyartoolkit.as3.markersystem.*;
+import org.libspark.flartoolkit.away3d4.*;
+import jp.nyatla.nyartoolkit.as3.core.param.*;
+class Observer implements INyARSingleCameraSystemObserver
+{
+	private var _ref_camera:FLARCamera3D;
+	public function Observer(i_ref_camera:FLARCamera3D)
+	{
+		this._ref_camera = i_ref_camera;
+	}
+	public function onUpdateCameraParametor(i_param:NyARParam, i_near:Number, i_far:Number):void	
+	{
+		this._ref_camera.setParam(i_param, i_near, i_far);
 	}
 }

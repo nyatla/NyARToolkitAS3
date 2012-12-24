@@ -70,7 +70,7 @@ import org.libspark.flartoolkit.utils.ArrayUtil;
 import away3d.core.math.Matrix3DUtils;
 class ARLens extends LensBase
 {
-	private var _ref_param:NyARParam=new NyARParam();
+	private var _ref_param:NyARParam;
 	public function ARLens()
 	{
 		super();
