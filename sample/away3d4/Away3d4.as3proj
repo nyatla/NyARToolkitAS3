@@ -50,11 +50,11 @@
   </build>
   <!-- SWC Include Libraries -->
   <includeLibraries>
-    <!-- example: <element path="..." /> -->
+    <element path="..\..\extlib\away3d\away3d-core-fp11-4\away3d-core-fp11_4_1_4" />
   </includeLibraries>
   <!-- SWC Libraries -->
   <libraryPaths>
-    <element path="away3d-core-fp11_4_1_4.swc" />
+    <element path="..\..\extlib\away3d-core-fp11-4\away3d-core-fp11_4_1_4.swc" />
   </libraryPaths>
   <!-- External Libraries -->
   <externalLibraryPaths>
