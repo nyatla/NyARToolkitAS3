@@ -82,7 +82,7 @@ ARマーカに立方体を表示するプログラムです。Hiroマーカを�
 
 ### Sample/Away3d  
 Away3D version 3.4以前向けのサンプルです。スクリーン制御に難があるため、640x480以外のサイズではうまく動きません。
-*Sample/Away3D4  
+* Sample/Away3D4  
 Away3D version 4.0.0 beta向けのデモです。
  
 
