@@ -53,34 +53,34 @@ http://away3d.com/
 
 サンプルプログラムの概要です。2つのFlashDevelopプロジェクトについて、説明します。
 
-* Sample/nytest project  
+### Sample/nytest project  
 NyARToolkitのテストプログラムです。
-** Main.as
+* Main.as
 NyARToolkitのテストプログラムです。ベンチマークと、基本クラスのテストを実行して、結果を表示します。依存する外部ライブラリはありません。
 
-* Sample/FLTest project
+### Sample/FLTest project
  FLARToolkitのテストプログラムです。
-** Main.as
+* Main.as
 NyARToolkitのFlash拡張部分のテストと、ベンチマークプログラムです。テスト結果をコンソールに出力します。依存する外部ライブラリはありません。
 
-* Sample/Pv3d  
+### Sample/Pv3d  
 paperVision3dを使ったサンプルプログラムです。sketchのサンプルのみとなります。
-** IdMarker.as
+* IdMarker.as  
 IDマーカを認識するプログラムです。ID0のマーカを使ってください。
-** ImagePickup.as
+* ImagePickup.as  
 マーカ平面から画像を取得するプログラムです。Hiroマーカを使ってください。
-** JpegInput.as
+* JpegInput.as  
 カメラ画像の変わりにJpeg画像を入力するプログラムです。
-** MarkerPlane.as
+* MarkerPlane.as  
 マーカ平面とマウス座標の相互変換をするプログラムです。
-** PngMarker.as
+* PngMarker.as  
 マーカパターンにPNG画像を使うプログラムです。
-** SimpleLite.as
+* SimpleLite.as  
 ARマーカに立方体を表示するプログラムです。Hiroマーカを使ってください。
-** SimpleLiteM.as
+* SimpleLiteM.as  
 複数のARマーカに立方体を表示するプログラムです。HiroマーカとKanjiマーカを使ってください。
 
-* Sample/Away3d  
+### Sample/Away3d  
 Away3D version 3.4以前向けのサンプルです。スクリーン制御に難があるため、640x480以外のサイズではうまく動きません。
 *Sample/Away3D4  
 Away3D version 4.0.0 beta向けのデモです。
